@@ -20,12 +20,12 @@
     var CONFIG = {"hostname":"haoyunlaile.github.io","root":"/","scheme":"Pisces","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"disqus","storage":true,"lazyload":true,"nav":{"disqus":{"text":"Load Comment","order":-1}},"activeClass":"disqus"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="参考资料 https:&#x2F;&#x2F;github.com&#x2F;shadowsocks&#x2F;shadowsocks-libev  https:&#x2F;&#x2F;github.com&#x2F;shadowsocks&#x2F;shadowsocks-android https:&#x2F;&#x2F;github.com&#x2F;shadowsocks&#x2F;shadowsocks-windows https:&#x2F;&#x2F;hub.docker.com&#x2F;r&#x2F;appso&#x2F;shadowsocks-">
+  <meta name="description" content="准备条件 一台墙外VPS（本文使用腾讯云香港 - centos7.6） 一台能SSH连接到VPS的本地电脑 （推荐连接工具xshell）  服务端安装步骤安装docker 1wget -qO- get.docker.com | bash  查看docker的版本信息、加入开启启动、启动docker应用 123docker versionsystemctl enable dockersystemct">
 <meta property="og:type" content="article">
 <meta property="og:title" content="快速部署 Shadowsocks Docker版">
 <meta property="og:url" content="http://haoyunlaile.github.io/2020/03/06/docker-install-shadowsocks-libev/index.html">
 <meta property="og:site_name" content="好运来了">
-<meta property="og:description" content="参考资料 https:&#x2F;&#x2F;github.com&#x2F;shadowsocks&#x2F;shadowsocks-libev  https:&#x2F;&#x2F;github.com&#x2F;shadowsocks&#x2F;shadowsocks-android https:&#x2F;&#x2F;github.com&#x2F;shadowsocks&#x2F;shadowsocks-windows https:&#x2F;&#x2F;hub.docker.com&#x2F;r&#x2F;appso&#x2F;shadowsocks-">
+<meta property="og:description" content="准备条件 一台墙外VPS（本文使用腾讯云香港 - centos7.6） 一台能SSH连接到VPS的本地电脑 （推荐连接工具xshell）  服务端安装步骤安装docker 1wget -qO- get.docker.com | bash  查看docker的版本信息、加入开启启动、启动docker应用 123docker versionsystemctl enable dockersystemct">
 <meta property="og:image" content="http://haoyunlaile.github.io/images/shoadowsocks-windows.png">
 <meta property="og:image" content="http://haoyunlaile.github.io/images/shoadowsocks-switchomega.png">
 <meta property="og:image" content="http://haoyunlaile.github.io/images/shoadowsocks-android.png">
@@ -52,6 +52,15 @@
   
 
 
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?55ae289b7e76ebbe6ab20e60c74bad9d";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
 
 
 
@@ -228,13 +237,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ol>
-<li><a href="https://github.com/shadowsocks/shadowsocks-libev" target="_blank" rel="noopener">https://github.com/shadowsocks/shadowsocks-libev</a> </li>
-<li><a href="https://github.com/shadowsocks/shadowsocks-android" target="_blank" rel="noopener">https://github.com/shadowsocks/shadowsocks-android</a></li>
-<li><a href="https://github.com/shadowsocks/shadowsocks-windows" target="_blank" rel="noopener">https://github.com/shadowsocks/shadowsocks-windows</a></li>
-<li><a href="https://hub.docker.com/r/appso/shadowsocks-libev/" target="_blank" rel="noopener">https://hub.docker.com/r/appso/shadowsocks-libev/</a></li>
-</ol>
-<h2 id="准备条件"><a href="#准备条件" class="headerlink" title="准备条件"></a>准备条件</h2><ol>
+        <h2 id="准备条件"><a href="#准备条件" class="headerlink" title="准备条件"></a>准备条件</h2><ol>
 <li>一台墙外VPS（本文使用腾讯云香港 - centos7.6）</li>
 <li>一台能SSH连接到VPS的本地电脑 （推荐连接工具xshell）</li>
 </ol>
@@ -248,6 +251,8 @@
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker pull appso/shadowsocks-libev</span><br></pre></td></tr></table></figure>
 
 <p>创建shadowssocks配置文件，主要不要变动配置文件目录，默认配置路径为 <strong>/etc/shadowsocks-libev/config.json</strong></p>
+  <a id="more"></a> 
+
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p /etc/shadowsocks-libev/</span><br><span class="line">touch /etc/shadowsocks-libev/config.json</span><br><span class="line">vi /etc/shadowsocks-libev/config.json</span><br></pre></td></tr></table></figure>
 
 <p>config.json 配置内容</p>
@@ -309,6 +314,12 @@
 <h2 id="android客户端安装"><a href="#android客户端安装" class="headerlink" title="android客户端安装"></a>android客户端安装</h2><p>打开  <a href="https://github.com/shadowsocks/shadowsocks-android/releases" target="_blank" rel="noopener">https://github.com/shadowsocks/shadowsocks-android/releases</a>  下载最新版本客户端，截止本文编写时间，最新版本为  <a href="https://github.com/shadowsocks/shadowsocks-android/releases/tag/v5.0.5" target="_blank" rel="noopener">v5.0.5</a>  ，下载后直接打开对应客户端进行配置,点击那个小飞机即可。</p>
 <p>配置跟windows端配置类似，挺简单的，自行摸索一会儿就可以搞定。</p>
 <p><img src="/images/shoadowsocks-android.png" alt="shoadowsocks-android"></p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ol>
+<li><a href="https://github.com/shadowsocks/shadowsocks-libev" target="_blank" rel="noopener">https://github.com/shadowsocks/shadowsocks-libev</a> </li>
+<li><a href="https://github.com/shadowsocks/shadowsocks-android" target="_blank" rel="noopener">https://github.com/shadowsocks/shadowsocks-android</a></li>
+<li><a href="https://github.com/shadowsocks/shadowsocks-windows" target="_blank" rel="noopener">https://github.com/shadowsocks/shadowsocks-windows</a></li>
+<li><a href="https://hub.docker.com/r/appso/shadowsocks-libev/" target="_blank" rel="noopener">https://hub.docker.com/r/appso/shadowsocks-libev/</a></li>
+</ol>
 
     </div>
 
@@ -390,7 +401,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-number">1.</span> <span class="nav-text">参考资料</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#准备条件"><span class="nav-number">2.</span> <span class="nav-text">准备条件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#服务端安装步骤"><span class="nav-number">3.</span> <span class="nav-text">服务端安装步骤</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#windows客户端安装"><span class="nav-number">4.</span> <span class="nav-text">windows客户端安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#android客户端安装"><span class="nav-number">5.</span> <span class="nav-text">android客户端安装</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#准备条件"><span class="nav-number">1.</span> <span class="nav-text">准备条件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#服务端安装步骤"><span class="nav-number">2.</span> <span class="nav-text">服务端安装步骤</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#windows客户端安装"><span class="nav-number">3.</span> <span class="nav-text">windows客户端安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#android客户端安装"><span class="nav-number">4.</span> <span class="nav-text">android客户端安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-number">5.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
