@@ -20,12 +20,12 @@
     var CONFIG = {"hostname":"haoyunlaile.github.io","root":"/","scheme":"Pisces","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"disqus","storage":true,"lazyload":true,"nav":{"disqus":{"text":"Load Comment","order":-1}},"activeClass":"disqus"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="准备条件 一台墙外VPS（本文使用腾讯云香港 - centos7.6） 一台能SSH连接到VPS的本地电脑 （推荐连接工具xshell）  服务端安装步骤安装docker 1wget -qO- get.docker.com | bash  查看docker的版本信息、加入开启启动、启动docker应用 123docker versionsystemctl enable dockersystemct">
+  <meta name="description" content="需求搭梯子翻墙访问google 准备条件 一台墙外VPS（本文使用腾讯云香港 - centos7.6） 一台能SSH连接到VPS的本地电脑 （推荐连接工具xshell）  遇到的问题因为在腾讯上直接安装使用shadowsocks遇到了”connect reset by peer”的问题，在公司访问(可直连境外)是正常的，用4g&#x2F;家里wifi访问就会出现上述错误，怀疑是腾讯云做了相关网站的流量拦截，">
 <meta property="og:type" content="article">
 <meta property="og:title" content="快速部署 Shadowsocks Docker版">
 <meta property="og:url" content="http://haoyunlaile.github.io/2020/03/06/docker-install-shadowsocks-libev/index.html">
 <meta property="og:site_name" content="好运来了">
-<meta property="og:description" content="准备条件 一台墙外VPS（本文使用腾讯云香港 - centos7.6） 一台能SSH连接到VPS的本地电脑 （推荐连接工具xshell）  服务端安装步骤安装docker 1wget -qO- get.docker.com | bash  查看docker的版本信息、加入开启启动、启动docker应用 123docker versionsystemctl enable dockersystemct">
+<meta property="og:description" content="需求搭梯子翻墙访问google 准备条件 一台墙外VPS（本文使用腾讯云香港 - centos7.6） 一台能SSH连接到VPS的本地电脑 （推荐连接工具xshell）  遇到的问题因为在腾讯上直接安装使用shadowsocks遇到了”connect reset by peer”的问题，在公司访问(可直连境外)是正常的，用4g&#x2F;家里wifi访问就会出现上述错误，怀疑是腾讯云做了相关网站的流量拦截，">
 <meta property="og:image" content="http://haoyunlaile.github.io/images/shoadowsocks-windows.png">
 <meta property="og:image" content="http://haoyunlaile.github.io/images/shoadowsocks-switchomega.png">
 <meta property="og:image" content="http://haoyunlaile.github.io/images/shoadowsocks-android.png">
@@ -88,6 +88,7 @@
   </style>
 </noscript>
 
+<link rel="alternate" href="/atom.xml" title="好运来了" type="application/atom+xml">
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage">
@@ -213,6 +214,13 @@
             </span>
 
           
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
   
   <span class="post-meta-item">
     
@@ -237,10 +245,12 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="准备条件"><a href="#准备条件" class="headerlink" title="准备条件"></a>准备条件</h2><ol>
+        <h2 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h2><p>搭梯子翻墙访问google</p>
+<h2 id="准备条件"><a href="#准备条件" class="headerlink" title="准备条件"></a>准备条件</h2><ol>
 <li>一台墙外VPS（本文使用腾讯云香港 - centos7.6）</li>
 <li>一台能SSH连接到VPS的本地电脑 （推荐连接工具xshell）</li>
 </ol>
+<h2 id="遇到的问题"><a href="#遇到的问题" class="headerlink" title="遇到的问题"></a>遇到的问题</h2><p>因为在腾讯上直接安装使用shadowsocks遇到了”connect reset by peer”的问题，在公司访问(可直连境外)是正常的，用4g/家里wifi访问就会出现上述错误，怀疑是腾讯云做了相关网站的流量拦截，故想到这用docker再代理一层。</p>
 <h2 id="服务端安装步骤"><a href="#服务端安装步骤" class="headerlink" title="服务端安装步骤"></a>服务端安装步骤</h2><p>安装docker</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget -qO- get.docker.com | bash</span><br></pre></td></tr></table></figure>
 
@@ -326,10 +336,30 @@
     
     
     
+        
+
+  <div class="followme">
+    <p>欢迎关注我的其它发布渠道</p>
+
+    <div class="social-list">
+
+            <div class="social-item">
+              <a target="_blank" class="social-link" href="/atom.xml">
+                <span class="icon">
+                  <i class="fa fa-rss"></i>
+                </span>
+
+                <span class="label">RSS</span>
+              </a>
+            </div>
+    </div>
+  </div>
+
 
       <footer class="post-footer">
+          
           <div class="post-tags">
-              <a href="/tags/shadowsocks/" rel="tag"># shadowsocks</a>
+              <a href="/tags/shadowsocks/" rel="tag"><i class="fa fa-tag"></i> shadowsocks</a>
           </div>
 
         
@@ -401,7 +431,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#准备条件"><span class="nav-number">1.</span> <span class="nav-text">准备条件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#服务端安装步骤"><span class="nav-number">2.</span> <span class="nav-text">服务端安装步骤</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#windows客户端安装"><span class="nav-number">3.</span> <span class="nav-text">windows客户端安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#android客户端安装"><span class="nav-number">4.</span> <span class="nav-text">android客户端安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-number">5.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#需求"><span class="nav-number">1.</span> <span class="nav-text">需求</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#准备条件"><span class="nav-number">2.</span> <span class="nav-text">准备条件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#遇到的问题"><span class="nav-number">3.</span> <span class="nav-text">遇到的问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#服务端安装步骤"><span class="nav-number">4.</span> <span class="nav-text">服务端安装步骤</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#windows客户端安装"><span class="nav-number">5.</span> <span class="nav-text">windows客户端安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#android客户端安装"><span class="nav-number">6.</span> <span class="nav-text">android客户端安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-number">7.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -466,13 +496,28 @@
   </span>
   <span class="author" itemprop="copyrightHolder">好运来了</span>
 </div>
-  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0
-  </div>
-  <span class="post-meta-divider">|</span>
-  <div class="theme-info">主题 – <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v7.7.2
-  </div>
 
         
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
 
 
 
@@ -486,6 +531,7 @@
   </div>
 
   
+  <script size="300" alpha="0.6" zIndex="-1" src="//cdn.jsdelivr.net/gh/theme-next/theme-next-canvas-ribbon@1/canvas-ribbon.js"></script>
   <script src="/lib/anime.min.js"></script>
   <script src="/lib/velocity/velocity.min.js"></script>
   <script src="/lib/velocity/velocity.ui.min.js"></script>
@@ -501,6 +547,8 @@
 <script src="/js/next-boot.js"></script>
 
 
+  <script defer src="//cdn.jsdelivr.net/gh/theme-next/theme-next-three@1/three.min.js"></script>
+    <script defer src="//cdn.jsdelivr.net/gh/theme-next/theme-next-three@1/three-waves.min.js"></script>
 
 
   
