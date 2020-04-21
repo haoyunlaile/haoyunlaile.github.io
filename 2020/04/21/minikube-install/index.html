@@ -26,11 +26,13 @@
 <meta property="og:url" content="http://haoyunlaile.github.io/2020/04/21/minikube-install/index.html">
 <meta property="og:site_name" content="好运来了">
 <meta property="og:description" content="需求安装kubernetes - Minikube本地环境 准备条件 一台VPS（本文使用阿里云香港 - centos7.7）- 用国内的服务器折腾的好一会儿都被墙了，先不把时间浪费在这，直接上香港的服务器 一台能SSH连接到VPS的本地电脑 （推荐连接工具xshell）  安装步骤在安装k8s前需要配置国内的镜像源，推荐使用阿里云的 123456789cat &lt;&lt;EOF &gt; &#x2F;">
+<meta property="og:image" content="http://haoyunlaile.github.io/images/k8s-dashboard.png">
 <meta property="article:published_time" content="2020-04-20T16:00:00.000Z">
 <meta property="article:modified_time" content="2020-04-20T16:00:00.000Z">
 <meta property="article:author" content="好运来了">
 <meta property="article:tag" content="kubernetes">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://haoyunlaile.github.io/images/k8s-dashboard.png">
 
 <link rel="canonical" href="http://haoyunlaile.github.io/2020/04/21/minikube-install/">
 
@@ -272,6 +274,9 @@
 <figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl<span class="built_in"> proxy </span><span class="attribute">--port</span>=33458 <span class="attribute">--address</span>=<span class="string">'0.0.0.0'</span> <span class="attribute">--accept-hosts</span>=<span class="string">'^.*'</span> &amp;</span><br></pre></td></tr></table></figure>
 
 <p>这里需要记得去阿里云的安全组配置33458端口外网可以访问</p>
+<p>然后就可以在浏览器访问k8s的dashborad了</p>
+<p><a href="http://127.0.0.1:33458/" target="_blank" rel="noopener">http://127.0.0.1:33458/</a></p>
+<p><img src="/images/k8s-dashboard.png" alt="k8s-dashboard"></p>
 <p>清理 minikube 的本地状态 </p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">minikube delete</span><br></pre></td></tr></table></figure>
 

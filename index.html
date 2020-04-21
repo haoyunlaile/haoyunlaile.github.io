@@ -364,6 +364,9 @@
 <figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl<span class="built_in"> proxy </span><span class="attribute">--port</span>=33458 <span class="attribute">--address</span>=<span class="string">'0.0.0.0'</span> <span class="attribute">--accept-hosts</span>=<span class="string">'^.*'</span> &amp;</span><br></pre></td></tr></table></figure>
 
 <p>这里需要记得去阿里云的安全组配置33458端口外网可以访问</p>
+<p>然后就可以在浏览器访问k8s的dashborad了</p>
+<p><a href="http://127.0.0.1:33458/" target="_blank" rel="noopener">http://127.0.0.1:33458/</a></p>
+<p><img src="/images/k8s-dashboard.png" alt="k8s-dashboard"></p>
 <p>清理 minikube 的本地状态 </p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">minikube delete</span><br></pre></td></tr></table></figure>
 
@@ -424,7 +427,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/shadowsocks/" itemprop="url" rel="index"><span itemprop="name">shadowsocks</span></a>
+                  <a href="/categories/util/" itemprop="url" rel="index"><span itemprop="name">util</span></a>
                 </span>
             </span>
 
