@@ -20,28 +20,32 @@
     var CONFIG = {"hostname":"haoyunlaile.github.io","root":"/","scheme":"Pisces","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"disqus","storage":true,"lazyload":true,"nav":{"disqus":{"text":"Load Comment","order":-1}},"activeClass":"disqus"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="java,go,istio,mosn,service mesh">
-<meta property="og:type" content="website">
-<meta property="og:title" content="好运来了">
-<meta property="og:url" content="http://haoyunlaile.github.io/index.html">
+  <meta name="description" content="需求kubeadm 搭建kubernetes集群环境 准备条件 三台VPS（本文使用阿里云香港 - centos7.7）- 用国内的服务器折腾的好一会儿都被墙了，先不把时间浪费在这，直接上香港的服务器 一台能SSH连接到VPS的本地电脑 （推荐连接工具xshell）  安装步骤在安装前需要配置国内的镜像源，这里推荐使用阿里云的 123456789cat &lt;&lt;EOF &gt; &#x2F;etc&#x2F;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="kubeadm built kubernetes cluster">
+<meta property="og:url" content="http://haoyunlaile.github.io/2020/04/22/kubeadm-install/index.html">
 <meta property="og:site_name" content="好运来了">
-<meta property="og:description" content="java,go,istio,mosn,service mesh">
+<meta property="og:description" content="需求kubeadm 搭建kubernetes集群环境 准备条件 三台VPS（本文使用阿里云香港 - centos7.7）- 用国内的服务器折腾的好一会儿都被墙了，先不把时间浪费在这，直接上香港的服务器 一台能SSH连接到VPS的本地电脑 （推荐连接工具xshell）  安装步骤在安装前需要配置国内的镜像源，这里推荐使用阿里云的 123456789cat &lt;&lt;EOF &gt; &#x2F;etc&#x2F;">
+<meta property="article:published_time" content="2020-04-21T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-04-21T16:00:00.000Z">
 <meta property="article:author" content="好运来了">
+<meta property="article:tag" content="kubernetes">
+<meta property="article:tag" content="kubeadm">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="http://haoyunlaile.github.io/">
+<link rel="canonical" href="http://haoyunlaile.github.io/2020/04/22/kubeadm-install/">
 
 
 <script id="page-configurations">
   // https://hexo.io/docs/variables.html
   CONFIG.page = {
     sidebar: "",
-    isHome : true,
-    isPost : false
+    isHome : false,
+    isPost : true
   };
 </script>
 
-  <title>好运来了</title>
+  <title>kubeadm built kubernetes cluster | 好运来了</title>
   
 
 
@@ -167,162 +171,10 @@
             
 
   <div class="posts-expand">
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="http://haoyunlaile.github.io/2020/04/22/k8s-port/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/50016783?s=400&u=a5ed1b51def3b9af69486f1f197f4725b370a03c&v=4">
-      <meta itemprop="name" content="好运来了">
-      <meta itemprop="description" content="java,go,istio,mosn,service mesh">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="好运来了">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/04/22/k8s-port/" class="post-title-link" itemprop="url">kubernetes port list</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-04-22 00:00:00" itemprop="dateCreated datePublished" datetime="2020-04-22T00:00:00+08:00">2020-04-22</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/kubernetes/" itemprop="url" rel="index"><span itemprop="name">kubernetes</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Disqus：</span>
-    
-    <a title="disqus" href="/2020/04/22/k8s-port/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/04/22/k8s-port/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
       
-          <h2 id="搭建k8s环境所需端口清单"><a href="#搭建k8s环境所需端口清单" class="headerlink" title="搭建k8s环境所需端口清单"></a>搭建k8s环境所需端口清单</h2><h3 id="控制平面节点端口清单"><a href="#控制平面节点端口清单" class="headerlink" title="控制平面节点端口清单"></a>控制平面节点端口清单</h3><table>
-<thead>
-<tr>
-<th align="center">协议</th>
-<th align="center">方向</th>
-<th align="center">端口范围</th>
-<th align="center">作用</th>
-<th align="center">使用者</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">TCP</td>
-<td align="center">入站</td>
-<td align="center">6443</td>
-<td align="center">Kubernetes API 服务器</td>
-<td align="center">所有组件</td>
-</tr>
-<tr>
-<td align="center">TCP</td>
-<td align="center">入站</td>
-<td align="center">2379-2380</td>
-<td align="center">etcd server client API</td>
-<td align="center">kube-apiserver, etcd</td>
-</tr>
-<tr>
-<td align="center">TCP</td>
-<td align="center">入站</td>
-<td align="center">10250</td>
-<td align="center">Kubelet API</td>
-<td align="center">kubelet 自身、控制平面组件</td>
-</tr>
-<tr>
-<td align="center">TCP</td>
-<td align="center">入站</td>
-<td align="center">10251</td>
-<td align="center">kube-scheduler</td>
-<td align="center">kube-scheduler 自身</td>
-</tr>
-<tr>
-<td align="center">TCP</td>
-<td align="center">入站</td>
-<td align="center">10252</td>
-<td align="center">kube-controller-manager</td>
-<td align="center">kube-controller-manager 自身</td>
-</tr>
-</tbody></table>
-<h3 id="Node节点端口清单"><a href="#Node节点端口清单" class="headerlink" title="Node节点端口清单"></a>Node节点端口清单</h3><table>
-<thead>
-<tr>
-<th align="center">协议</th>
-<th align="center">方向</th>
-<th align="center">端口范围</th>
-<th align="center">作用</th>
-<th align="center">使用者</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">TCP</td>
-<td align="center">入站</td>
-<td align="center">10250</td>
-<td align="center">Kubelet API</td>
-<td align="center">kubelet 自身、控制平面组件</td>
-</tr>
-<tr>
-<td align="center">TCP</td>
-<td align="center">入站</td>
-<td align="center">30000-32767</td>
-<td align="center">NodePort 服务**</td>
-<td align="center">所有组件</td>
-</tr>
-</tbody></table>
-<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p> <a href="https://kubernetes.io/zh/docs/setup/production-environment/tools/kubeadm/install-kubeadm/" target="_blank" rel="noopener">https://kubernetes.io/zh/docs/setup/production-environment/tools/kubeadm/install-kubeadm/</a> </p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
   
   
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-Hans">
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-Hans">
     <link itemprop="mainEntityOfPage" href="http://haoyunlaile.github.io/2020/04/22/kubeadm-install/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -336,8 +188,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/04/22/kubeadm-install/" class="post-title-link" itemprop="url">kubeadm built kubernetes cluster</a>
+          kubeadm built kubernetes cluster
         </h1>
 
         <div class="post-meta">
@@ -360,6 +211,13 @@
             </span>
 
           
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
   
   <span class="post-meta-item">
     
@@ -384,7 +242,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h2 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h2><p>kubeadm 搭建kubernetes集群环境</p>
+        <h2 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h2><p>kubeadm 搭建kubernetes集群环境</p>
 <h2 id="准备条件"><a href="#准备条件" class="headerlink" title="准备条件"></a>准备条件</h2><ol>
 <li>三台VPS（本文使用<strong>阿里云香港</strong> - centos7.7）- 用国内的服务器折腾的好一会儿都被墙了，先不把时间浪费在这，直接上香港的服务器</li>
 <li>一台能SSH连接到VPS的本地电脑 （推荐连接工具xshell）</li>
@@ -417,337 +275,54 @@
 <p> <a href="https://kubernetes.io/zh/docs/reference/setup-tools/kubeadm/kubeadm/" target="_blank" rel="noopener">https://kubernetes.io/zh/docs/reference/setup-tools/kubeadm/kubeadm/</a> </p>
 <p> <a href="https://github.com/coreos/flannel" target="_blank" rel="noopener">https://github.com/coreos/flannel</a> </p>
 
-      
     </div>
 
     
     
     
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
         
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="http://haoyunlaile.github.io/2020/04/21/docker-install/">
 
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/50016783?s=400&u=a5ed1b51def3b9af69486f1f197f4725b370a03c&v=4">
-      <meta itemprop="name" content="好运来了">
-      <meta itemprop="description" content="java,go,istio,mosn,service mesh">
-    </span>
+  <div class="followme">
+    <p>欢迎关注我的其它发布渠道</p>
 
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="好运来了">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/04/21/docker-install/" class="post-title-link" itemprop="url">centos7 install docker</a>
-        </h1>
+    <div class="social-list">
 
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-04-21 00:00:00" itemprop="dateCreated datePublished" datetime="2020-04-21T00:00:00+08:00">2020-04-21</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/docker/" itemprop="url" rel="index"><span itemprop="name">docker</span></a>
+            <div class="social-item">
+              <a target="_blank" class="social-link" href="/atom.xml">
+                <span class="icon">
+                  <i class="fa fa-rss"></i>
                 </span>
-            </span>
 
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Disqus：</span>
-    
-    <a title="disqus" href="/2020/04/21/docker-install/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/04/21/docker-install/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h2><p>安装docker运行环境</p>
-<h2 id="准备条件"><a href="#准备条件" class="headerlink" title="准备条件"></a>准备条件</h2><ol>
-<li>一台VPS（本文使用<strong>阿里云香港</strong> - centos7.7）</li>
-<li>一台能SSH连接到VPS的本地电脑 （推荐连接工具xshell）</li>
-</ol>
-<h2 id="安装步骤"><a href="#安装步骤" class="headerlink" title="安装步骤"></a>安装步骤</h2><p>安装docker</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">curl -fsSL https://get.docker.com -o get-docker.sh</span><br><span class="line">sh get-docker.sh --mirror Aliyun</span><br></pre></td></tr></table></figure>
-
-<p>配置docker访问加速</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">tee /etc/docker/daemon.json &lt;&lt;-<span class="string">'EOF'</span></span><br><span class="line">&#123;</span><br><span class="line"> <span class="string">"registry-mirrors"</span>: [</span><br><span class="line"> 	 <span class="string">"https://ze9vyrof.mirror.aliyuncs.com"</span>,</span><br><span class="line">     <span class="string">"https://registry.docker-cn.com"</span>,</span><br><span class="line">     <span class="string">"http://f1361db2.m.daocloud.io"</span>,</span><br><span class="line">     <span class="string">"https://docker.mirrors.ustc.edu.cn"</span></span><br><span class="line"> ]</span><br><span class="line">&#125;</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
-
-<p>创建用户并加入docker组</p>
-<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">useradd</span> <span class="string">-g docker docker</span></span><br><span class="line"><span class="attr">usermod</span> <span class="string">-aG docker docker</span></span><br></pre></td></tr></table></figure>
-
-<p>加入开启启动、启动docker应用</p>
-<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">systemctl <span class="keyword">enable</span> docker</span><br><span class="line">systemctl <span class="keyword">start</span> docker</span><br></pre></td></tr></table></figure>
-
-<p>测试 Docker 是否安装正确</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">docker run hello-world</span><br><span class="line"></span><br><span class="line">Unable to find image <span class="string">'hello-world:latest'</span> locally</span><br><span class="line">latest: Pulling from library/hello-world</span><br><span class="line">0e03bdcc26d7: Pulling fs layer </span><br><span class="line">latest: Pulling from library/hello-world</span><br><span class="line">0e03bdcc26d7: Pull complete </span><br><span class="line">Digest: sha256:8e3114318a995a1ee497790535e7b88365222a21771ae7e53687ad76563e8e76</span><br><span class="line">Status: Downloaded newer image <span class="keyword">for</span> hello-world:latest</span><br><span class="line"></span><br><span class="line">Hello from Docker!</span><br><span class="line">This message shows that your installation appears to be working correctly.</span><br><span class="line"></span><br><span class="line">To generate this message, Docker took the following steps:</span><br><span class="line"> 1. The Docker client contacted the Docker daemon.</span><br><span class="line"> 2. The Docker daemon pulled the <span class="string">"hello-world"</span> image from the Docker Hub.</span><br><span class="line">    (amd64)</span><br><span class="line"> 3. The Docker daemon created a new container from that image <span class="built_in">which</span> runs the</span><br><span class="line">    executable that produces the output you are currently reading.</span><br><span class="line"> 4. The Docker daemon streamed that output to the Docker client, <span class="built_in">which</span> sent it</span><br><span class="line">    to your terminal.</span><br><span class="line"></span><br><span class="line">To try something more ambitious, you can run an Ubuntu container with:</span><br><span class="line"> $ docker run -it ubuntu bash</span><br><span class="line"></span><br><span class="line">Share images, automate workflows, and more with a free Docker ID:</span><br><span class="line"> https://hub.docker.com/</span><br><span class="line"></span><br><span class="line">For more examples and ideas, visit:</span><br><span class="line"> https://docs.docker.com/get-started/</span><br></pre></td></tr></table></figure>
-
-<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p> <a href="https://docs.docker.com/engine/install/centos/" target="_blank" rel="noopener">https://docs.docker.com/engine/install/centos/</a> </p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="http://haoyunlaile.github.io/2020/04/21/minikube-install/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/50016783?s=400&u=a5ed1b51def3b9af69486f1f197f4725b370a03c&v=4">
-      <meta itemprop="name" content="好运来了">
-      <meta itemprop="description" content="java,go,istio,mosn,service mesh">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="好运来了">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/04/21/minikube-install/" class="post-title-link" itemprop="url">Minikube install</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-04-21 00:00:00" itemprop="dateCreated datePublished" datetime="2020-04-21T00:00:00+08:00">2020-04-21</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/kubernetes/" itemprop="url" rel="index"><span itemprop="name">kubernetes</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Disqus：</span>
-    
-    <a title="disqus" href="/2020/04/21/minikube-install/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/04/21/minikube-install/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h2><p>安装kubernetes - Minikube本地环境</p>
-<h2 id="准备条件"><a href="#准备条件" class="headerlink" title="准备条件"></a>准备条件</h2><ol>
-<li>一台VPS（本文使用<strong>阿里云香港</strong> - centos7.7）- 用国内的服务器折腾的好一会儿都被墙了，先不把时间浪费在这，直接上香港的服务器</li>
-<li>一台能SSH连接到VPS的本地电脑 （推荐连接工具xshell）</li>
-</ol>
-<h2 id="安装步骤"><a href="#安装步骤" class="headerlink" title="安装步骤"></a>安装步骤</h2><p>在安装前需要配置国内的镜像源，这里推荐使用阿里云的</p>
-<figure class="highlight crystal"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">cat &lt;&lt;EOF &gt; <span class="regexp">/etc/yum</span>.repos.d/kubernetes.repo</span><br><span class="line">[kubernetes]</span><br><span class="line">name=Kubernetes</span><br><span class="line">baseurl=<span class="symbol">https:</span>/<span class="regexp">/mirrors.aliyun.com/kubernetes</span><span class="regexp">/yum/repos</span><span class="regexp">/kubernetes-el7-x86_64/</span></span><br><span class="line">enabled=<span class="number">1</span></span><br><span class="line">gpgcheck=<span class="number">1</span></span><br><span class="line">repo_gpgcheck=<span class="number">1</span></span><br><span class="line">gpgkey=<span class="symbol">https:</span>/<span class="regexp">/mirrors.aliyun.com/kubernetes</span><span class="regexp">/yum/doc</span><span class="regexp">/yum-key.gpg https:/</span><span class="regexp">/mirrors.aliyun.com/kubernetes</span><span class="regexp">/yum/doc</span><span class="regexp">/rpm-package-key.gpg</span></span><br><span class="line"><span class="regexp">EOF</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="安装kubectl"><a href="#安装kubectl" class="headerlink" title="安装kubectl"></a>安装kubectl</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install -y kubectl</span><br></pre></td></tr></table></figure>
-
-<p>  shell 中开启 kubectl 命令自动补全 </p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">yum install bash-completion -y</span><br><span class="line"><span class="built_in">echo</span> <span class="string">"source &lt;(kubectl completion bash)"</span> &gt;&gt; ~/.bashrc</span><br></pre></td></tr></table></figure>
-
-<h3 id="安装minukube"><a href="#安装minukube" class="headerlink" title="安装minukube"></a>安装minukube</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 \</span><br><span class="line">  &amp;&amp; chmod +x minikube</span><br><span class="line">mkdir -p /usr/<span class="built_in">local</span>/bin/</span><br><span class="line">install minikube /usr/<span class="built_in">local</span>/bin/</span><br><span class="line">su - docker</span><br></pre></td></tr></table></figure>
-
-<h3 id="启动本地-Kubernetes-集群、-检查集群的状态"><a href="#启动本地-Kubernetes-集群、-检查集群的状态" class="headerlink" title="启动本地 Kubernetes 集群、 检查集群的状态"></a>启动本地 Kubernetes 集群、 检查集群的状态</h3><figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">minikube start</span><br><span class="line"></span><br><span class="line">* minikube v1<span class="number">.9</span><span class="number">.2</span> on Centos <span class="number">7.7</span><span class="number">.1908</span></span><br><span class="line">* Automatically selected the docker driver</span><br><span class="line">* Starting control plane node m01 <span class="keyword">in</span> cluster minikube</span><br><span class="line">* Pulling base image ...</span><br><span class="line">* Downloading Kubernetes v1<span class="number">.18</span><span class="number">.0</span> preload ...</span><br><span class="line">    &gt; preloaded-images-k8s-v2-v1<span class="number">.18</span><span class="number">.0</span>-docker-overlay2-amd64.tar.lz4: <span class="number">542.91</span> MiB</span><br><span class="line">* Creating Kubernetes <span class="keyword">in</span> docker container with (CPUs=<span class="number">2</span>) (<span class="number">4</span> available), Memory=<span class="number">2200</span>MB (<span class="number">7821</span>MB available) ...</span><br><span class="line">* Preparing Kubernetes v1<span class="number">.18</span><span class="number">.0</span> on Docker <span class="number">19.03</span><span class="number">.2</span> ...</span><br><span class="line">  - kubeadm.pod-network-cidr=<span class="number">10.244</span><span class="number">.0</span><span class="number">.0</span>/<span class="number">16</span></span><br><span class="line">* Enabling addons: <span class="keyword">default</span>-storageclass, storage-provisioner</span><br><span class="line">! Enabling <span class="string">'default-storageclass'</span> returned an error: running callbacks: [chmod: chmod deploy/addons/storageclass/storageclass.yaml.tmpl: permission denied]</span><br><span class="line">* Done! kubectl <span class="keyword">is</span> now configured to use <span class="string">"minikube"</span></span><br></pre></td></tr></table></figure>
-
-<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">minikube</span> <span class="string">status</span></span><br><span class="line"></span><br><span class="line"><span class="attr">m01</span></span><br><span class="line"><span class="attr">host</span>: <span class="string">Running</span></span><br><span class="line"><span class="attr">kubelet</span>: <span class="string">Running</span></span><br><span class="line"><span class="attr">apiserver</span>: <span class="string">Running</span></span><br><span class="line"><span class="attr">kubeconfig</span>: <span class="string">Configured</span></span><br></pre></td></tr></table></figure>
-
-<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">kubectl <span class="keyword">cluster</span>-<span class="keyword">info</span></span><br><span class="line"></span><br><span class="line">Kubernetes master <span class="keyword">is</span> running at https://<span class="number">172.17</span><span class="number">.0</span><span class="number">.2</span>:<span class="number">8443</span></span><br><span class="line">KubeDNS <span class="keyword">is</span> running at https://<span class="number">172.17</span><span class="number">.0</span><span class="number">.2</span>:<span class="number">8443</span>/api/v1/namespaces/kube-<span class="keyword">system</span>/services/kube-dns:dns/proxy</span><br><span class="line"></span><br><span class="line"><span class="keyword">To</span> further <span class="keyword">debug</span> <span class="keyword">and</span> diagnose <span class="keyword">cluster</span> problems, use <span class="string">'kubectl cluster-info dump'</span>.</span><br></pre></td></tr></table></figure>
-
-<h3 id="开启Kubernetes-dashboard服务"><a href="#开启Kubernetes-dashboard服务" class="headerlink" title="开启Kubernetes dashboard服务"></a>开启Kubernetes dashboard服务</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">minikube dashboard --url</span><br><span class="line"></span><br><span class="line">* Enabling dashboard ...</span><br><span class="line">* Verifying dashboard health ...</span><br><span class="line">* Launching proxy ...</span><br><span class="line">* Verifying proxy health ...</span><br><span class="line">http://127.0.0.1:33457/api/v1/namespaces/kubernetes-dashboard/services/http:kubernetes-dashboard:/proxy/</span><br></pre></td></tr></table></figure>
-
-<h3 id="开启kube-proxy端口映射，使其可以远程访问"><a href="#开启kube-proxy端口映射，使其可以远程访问" class="headerlink" title="开启kube-proxy端口映射，使其可以远程访问"></a>开启kube-proxy端口映射，使其可以远程访问</h3><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl<span class="built_in"> proxy </span><span class="attribute">--port</span>=33458 <span class="attribute">--address</span>=<span class="string">'0.0.0.0'</span> <span class="attribute">--accept-hosts</span>=<span class="string">'^.*'</span> &amp;</span><br></pre></td></tr></table></figure>
-
-<p>这里需要记得去阿里云的安全组配置33458端口外网可以访问</p>
-<p>然后就可以在浏览器访问k8s的dashborad了</p>
-<p><a href="http://127.0.0.1:33458/" target="_blank" rel="noopener">http://127.0.0.1:33458/</a></p>
-<p><img src="/images/k8s-dashboard.png" alt="k8s-dashboard"></p>
-<p>清理 minikube 的本地状态 </p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">minikube delete</span><br></pre></td></tr></table></figure>
-
-
-
-<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p> <a href="https://juejin.im/post/5b8a4536e51d4538c545645c" target="_blank" rel="noopener">https://juejin.im/post/5b8a4536e51d4538c545645c</a> </p>
-<p> <a href="https://kubernetes.io/zh/docs/tasks/tools/install-minikube/" target="_blank" rel="noopener">https://kubernetes.io/zh/docs/tasks/tools/install-minikube/</a> </p>
-<p> <a href="https://github.com/kubernetes/minikube" target="_blank" rel="noopener">https://github.com/kubernetes/minikube</a> </p>
-<p> <a href="https://minikube.sigs.k8s.io/docs/handbook/dashboard/" target="_blank" rel="noopener">https://minikube.sigs.k8s.io/docs/handbook/dashboard/</a> </p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="http://haoyunlaile.github.io/2020/03/06/docker-install-shadowsocks-libev/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/50016783?s=400&u=a5ed1b51def3b9af69486f1f197f4725b370a03c&v=4">
-      <meta itemprop="name" content="好运来了">
-      <meta itemprop="description" content="java,go,istio,mosn,service mesh">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="好运来了">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/03/06/docker-install-shadowsocks-libev/" class="post-title-link" itemprop="url">快速部署 Shadowsocks Docker版</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-03-06 00:00:00" itemprop="dateCreated datePublished" datetime="2020-03-06T00:00:00+08:00">2020-03-06</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/docker/" itemprop="url" rel="index"><span itemprop="name">docker</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Disqus：</span>
-    
-    <a title="disqus" href="/2020/03/06/docker-install-shadowsocks-libev/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/03/06/docker-install-shadowsocks-libev/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h2><p>搭梯子翻墙访问google</p>
-<h2 id="准备条件"><a href="#准备条件" class="headerlink" title="准备条件"></a>准备条件</h2><ol>
-<li>一台墙外VPS（本文使用腾讯云香港 - centos7.6）</li>
-<li>一台能SSH连接到VPS的本地电脑 （推荐连接工具xshell）</li>
-</ol>
-<h2 id="遇到的问题"><a href="#遇到的问题" class="headerlink" title="遇到的问题"></a>遇到的问题</h2><p>因为在腾讯上直接安装使用shadowsocks遇到了”connect reset by peer”的问题，在公司访问(可直连境外)是正常的，用4g/家里wifi访问就会出现上述错误，怀疑是腾讯云做了相关网站的流量拦截，故想到这用docker再代理一层。</p>
-<h2 id="服务端安装步骤"><a href="#服务端安装步骤" class="headerlink" title="服务端安装步骤"></a>服务端安装步骤</h2><p>安装docker</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget -qO- get.docker.com | bash</span><br></pre></td></tr></table></figure>
-
-<p>查看docker的版本信息、加入开启启动、启动docker应用</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">docker version</span><br><span class="line">systemctl <span class="built_in">enable</span> docker</span><br><span class="line">systemctl start docker</span><br></pre></td></tr></table></figure>
-
-<p>拉取docker版shadowsocks-libev</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker pull appso/shadowsocks-libev</span><br></pre></td></tr></table></figure>
-
-<p>创建shadowssocks配置文件，主要不要变动配置文件目录，默认配置路径为 <strong>/etc/shadowsocks-libev/config.json</strong></p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/03/06/docker-install-shadowsocks-libev/#more" rel="contents">
-                阅读全文 &raquo;
+                <span class="label">RSS</span>
               </a>
             </div>
-          <!--/noindex-->
-        
-      
     </div>
+  </div>
 
-    
-    
-    
+
       <footer class="post-footer">
-        <div class="post-eof"></div>
+          
+          <div class="post-tags">
+              <a href="/tags/kubernetes/" rel="tag"><i class="fa fa-tag"></i> kubernetes</a>
+              <a href="/tags/kubeadm/" rel="tag"><i class="fa fa-tag"></i> kubeadm</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/04/21/docker-install/" rel="prev" title="centos7 install docker">
+      <i class="fa fa-chevron-left"></i> centos7 install docker
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/04/22/k8s-port/" rel="next" title="kubernetes port list">
+      kubernetes port list <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
       </footer>
+    
   </article>
   
   
@@ -755,12 +330,16 @@
 
   </div>
 
-  
-
-
 
           </div>
           
+    
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
 
 <script>
   window.addEventListener('tabs:register', () => {
@@ -807,6 +386,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#需求"><span class="nav-number">1.</span> <span class="nav-text">需求</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#准备条件"><span class="nav-number">2.</span> <span class="nav-text">准备条件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装步骤"><span class="nav-number">3.</span> <span class="nav-text">安装步骤</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#安装kubelet、kubeadm、kubectl"><span class="nav-number">3.1.</span> <span class="nav-text">安装kubelet、kubeadm、kubectl</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#确保流量路由配置"><span class="nav-number">3.2.</span> <span class="nav-text">确保流量路由配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#初始化kubeadm"><span class="nav-number">3.3.</span> <span class="nav-text">初始化kubeadm</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#允许普通用户可以运行-kubectl"><span class="nav-number">3.4.</span> <span class="nav-text">允许普通用户可以运行 kubectl</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#配置flannel网络"><span class="nav-number">3.5.</span> <span class="nav-text">配置flannel网络</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#接下来将node节点加入集群"><span class="nav-number">3.6.</span> <span class="nav-text">接下来将node节点加入集群</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考文献"><span class="nav-number">4.</span> <span class="nav-text">参考文献</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -955,6 +535,26 @@
   }
   // defer loading until the whole page loading is completed
   window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "http://haoyunlaile.github.io/2020/04/22/kubeadm-install/";
+    this.page.identifier = "2020/04/22/kubeadm-install/";
+    this.page.title = "kubeadm built kubernetes cluster";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://haoyunlaile.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
 </script>
 
 </body>
