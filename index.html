@@ -435,6 +435,124 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://haoyunlaile.github.io/2020/04/22/kubernates-dashboard/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/50016783?s=400&u=a5ed1b51def3b9af69486f1f197f4725b370a03c&v=4">
+      <meta itemprop="name" content="好运来了">
+      <meta itemprop="description" content="java,go,istio,mosn,service mesh">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="好运来了">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/04/22/kubernates-dashboard/" class="post-title-link" itemprop="url">kubernetes dashboard install</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-04-22 00:00:00" itemprop="dateCreated datePublished" datetime="2020-04-22T00:00:00+08:00">2020-04-22</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/kubernetes/" itemprop="url" rel="index"><span itemprop="name">kubernetes</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus：</span>
+    
+    <a title="disqus" href="/2020/04/22/kubernates-dashboard/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/04/22/kubernates-dashboard/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h2><p>基于网页查看Kubernetes 用户界面 </p>
+<h2 id="安装步骤"><a href="#安装步骤" class="headerlink" title="安装步骤"></a>安装步骤</h2><p>在控制面板节点部署dashborad</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0/aio/deploy/recommended.yaml</span><br></pre></td></tr></table></figure>
+
+<h3 id="放开外网端口映射"><a href="#放开外网端口映射" class="headerlink" title="放开外网端口映射"></a>放开外网端口映射</h3><blockquote>
+<p>如果需要外网访问，需要使用NodePort的方式对外暴露端口，不能使用<code>kubectl proxy</code>的方式，因为该方式只能通过http访问，非本地环境无法正常登录，在这里折腾了好几个小时，主要还是没有一字一句看官方文档。</p>
+</blockquote>
+<p>更改原文件<code>type: ClusterIP</code> 为<code>type: NodePort</code>后保存</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">kubectl</span> <span class="string">-n</span> <span class="string">kubernetes-dashboard</span> <span class="string">edit</span> <span class="string">service</span> <span class="string">kubernetes-dashboard</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Please edit the object below. Lines beginning with a '#' will be ignored,</span></span><br><span class="line"><span class="comment"># and an empty file will abort the edit. If an error occurs while saving this file will be</span></span><br><span class="line"><span class="comment"># reopened with the relevant failures.</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="string">...</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">kubernetes-dashboard</span></span><br><span class="line">  <span class="attr">namespace:</span> <span class="string">kubernetes-dashboard</span></span><br><span class="line">  <span class="attr">resourceVersion:</span> <span class="string">"343478"</span></span><br><span class="line">  <span class="attr">selfLink:</span> <span class="string">/api/v1/namespaces/kubernetes-dashboard/services/kubernetes-dashboard</span></span><br><span class="line">  <span class="attr">uid:</span> <span class="string">8e48f478-993d-11e7-87e0-901b0e532516</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">clusterIP:</span> <span class="number">10.100</span><span class="number">.124</span><span class="number">.90</span></span><br><span class="line">  <span class="attr">externalTrafficPolicy:</span> <span class="string">Cluster</span></span><br><span class="line">  <span class="attr">ports:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">port:</span> <span class="number">443</span></span><br><span class="line">    <span class="attr">protocol:</span> <span class="string">TCP</span></span><br><span class="line">    <span class="attr">targetPort:</span> <span class="number">8443</span></span><br><span class="line">  <span class="attr">selector:</span></span><br><span class="line">    <span class="attr">k8s-app:</span> <span class="string">kubernetes-dashboard</span></span><br><span class="line">  <span class="attr">sessionAffinity:</span> <span class="string">None</span></span><br><span class="line">  <span class="attr">type:</span> <span class="string">ClusterIP</span></span><br><span class="line"><span class="attr">status:</span></span><br><span class="line">  <span class="attr">loadBalancer:</span> <span class="string">&#123;&#125;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="下一步获取nodeport对外开放的https端口，注意这里为32443端口"><a href="#下一步获取nodeport对外开放的https端口，注意这里为32443端口" class="headerlink" title="下一步获取nodeport对外开放的https端口，注意这里为32443端口"></a>下一步获取nodeport对外开放的https端口，注意这里为32443端口</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">kubectl -n kubernetes-dashboard get service kubernetes-dashboard</span><br><span class="line"></span><br><span class="line">NAME                   TYPE       CLUSTER-IP    EXTERNAL-IP   PORT(S)         AGE</span><br><span class="line">kubernetes-dashboard   NodePort   10.98.33.83   &lt;none&gt;        443:32443/TCP   77m</span><br></pre></td></tr></table></figure>
+
+<h3 id="同时启动监控指标收集服务，不然会dashborad无法展示数据图表"><a href="#同时启动监控指标收集服务，不然会dashborad无法展示数据图表" class="headerlink" title="同时启动监控指标收集服务，不然会dashborad无法展示数据图表"></a>同时启动监控指标收集服务，不然会dashborad无法展示数据图表</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/download/v0.3.6/components.yaml</span><br></pre></td></tr></table></figure>
+
+<p>然后就可以访问下面的地址</p>
+<p><code>https://&lt;master-ip&gt;:&lt;nodePort&gt;</code></p>
+<p>访问上面的地址会出现登录的界面，如下图：</p>
+<p><img src="/images/k8s-dashboard-login.png" alt="k8s-dashboard-login"></p>
+<p>这里选择使用token登录</p>
+<p>创建dashboard对应的admin账户</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">touch dashboard-admin.yml</span><br><span class="line">vi dashboard-admin.yml</span><br><span class="line"></span><br><span class="line">apiVersion: v1</span><br><span class="line">kind: ServiceAccount</span><br><span class="line">metadata:</span><br><span class="line">  name: admin-user</span><br><span class="line">  namespace: kubernetes-dashboard</span><br><span class="line"></span><br><span class="line">---</span><br><span class="line"></span><br><span class="line">apiVersion: rbac.authorization.k8s.io/v1</span><br><span class="line">kind: ClusterRoleBinding</span><br><span class="line">metadata:</span><br><span class="line">  name: admin-user</span><br><span class="line">roleRef:</span><br><span class="line">  apiGroup: rbac.authorization.k8s.io</span><br><span class="line">  kind: ClusterRole</span><br><span class="line">  name: cluster-admin</span><br><span class="line">subjects:</span><br><span class="line">- kind: ServiceAccount</span><br><span class="line">  name: admin-user</span><br><span class="line">  namespace: kubernetes-dashboard</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl apply -f dashboard-admin.yml</span><br></pre></td></tr></table></figure>
+
+<p>然后通过如下命令获取登录的token</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">kubectl -n kubernetes-dashboard describe secret $(kubectl -n kubernetes-dashboard get secret | grep admin-user | awk <span class="string">'&#123;print $1&#125;'</span>)</span><br><span class="line"></span><br><span class="line">Name:         admin-user-token-5j9gg</span><br><span class="line">Namespace:    kubernetes-dashboard</span><br><span class="line">Labels:       &lt;none&gt;</span><br><span class="line">Annotations:  kubernetes.io/service-account.name: admin-user</span><br><span class="line">              kubernetes.io/service-account.uid: 8b1c0aa8-9ee1-4c06-a983-6cc8ebecf8b2</span><br><span class="line"></span><br><span class="line">Type:  kubernetes.io/service-account-token</span><br><span class="line"></span><br><span class="line">Data</span><br><span class="line">====</span><br><span class="line">ca.crt:     1025 bytes</span><br><span class="line">namespace:  20 bytes</span><br><span class="line">token:      eyJhbGciOiJSUzI1NiIsImtpZCI6Im5BZWtISUdnVnloMDJiRjdLZ0pJdTMxNXZ2YTdtY2U2Z0p3QURlblFnSEEifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJrdWJlcm5ldGVzLWRhc2hib2FyZCIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VjcmV0Lm5hbWUiOiJhZG1pbi11c2VyLXRva2VuLTVqOWdnIiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQubmFtZSI6ImFkbbWluLXVzZXIiLCJrddWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC51aWQiOiI4YjFjMGFhOC05ZWUxLTRjMDYtYTk4My02Y2M4ZWJlY2Y4YjIiLCJzdWIiOiJzeXN0ZW06c2VydmljZWFjY291bnQ6a3ViZXJuZXRlcy1kYXNoYm9hcmQ6YWRtaW4tdXNlciJ9.C4Ma3tp6GdMCusjPEaQNqm_92-PEEm02-68OvsMq1eExPvMZxYYrvmwSWwOnJIps5mL2BEu1XqchsWlNFYpawe5HIk_zrimfff-NpwVRqxu0qPt0MxN0KzVgMm5hOaOYKYJW0zz1mpFZI8-uvqdDzwJGFan7vLH1KTCUt5gTHlv-KJyYa6zmE2QKl0-IATcesCF0sU51K2F5NeSU9dvE9hJ92mcETuGwXsuPo5aPSu-1yi1WFnaWDQrcJseXxOWREaYv0o-9swCZOYYBdNy7G4h6xB6cWxUD7C5Un4lB-5VaBqD0D_hS5Cwh3S5ETKYikag6-tB_sOdG7w-KuONicQ</span><br></pre></td></tr></table></figure>
+
+<p>取上图的token字段粘贴进登录界面即可。</p>
+<blockquote>
+<p>注意，有的文章会写此方式获取到的token还需要进行base64解密，可能是因为版本原因，本人测试是可以直接复制后进行登录的</p>
+</blockquote>
+<p>登录成功后界面如图</p>
+<p><img src="/images/k8s-dashboard-nodes.png" alt="k8s-dashboard-nodes.png"></p>
+<p>终于装好了，踩了不少坑，主要还是不熟悉。后面切记认真仔细阅读官方文档。</p>
+<h2 id="参考文档"><a href="#参考文档" class="headerlink" title="参考文档"></a>参考文档</h2><p> <a href="https://kubernetes.io/zh/docs/tasks/access-application-cluster/web-ui-dashboard/" target="_blank" rel="noopener">https://kubernetes.io/zh/docs/tasks/access-application-cluster/web-ui-dashboard/</a> </p>
+<p> <a href="https://github.com/kubernetes/dashboard" target="_blank" rel="noopener">https://github.com/kubernetes/dashboard</a> </p>
+<p> <a href="https://github.com/kubernetes-sigs/metrics-server" target="_blank" rel="noopener">https://github.com/kubernetes-sigs/metrics-server</a></p>
+<p> <a href="https://github.com/kubernetes/dashboard/blob/master/docs/user/accessing-dashboard/1.7.x-and-above.md" target="_blank" rel="noopener">https://github.com/kubernetes/dashboard/blob/master/docs/user/accessing-dashboard/1.7.x-and-above.md</a> </p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-Hans">
     <link itemprop="mainEntityOfPage" href="http://haoyunlaile.github.io/2020/04/21/docker-install/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -822,7 +940,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives">
         
-          <span class="site-state-item-count">5</span>
+          <span class="site-state-item-count">6</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -835,7 +953,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags">
           
-        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-count">6</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
