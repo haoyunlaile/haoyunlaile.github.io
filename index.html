@@ -261,6 +261,109 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://haoyunlaile.github.io/2020/04/23/istio-install/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/50016783?s=400&u=a5ed1b51def3b9af69486f1f197f4725b370a03c&v=4">
+      <meta itemprop="name" content="好运来了">
+      <meta itemprop="description" content="java,go,istio,mosn,service mesh">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="好运来了">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/04/23/istio-install/" class="post-title-link" itemprop="url">istio install</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-04-23 00:00:00" itemprop="dateCreated datePublished" datetime="2020-04-23T00:00:00+08:00">2020-04-23</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/istio/" itemprop="url" rel="index"><span itemprop="name">istio</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus：</span>
+    
+    <a title="disqus" href="/2020/04/23/istio-install/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/04/23/istio-install/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h2><p>搭建istio基础环境</p>
+<h2 id="安装步骤"><a href="#安装步骤" class="headerlink" title="安装步骤"></a>安装步骤</h2><p>在安装 Istio 之前，需要一个运行着 Kubernetes 的环境，安装步骤可以参考前面的文章</p>
+<p>下载istio，然后解压，然后将 <code>istioctl</code> 增加到 path 环境变量中 </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">curl -L https://istio.io/downloadIstio | sh -</span><br><span class="line"><span class="built_in">cd</span> istio-1.5.1</span><br><span class="line"><span class="built_in">export</span> PATH=<span class="variable">$PWD</span>/bin:<span class="variable">$PATH</span></span><br></pre></td></tr></table></figure>
+
+<p> 新建<code>istio-1.5.1.yaml</code> 配置文件、按照官方文档操作安装会出现错误，导致不能正常进行sidecar 自动注入</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">vim</span> <span class="selector-tag">istio-1</span><span class="selector-class">.5</span><span class="selector-class">.1</span><span class="selector-class">.yaml</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: install.istio.io/v1alpha1</span><br><span class="line">kind: IstioOperator</span><br><span class="line">spec:</span><br><span class="line">  components:</span><br><span class="line">    egressGateways:</span><br><span class="line">    - name: istio-egressgateway</span><br><span class="line">      enabled: <span class="literal">true</span></span><br><span class="line">      k8s:</span><br><span class="line">        resources:</span><br><span class="line">          requests:</span><br><span class="line">            cpu: 10m</span><br><span class="line">            memory: 40Mi</span><br><span class="line"></span><br><span class="line">    ingressGateways:</span><br><span class="line">    - name: istio-ingressgateway</span><br><span class="line">      enabled: <span class="literal">true</span></span><br><span class="line">      k8s:</span><br><span class="line">        resources:</span><br><span class="line">          requests:</span><br><span class="line">            cpu: 10m</span><br><span class="line">            memory: 40Mi</span><br><span class="line">        service:</span><br><span class="line">          ports:</span><br><span class="line">            <span class="comment">## You can add custom gateway ports in user values overrides, but it must include those ports since helm replaces.</span></span><br><span class="line">            <span class="comment"># Note that AWS ELB will by default perform health checks on the first port</span></span><br><span class="line">            <span class="comment"># on this list. Setting this to the health check port will ensure that health</span></span><br><span class="line">            <span class="comment"># checks always work. https://github.com/istio/istio/issues/12503</span></span><br><span class="line">            - port: 15020</span><br><span class="line">              targetPort: 15020</span><br><span class="line">              name: status-port</span><br><span class="line">            - port: 80</span><br><span class="line">              targetPort: 8080</span><br><span class="line">              name: http2</span><br><span class="line">            - port: 443</span><br><span class="line">              targetPort: 8443</span><br><span class="line">              name: https</span><br><span class="line">            - port: 31400</span><br><span class="line">              targetPort: 31400</span><br><span class="line">              name: tcp</span><br><span class="line">              <span class="comment"># This is the port where sni routing happens</span></span><br><span class="line">            - port: 15443</span><br><span class="line">              targetPort: 15443</span><br><span class="line">              name: tls</span><br><span class="line"></span><br><span class="line">    policy:</span><br><span class="line">      enabled: <span class="literal">false</span></span><br><span class="line">      k8s:</span><br><span class="line">        resources:</span><br><span class="line">          requests:</span><br><span class="line">            cpu: 10m</span><br><span class="line">            memory: 100Mi</span><br><span class="line"></span><br><span class="line">    telemetry:</span><br><span class="line">      k8s:</span><br><span class="line">        resources:</span><br><span class="line">          requests:</span><br><span class="line">            cpu: 50m</span><br><span class="line">            memory: 100Mi</span><br><span class="line"></span><br><span class="line">    pilot:</span><br><span class="line">      k8s:</span><br><span class="line">        env:</span><br><span class="line">          - name: POD_NAME</span><br><span class="line">            valueFrom:</span><br><span class="line">              fieldRef:</span><br><span class="line">                apiVersion: v1</span><br><span class="line">                fieldPath: metadata.name</span><br><span class="line">          - name: POD_NAMESPACE</span><br><span class="line">            valueFrom:</span><br><span class="line">              fieldRef:</span><br><span class="line">                apiVersion: v1</span><br><span class="line">                fieldPath: metadata.namespace</span><br><span class="line">          - name: GODEBUG</span><br><span class="line">            value: gctrace=1</span><br><span class="line">          - name: PILOT_TRACE_SAMPLING</span><br><span class="line">            value: <span class="string">"100"</span></span><br><span class="line">          - name: CONFIG_NAMESPACE</span><br><span class="line">            value: istio-config</span><br><span class="line">        resources:</span><br><span class="line">          requests:</span><br><span class="line">            cpu: 10m</span><br><span class="line">            memory: 100Mi</span><br><span class="line"></span><br><span class="line">  addonComponents:</span><br><span class="line">    kiali:</span><br><span class="line">      enabled: <span class="literal">true</span></span><br><span class="line">    grafana:</span><br><span class="line">      enabled: <span class="literal">true</span></span><br><span class="line">    tracing:</span><br><span class="line">      enabled: <span class="literal">true</span></span><br><span class="line">    prometheus:</span><br><span class="line">      enabled: <span class="literal">true</span></span><br><span class="line"></span><br><span class="line">  values:</span><br><span class="line">    global:</span><br><span class="line">      disablePolicyChecks: <span class="literal">false</span></span><br><span class="line">      proxy:</span><br><span class="line">        accessLogFile: /dev/stdout</span><br><span class="line">        includeIPRanges: 192.168.16.0/20,192.168.32.0/20</span><br><span class="line">        autoInject: enabled  <span class="comment">#配置自动注入</span></span><br><span class="line">        resources:</span><br><span class="line">          requests:</span><br><span class="line">            cpu: 10m</span><br><span class="line">            memory: 40Mi</span><br><span class="line">    sidecarInjectorWebhook:</span><br><span class="line">      enableNamespacesByDefault: <span class="literal">true</span></span><br><span class="line"></span><br><span class="line">    pilot:</span><br><span class="line">      autoscaleEnabled: <span class="literal">false</span></span><br><span class="line"></span><br><span class="line">    mixer:</span><br><span class="line">      adapters:</span><br><span class="line">        useAdapterCRDs: <span class="literal">false</span></span><br><span class="line">        kubernetesenv:</span><br><span class="line">          enabled: <span class="literal">true</span></span><br><span class="line">        prometheus:</span><br><span class="line">          enabled: <span class="literal">true</span></span><br><span class="line">          metricsExpiryDuration: 10m</span><br><span class="line">        stackdriver:</span><br><span class="line">          enabled: <span class="literal">false</span></span><br><span class="line">        stdio:</span><br><span class="line">          enabled: <span class="literal">true</span></span><br><span class="line">          outputAsJson: <span class="literal">false</span></span><br><span class="line">      policy:</span><br><span class="line">        autoscaleEnabled: <span class="literal">false</span></span><br><span class="line">      telemetry:</span><br><span class="line">        autoscaleEnabled: <span class="literal">false</span></span><br><span class="line"></span><br><span class="line">    gateways:</span><br><span class="line">      istio-egressgateway:</span><br><span class="line">        autoscaleEnabled: <span class="literal">true</span></span><br><span class="line">      istio-ingressgateway:</span><br><span class="line">        autoscaleEnabled: <span class="literal">true</span></span><br><span class="line">    kiali:</span><br><span class="line">      createDemoSecret: <span class="literal">true</span></span><br></pre></td></tr></table></figure>
+
+<p>安装对应配置</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">istioctl manifest apply -f istio-1.5.1.yaml</span><br></pre></td></tr></table></figure>
+
+<p> 验证是否安装成功 </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">kubectl get svc -n istio-system</span><br><span class="line"></span><br><span class="line">NAME                        TYPE           CLUSTER-IP       EXTERNAL-IP   PORT(S)                                                                      AGE</span><br><span class="line">grafana                     ClusterIP      10.106.222.1     &lt;none&gt;        3000/TCP                                                                     72m</span><br><span class="line">istio-egressgateway         ClusterIP      10.105.147.175   &lt;none&gt;        80/TCP,443/TCP,15443/TCP                                                     72m</span><br><span class="line">istio-ingressgateway        LoadBalancer   10.101.90.130    &lt;pending&gt;     15020:31121/TCP,80:31729/TCP,443:31903/TCP,31400:32746/TCP,15443:31084/TCP   72m</span><br><span class="line">istio-pilot                 ClusterIP      10.101.28.124    &lt;none&gt;        15010/TCP,15011/TCP,15012/TCP,8080/TCP,15014/TCP,443/TCP                     80m</span><br><span class="line">istiod                      ClusterIP      10.99.35.177     &lt;none&gt;        15012/TCP,443/TCP                                                            80m</span><br><span class="line">jaeger-agent                ClusterIP      None             &lt;none&gt;        5775/UDP,6831/UDP,6832/UDP                                                   72m</span><br><span class="line">jaeger-collector            ClusterIP      10.109.237.212   &lt;none&gt;        14267/TCP,14268/TCP,14250/TCP                                                72m</span><br><span class="line">jaeger-collector-headless   ClusterIP      None             &lt;none&gt;        14250/TCP                                                                    72m</span><br><span class="line">jaeger-query                ClusterIP      10.103.4.63      &lt;none&gt;        16686/TCP                                                                    72m</span><br><span class="line">kiali                       ClusterIP      10.100.49.221    &lt;none&gt;        20001/TCP                                                                    72m</span><br><span class="line">prometheus                  ClusterIP      10.110.124.176   &lt;none&gt;        9090/TCP                                                                     72m</span><br><span class="line">tracing                     ClusterIP      10.106.75.109    &lt;none&gt;        80/TCP                                                                       72m</span><br><span class="line">zipkin                      ClusterIP      10.103.9.94      &lt;none&gt;        9411/TCP</span><br></pre></td></tr></table></figure>
+
+<p> 确保关联的 Kubernetes pod 已经部署，并且 <code>STATUS</code> 为 <code>Running</code> </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">kubectl get pods -n istio-system</span><br><span class="line"></span><br><span class="line">NAME                                    READY   STATUS    RESTARTS   AGE</span><br><span class="line">grafana-5f6f8cbf75-trjl6                1/1     Running   0          73m</span><br><span class="line">istio-egressgateway-74896c8487-9qnwg    1/1     Running   0          73m</span><br><span class="line">istio-ingressgateway-56f7dd5d6b-9c22z   1/1     Running   0          73m</span><br><span class="line">istio-tracing-9dd6c4f7c-qr7vl           1/1     Running   0          73m</span><br><span class="line">istiod-756bd84654-fqp7b                 1/1     Running   0          73m</span><br><span class="line">istiod-756bd84654-hxpqt                 1/1     Running   0          73m</span><br><span class="line">kiali-869c6894c5-p4h7r                  1/1     Running   0          73m</span><br><span class="line">prometheus-c89875c74-lvq52              2/2     Running   0          73m</span><br></pre></td></tr></table></figure>
+
+<p>卸载istio</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">istioctl manifest generate --<span class="built_in">set</span> profile=demo | kubectl delete -f -</span><br></pre></td></tr></table></figure>
+
+<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p> <a href="https://preliminary.istio.io/zh/docs/setup/getting-started/" target="_blank" rel="noopener">https://preliminary.istio.io/zh/docs/setup/getting-started/</a> </p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-Hans">
     <link itemprop="mainEntityOfPage" href="http://haoyunlaile.github.io/2020/04/22/k8s-port/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1030,20 +1133,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives">
         
-          <span class="site-state-item-count">7</span>
+          <span class="site-state-item-count">8</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories">
           
-        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-count">3</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags">
           
-        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-count">8</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
