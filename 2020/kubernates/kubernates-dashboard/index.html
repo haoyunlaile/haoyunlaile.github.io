@@ -23,7 +23,7 @@
   <meta name="description" content="需求基于网页查看Kubernetes 用户界面  安装步骤在控制面板节点部署dashborad 1kubectl apply -f https:&#x2F;&#x2F;raw.githubusercontent.com&#x2F;kubernetes&#x2F;dashboard&#x2F;v2.0.0&#x2F;aio&#x2F;deploy&#x2F;recommended.yaml  放开外网端口映射 如果需要外网访问，需要使用NodePort的方式对外暴露端口，不能使">
 <meta property="og:type" content="article">
 <meta property="og:title" content="kubernetes dashboard install">
-<meta property="og:url" content="http://haoyunlaile.github.io/2020/04/22/kubernates-dashboard/index.html">
+<meta property="og:url" content="http://haoyunlaile.github.io/2020/kubernates/kubernates-dashboard/index.html">
 <meta property="og:site_name" content="好运来了">
 <meta property="og:description" content="需求基于网页查看Kubernetes 用户界面  安装步骤在控制面板节点部署dashborad 1kubectl apply -f https:&#x2F;&#x2F;raw.githubusercontent.com&#x2F;kubernetes&#x2F;dashboard&#x2F;v2.0.0&#x2F;aio&#x2F;deploy&#x2F;recommended.yaml  放开外网端口映射 如果需要外网访问，需要使用NodePort的方式对外暴露端口，不能使">
 <meta property="og:image" content="http://haoyunlaile.github.io/images/k8s-dashboard-login.png">
@@ -35,7 +35,7 @@
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://haoyunlaile.github.io/images/k8s-dashboard-login.png">
 
-<link rel="canonical" href="http://haoyunlaile.github.io/2020/04/22/kubernates-dashboard/">
+<link rel="canonical" href="http://haoyunlaile.github.io/2020/kubernates/kubernates-dashboard/">
 
 
 <script id="page-configurations">
@@ -178,7 +178,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="http://haoyunlaile.github.io/2020/04/22/kubernates-dashboard/">
+    <link itemprop="mainEntityOfPage" href="http://haoyunlaile.github.io/2020/kubernates/kubernates-dashboard/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/50016783?s=400&u=a5ed1b51def3b9af69486f1f197f4725b370a03c&v=4">
@@ -229,8 +229,8 @@
       </span>
       <span class="post-meta-item-text">Disqus：</span>
     
-    <a title="disqus" href="/2020/04/22/kubernates-dashboard/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/04/22/kubernates-dashboard/" itemprop="commentCount"></span>
+    <a title="disqus" href="/2020/kubernates/kubernates-dashboard/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/kubernates/kubernates-dashboard/" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -262,7 +262,7 @@
 <p>然后就可以访问下面的地址</p>
 <p><code>https://&lt;master-ip&gt;:&lt;nodePort&gt;</code></p>
 <p>访问上面的地址会出现登录的界面，如下图：</p>
-<p><img src="/images/k8s-dashboard-login.png" alt="k8s-dashboard-login"></p>
+<p><img data-src="/images/k8s-dashboard-login.png" alt="k8s-dashboard-login"></p>
 <p>这里选择使用token登录</p>
 <p>创建dashboard对应的admin账户</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">touch dashboard-admin.yml</span><br><span class="line">vi dashboard-admin.yml</span><br><span class="line"></span><br><span class="line">apiVersion: v1</span><br><span class="line">kind: ServiceAccount</span><br><span class="line">metadata:</span><br><span class="line">  name: admin-user</span><br><span class="line">  namespace: kubernetes-dashboard</span><br><span class="line"></span><br><span class="line">---</span><br><span class="line"></span><br><span class="line">apiVersion: rbac.authorization.k8s.io/v1</span><br><span class="line">kind: ClusterRoleBinding</span><br><span class="line">metadata:</span><br><span class="line">  name: admin-user</span><br><span class="line">roleRef:</span><br><span class="line">  apiGroup: rbac.authorization.k8s.io</span><br><span class="line">  kind: ClusterRole</span><br><span class="line">  name: cluster-admin</span><br><span class="line">subjects:</span><br><span class="line">- kind: ServiceAccount</span><br><span class="line">  name: admin-user</span><br><span class="line">  namespace: kubernetes-dashboard</span><br></pre></td></tr></table></figure>
@@ -277,7 +277,7 @@
 <p>注意，有的文章会写此方式获取到的token还需要进行base64解密，可能是因为版本原因，本人测试是可以直接复制后进行登录的</p>
 </blockquote>
 <p>登录成功后界面如图</p>
-<p><img src="/images/k8s-dashboard-nodes.png" alt="k8s-dashboard-nodes.png"></p>
+<p><img data-src="/images/k8s-dashboard-nodes.png" alt="k8s-dashboard-nodes.png"></p>
 <p>终于装好了，踩了不少坑，主要还是不熟悉。后面切记认真仔细阅读官方文档。</p>
 <h2 id="参考文档"><a href="#参考文档" class="headerlink" title="参考文档"></a>参考文档</h2><p> <a href="https://kubernetes.io/zh/docs/tasks/access-application-cluster/web-ui-dashboard/" target="_blank" rel="noopener">https://kubernetes.io/zh/docs/tasks/access-application-cluster/web-ui-dashboard/</a> </p>
 <p> <a href="https://github.com/kubernetes/dashboard" target="_blank" rel="noopener">https://github.com/kubernetes/dashboard</a> </p>
@@ -321,11 +321,11 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2020/04/21/docker-install/" rel="prev" title="centos7 install docker">
+    <a href="/2020/docker/docker-install/" rel="prev" title="centos7 install docker">
       <i class="fa fa-chevron-left"></i> centos7 install docker
     </a></div>
       <div class="post-nav-item">
-    <a href="/2020/04/22/kubeadm-install/" rel="next" title="kubeadm built kubernetes cluster">
+    <a href="/2020/kubernates/kubeadm-install/" rel="next" title="kubeadm built kubernetes cluster">
       kubeadm built kubernetes cluster <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
@@ -558,8 +558,8 @@
 </script>
 <script>
   var disqus_config = function() {
-    this.page.url = "http://haoyunlaile.github.io/2020/04/22/kubernates-dashboard/";
-    this.page.identifier = "2020/04/22/kubernates-dashboard/";
+    this.page.url = "http://haoyunlaile.github.io/2020/kubernates/kubernates-dashboard/";
+    this.page.identifier = "2020/kubernates/kubernates-dashboard/";
     this.page.title = "kubernetes dashboard install";
     };
   NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {

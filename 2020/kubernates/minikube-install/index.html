@@ -23,7 +23,7 @@
   <meta name="description" content="需求安装kubernetes - Minikube本地环境 准备条件 一台VPS（本文使用阿里云香港 - centos7.7）- 用国内的服务器折腾的好一会儿都被墙了，先不把时间浪费在这，直接上香港的服务器 一台能SSH连接到VPS的本地电脑 （推荐连接工具xshell）  安装步骤在安装前需要配置国内的镜像源，这里推荐使用阿里云的 123456789cat &lt;&lt;EOF &gt; &#x2F;e">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Minikube install">
-<meta property="og:url" content="http://haoyunlaile.github.io/2020/04/21/minikube-install/index.html">
+<meta property="og:url" content="http://haoyunlaile.github.io/2020/kubernates/minikube-install/index.html">
 <meta property="og:site_name" content="好运来了">
 <meta property="og:description" content="需求安装kubernetes - Minikube本地环境 准备条件 一台VPS（本文使用阿里云香港 - centos7.7）- 用国内的服务器折腾的好一会儿都被墙了，先不把时间浪费在这，直接上香港的服务器 一台能SSH连接到VPS的本地电脑 （推荐连接工具xshell）  安装步骤在安装前需要配置国内的镜像源，这里推荐使用阿里云的 123456789cat &lt;&lt;EOF &gt; &#x2F;e">
 <meta property="og:image" content="http://haoyunlaile.github.io/images/k8s-dashboard.png">
@@ -35,7 +35,7 @@
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://haoyunlaile.github.io/images/k8s-dashboard.png">
 
-<link rel="canonical" href="http://haoyunlaile.github.io/2020/04/21/minikube-install/">
+<link rel="canonical" href="http://haoyunlaile.github.io/2020/kubernates/minikube-install/">
 
 
 <script id="page-configurations">
@@ -178,7 +178,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="http://haoyunlaile.github.io/2020/04/21/minikube-install/">
+    <link itemprop="mainEntityOfPage" href="http://haoyunlaile.github.io/2020/kubernates/minikube-install/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/50016783?s=400&u=a5ed1b51def3b9af69486f1f197f4725b370a03c&v=4">
@@ -229,8 +229,8 @@
       </span>
       <span class="post-meta-item-text">Disqus：</span>
     
-    <a title="disqus" href="/2020/04/21/minikube-install/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/04/21/minikube-install/" itemprop="commentCount"></span>
+    <a title="disqus" href="/2020/kubernates/minikube-install/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/kubernates/minikube-install/" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -273,7 +273,7 @@
 <p>这里需要记得去阿里云的安全组配置33458端口外网可以访问</p>
 <p>然后就可以在浏览器访问k8s的dashborad了</p>
 <p><a href="http://127.0.0.1:33458/" target="_blank" rel="noopener">http://127.0.0.1:33458/</a></p>
-<p><img src="/images/k8s-dashboard.png" alt="k8s-dashboard"></p>
+<p><img data-src="/images/k8s-dashboard.png" alt="k8s-dashboard"></p>
 <p>清理 minikube 的本地状态 </p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">minikube delete</span><br></pre></td></tr></table></figure>
 
@@ -322,11 +322,11 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2020/03/06/docker-install-shadowsocks-libev/" rel="prev" title="快速部署 Shadowsocks Docker版">
+    <a href="/2020/docker/docker-install-shadowsocks-libev/" rel="prev" title="快速部署 Shadowsocks Docker版">
       <i class="fa fa-chevron-left"></i> 快速部署 Shadowsocks Docker版
     </a></div>
       <div class="post-nav-item">
-    <a href="/2020/04/21/docker-install/" rel="next" title="centos7 install docker">
+    <a href="/2020/docker/docker-install/" rel="next" title="centos7 install docker">
       centos7 install docker <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
@@ -559,8 +559,8 @@
 </script>
 <script>
   var disqus_config = function() {
-    this.page.url = "http://haoyunlaile.github.io/2020/04/21/minikube-install/";
-    this.page.identifier = "2020/04/21/minikube-install/";
+    this.page.url = "http://haoyunlaile.github.io/2020/kubernates/minikube-install/";
+    this.page.identifier = "2020/kubernates/minikube-install/";
     this.page.title = "Minikube install";
     };
   NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {

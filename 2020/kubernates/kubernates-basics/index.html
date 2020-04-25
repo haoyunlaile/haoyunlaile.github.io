@@ -20,19 +20,21 @@
     var CONFIG = {"hostname":"haoyunlaile.github.io","root":"/","scheme":"Pisces","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":"disqus","storage":true,"lazyload":true,"nav":{"disqus":{"text":"Load Comment","order":-1}},"activeClass":"disqus"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="搭建k8s环境所需端口清单控制平面节点端口清单   协议 方向 端口范围 作用 使用者    TCP 入站 6443 Kubernetes API 服务器 所有组件   TCP 入站 2379-2380 etcd server client API kube-apiserver, etcd   TCP 入站 10250 Kubelet API kubelet 自身、控制平面组件   TCP 入站">
+  <meta name="description" content="概述这篇文章用来记录Kubernetes 的基础资料，整体以最新官方文档为准。 因为k8s整体比较偏运维，作为研发可先大致了解其概念及初级使用方式，后面重点学习点会放在service mesh istio 上。因为istio目前的架构依赖k8s相关组件，后面在学习istio 的过程中使用到k8s具体组件后再回过头来针对性的学习。 Kubernetes 集群所需的各种组件 最好把官方相关文档全部都认">
 <meta property="og:type" content="article">
-<meta property="og:title" content="kubernetes port list">
-<meta property="og:url" content="http://haoyunlaile.github.io/2020/04/22/k8s-port/index.html">
+<meta property="og:title" content="kubernetes资料">
+<meta property="og:url" content="http://haoyunlaile.github.io/2020/kubernates/kubernates-basics/index.html">
 <meta property="og:site_name" content="好运来了">
-<meta property="og:description" content="搭建k8s环境所需端口清单控制平面节点端口清单   协议 方向 端口范围 作用 使用者    TCP 入站 6443 Kubernetes API 服务器 所有组件   TCP 入站 2379-2380 etcd server client API kube-apiserver, etcd   TCP 入站 10250 Kubelet API kubelet 自身、控制平面组件   TCP 入站">
-<meta property="article:published_time" content="2020-04-21T16:00:00.000Z">
-<meta property="article:modified_time" content="2020-04-21T16:00:00.000Z">
+<meta property="og:description" content="概述这篇文章用来记录Kubernetes 的基础资料，整体以最新官方文档为准。 因为k8s整体比较偏运维，作为研发可先大致了解其概念及初级使用方式，后面重点学习点会放在service mesh istio 上。因为istio目前的架构依赖k8s相关组件，后面在学习istio 的过程中使用到k8s具体组件后再回过头来针对性的学习。 Kubernetes 集群所需的各种组件 最好把官方相关文档全部都认">
+<meta property="og:image" content="http://haoyunlaile.github.io/images/components-of-kubernetes.png">
+<meta property="article:published_time" content="2020-04-22T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-04-22T16:00:00.000Z">
 <meta property="article:author" content="好运来了">
-<meta property="article:tag" content="kubernetes">
+<meta property="article:tag" content="kubernetes资料">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://haoyunlaile.github.io/images/components-of-kubernetes.png">
 
-<link rel="canonical" href="http://haoyunlaile.github.io/2020/04/22/k8s-port/">
+<link rel="canonical" href="http://haoyunlaile.github.io/2020/kubernates/kubernates-basics/">
 
 
 <script id="page-configurations">
@@ -44,7 +46,7 @@
   };
 </script>
 
-  <title>kubernetes port list | 好运来了</title>
+  <title>kubernetes资料 | 好运来了</title>
   
 
 
@@ -175,7 +177,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="http://haoyunlaile.github.io/2020/04/22/k8s-port/">
+    <link itemprop="mainEntityOfPage" href="http://haoyunlaile.github.io/2020/kubernates/kubernates-basics/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/50016783?s=400&u=a5ed1b51def3b9af69486f1f197f4725b370a03c&v=4">
@@ -188,7 +190,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          kubernetes port list
+          kubernetes资料
         </h1>
 
         <div class="post-meta">
@@ -198,7 +200,7 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2020-04-22 00:00:00" itemprop="dateCreated datePublished" datetime="2020-04-22T00:00:00+08:00">2020-04-22</time>
+              <time title="创建时间：2020-04-23 00:00:00" itemprop="dateCreated datePublished" datetime="2020-04-23T00:00:00+08:00">2020-04-23</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -226,8 +228,8 @@
       </span>
       <span class="post-meta-item-text">Disqus：</span>
     
-    <a title="disqus" href="/2020/04/22/k8s-port/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/04/22/k8s-port/" itemprop="commentCount"></span>
+    <a title="disqus" href="/2020/kubernates/kubernates-basics/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/kubernates/kubernates-basics/" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -242,78 +244,16 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="搭建k8s环境所需端口清单"><a href="#搭建k8s环境所需端口清单" class="headerlink" title="搭建k8s环境所需端口清单"></a>搭建k8s环境所需端口清单</h2><h3 id="控制平面节点端口清单"><a href="#控制平面节点端口清单" class="headerlink" title="控制平面节点端口清单"></a>控制平面节点端口清单</h3><table>
-<thead>
-<tr>
-<th align="center">协议</th>
-<th align="center">方向</th>
-<th align="center">端口范围</th>
-<th align="center">作用</th>
-<th align="center">使用者</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">TCP</td>
-<td align="center">入站</td>
-<td align="center">6443</td>
-<td align="center">Kubernetes API 服务器</td>
-<td align="center">所有组件</td>
-</tr>
-<tr>
-<td align="center">TCP</td>
-<td align="center">入站</td>
-<td align="center">2379-2380</td>
-<td align="center">etcd server client API</td>
-<td align="center">kube-apiserver, etcd</td>
-</tr>
-<tr>
-<td align="center">TCP</td>
-<td align="center">入站</td>
-<td align="center">10250</td>
-<td align="center">Kubelet API</td>
-<td align="center">kubelet 自身、控制平面组件</td>
-</tr>
-<tr>
-<td align="center">TCP</td>
-<td align="center">入站</td>
-<td align="center">10251</td>
-<td align="center">kube-scheduler</td>
-<td align="center">kube-scheduler 自身</td>
-</tr>
-<tr>
-<td align="center">TCP</td>
-<td align="center">入站</td>
-<td align="center">10252</td>
-<td align="center">kube-controller-manager</td>
-<td align="center">kube-controller-manager 自身</td>
-</tr>
-</tbody></table>
-<h3 id="Node节点端口清单"><a href="#Node节点端口清单" class="headerlink" title="Node节点端口清单"></a>Node节点端口清单</h3><table>
-<thead>
-<tr>
-<th align="center">协议</th>
-<th align="center">方向</th>
-<th align="center">端口范围</th>
-<th align="center">作用</th>
-<th align="center">使用者</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">TCP</td>
-<td align="center">入站</td>
-<td align="center">10250</td>
-<td align="center">Kubelet API</td>
-<td align="center">kubelet 自身、控制平面组件</td>
-</tr>
-<tr>
-<td align="center">TCP</td>
-<td align="center">入站</td>
-<td align="center">30000-32767</td>
-<td align="center">NodePort 服务**</td>
-<td align="center">所有组件</td>
-</tr>
-</tbody></table>
-<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p> <a href="https://kubernetes.io/zh/docs/setup/production-environment/tools/kubeadm/install-kubeadm/" target="_blank" rel="noopener">https://kubernetes.io/zh/docs/setup/production-environment/tools/kubeadm/install-kubeadm/</a> </p>
+        <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>这篇文章用来记录Kubernetes 的基础资料，整体以最新官方文档为准。</p>
+<p>因为k8s整体比较偏运维，作为研发可先大致了解其概念及初级使用方式，后面重点学习点会放在service mesh <code>istio</code> 上。因为<code>istio</code>目前的架构依赖k8s相关组件，后面在学习<code>istio</code> 的过程中使用到k8s具体组件后再回过头来针对性的学习。</p>
+<h3 id="Kubernetes-集群所需的各种组件"><a href="#Kubernetes-集群所需的各种组件" class="headerlink" title="Kubernetes 集群所需的各种组件"></a>Kubernetes 集群所需的各种组件</h3><p><img data-src="/images/components-of-kubernetes.png" alt="components-of-kubernetes.png"></p>
+<p>最好把官方相关文档全部都认认真真看一遍，然后跟着操作一遍会强化理解。因为涉及的体系非常庞大，里面使用到的一个组件可能都需要学习很久，不要着急，慢慢来，有计划一个一个的啃下来。术业有专攻、有目标性的学习与突破。道路且长、共勉</p>
+<h2 id="参考文档"><a href="#参考文档" class="headerlink" title="参考文档"></a>参考文档</h2><p><a href="https://kubernetes.io/zh/docs/concepts/" target="_blank" rel="noopener">https://kubernetes.io/zh/docs/concepts/</a> </p>
+<p><a href="https://kubernetes.io/zh/docs/concepts/overview/components/" target="_blank" rel="noopener">https://kubernetes.io/zh/docs/concepts/overview/components/</a> </p>
+<p><a href="https://kubernetes.io/zh/docs/concepts/workloads/pods/pod-overview/" target="_blank" rel="noopener">https://kubernetes.io/zh/docs/concepts/workloads/pods/pod-overview/</a> </p>
+<p><a href="https://kubernetes.io/zh/docs/tasks/" target="_blank" rel="noopener">https://kubernetes.io/zh/docs/tasks/</a> </p>
+<p><a href="https://kubernetes.io/zh/docs/reference/" target="_blank" rel="noopener">https://kubernetes.io/zh/docs/reference/</a> </p>
+<p><a href="https://kubernetes.io/docs/reference/generated/kubectl/kubectl-commands#-strong-getting-started-strong-" target="_blank" rel="noopener">https://kubernetes.io/docs/reference/generated/kubectl/kubectl-commands#-strong-getting-started-strong-</a> </p>
 
     </div>
 
@@ -343,7 +283,7 @@
       <footer class="post-footer">
           
           <div class="post-tags">
-              <a href="/tags/kubernetes/" rel="tag"><i class="fa fa-tag"></i> kubernetes</a>
+              <a href="/tags/kubernetes%E8%B5%84%E6%96%99/" rel="tag"><i class="fa fa-tag"></i> kubernetes资料</a>
           </div>
 
         
@@ -352,11 +292,11 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2020/04/22/kubeadm-install/" rel="prev" title="kubeadm built kubernetes cluster">
-      <i class="fa fa-chevron-left"></i> kubeadm built kubernetes cluster
+    <a href="/2020/kubernates/k8s-port/" rel="prev" title="kubernetes port list">
+      <i class="fa fa-chevron-left"></i> kubernetes port list
     </a></div>
       <div class="post-nav-item">
-    <a href="/2020/04/23/istio-install/" rel="next" title="istio install">
+    <a href="/2020/istio/istio-install/" rel="next" title="istio install">
       istio install <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
@@ -425,7 +365,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#搭建k8s环境所需端口清单"><span class="nav-number">1.</span> <span class="nav-text">搭建k8s环境所需端口清单</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#控制平面节点端口清单"><span class="nav-number">1.1.</span> <span class="nav-text">控制平面节点端口清单</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Node节点端口清单"><span class="nav-number">1.2.</span> <span class="nav-text">Node节点端口清单</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-number">2.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#概述"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Kubernetes-集群所需的各种组件"><span class="nav-number">1.1.</span> <span class="nav-text">Kubernetes 集群所需的各种组件</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考文档"><span class="nav-number">2.</span> <span class="nav-text">参考文档</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -589,9 +529,9 @@
 </script>
 <script>
   var disqus_config = function() {
-    this.page.url = "http://haoyunlaile.github.io/2020/04/22/k8s-port/";
-    this.page.identifier = "2020/04/22/k8s-port/";
-    this.page.title = "kubernetes port list";
+    this.page.url = "http://haoyunlaile.github.io/2020/kubernates/kubernates-basics/";
+    this.page.identifier = "2020/kubernates/kubernates-basics/";
+    this.page.title = "kubernetes资料";
     };
   NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
     if (window.DISQUS) {
