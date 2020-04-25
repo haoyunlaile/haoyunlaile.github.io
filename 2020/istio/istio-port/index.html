@@ -20,16 +20,19 @@
     var CONFIG = {"hostname":"haoyunlaile.github.io","root":"/","scheme":"Pisces","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":"disqus","storage":true,"lazyload":true,"nav":{"disqus":{"text":"Load Comment","order":-1}},"activeClass":"disqus"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="java,go,istio,mosn,service mesh">
-<meta property="og:type" content="website">
-<meta property="og:title" content="好运来了">
-<meta property="og:url" content="http://haoyunlaile.github.io/tags/docker/index.html">
+  <meta name="description" content="Istio 使用了如下的端口和协议   端口 协议 使用者 描述    8060 HTTP Citadel GRPC 服务器   8080 HTTP Citadel agent SDS service 监控   9090 HTTP Prometheus Prometheus   9091 HTTP Mixer 策略&#x2F;遥测   9876 HTTP Citadel, Citadel agent Con">
+<meta property="og:type" content="article">
+<meta property="og:title" content="istio使用的端口">
+<meta property="og:url" content="http://haoyunlaile.github.io/2020/istio/istio-port/index.html">
 <meta property="og:site_name" content="好运来了">
-<meta property="og:description" content="java,go,istio,mosn,service mesh">
+<meta property="og:description" content="Istio 使用了如下的端口和协议   端口 协议 使用者 描述    8060 HTTP Citadel GRPC 服务器   8080 HTTP Citadel agent SDS service 监控   9090 HTTP Prometheus Prometheus   9091 HTTP Mixer 策略&#x2F;遥测   9876 HTTP Citadel, Citadel agent Con">
+<meta property="article:published_time" content="2020-04-24T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-04-24T16:00:00.000Z">
 <meta property="article:author" content="好运来了">
+<meta property="article:tag" content="istio">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="http://haoyunlaile.github.io/tags/docker/">
+<link rel="canonical" href="http://haoyunlaile.github.io/2020/istio/istio-port/">
 
 
 <script id="page-configurations">
@@ -37,11 +40,11 @@
   CONFIG.page = {
     sidebar: "",
     isHome : false,
-    isPost : false
+    isPost : true
   };
 </script>
 
-  <title>标签: docker | 好运来了</title>
+  <title>istio使用的端口 | 好运来了</title>
   
 
 
@@ -167,74 +170,277 @@
           <div class="content">
             
 
+  <div class="posts-expand">
+      
   
   
-  
-  <div class="post-block">
-    <div class="posts-collapse">
-      <div class="collection-title">
-        <h1 class="collection-header">docker
-          <small>标签</small>
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://haoyunlaile.github.io/2020/istio/istio-port/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/50016783?s=400&u=a5ed1b51def3b9af69486f1f197f4725b370a03c&v=4">
+      <meta itemprop="name" content="好运来了">
+      <meta itemprop="description" content="java,go,istio,mosn,service mesh">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="好运来了">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          istio使用的端口
         </h1>
-      </div>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-04-25 00:00:00" itemprop="dateCreated datePublished" datetime="2020-04-25T00:00:00+08:00">2020-04-25</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/istio/" itemprop="url" rel="index"><span itemprop="name">istio</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus：</span>
+    
+    <a title="disqus" href="/2020/istio/istio-port/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/istio/istio-port/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
       
-    <div class="collection-year">
-      <h1 class="collection-header">2020</h1>
+        <h2 id="Istio-使用了如下的端口和协议"><a href="#Istio-使用了如下的端口和协议" class="headerlink" title="Istio 使用了如下的端口和协议"></a>Istio 使用了如下的端口和协议</h2><table>
+<thead>
+<tr>
+<th>端口</th>
+<th>协议</th>
+<th align="left">使用者</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>8060</td>
+<td>HTTP</td>
+<td align="left">Citadel</td>
+<td>GRPC 服务器</td>
+</tr>
+<tr>
+<td>8080</td>
+<td>HTTP</td>
+<td align="left">Citadel agent</td>
+<td>SDS service 监控</td>
+</tr>
+<tr>
+<td>9090</td>
+<td>HTTP</td>
+<td align="left">Prometheus</td>
+<td>Prometheus</td>
+</tr>
+<tr>
+<td>9091</td>
+<td>HTTP</td>
+<td align="left">Mixer</td>
+<td>策略/遥测</td>
+</tr>
+<tr>
+<td>9876</td>
+<td>HTTP</td>
+<td align="left">Citadel, Citadel agent</td>
+<td>ControlZ 用户界面</td>
+</tr>
+<tr>
+<td>9901</td>
+<td>GRPC</td>
+<td align="left">Galley</td>
+<td>网格配置协议</td>
+</tr>
+<tr>
+<td>15000</td>
+<td>TCP</td>
+<td align="left">Envoy</td>
+<td>Envoy 管理端口 (commands/diagnostics)</td>
+</tr>
+<tr>
+<td>15001</td>
+<td>TCP</td>
+<td align="left">Envoy</td>
+<td>Envoy 传出</td>
+</tr>
+<tr>
+<td>15006</td>
+<td>TCP</td>
+<td align="left">Envoy</td>
+<td>Envoy 传入</td>
+</tr>
+<tr>
+<td>15004</td>
+<td>HTTP</td>
+<td align="left">Mixer, Pilot</td>
+<td>策略/遥测 - <code>mTLS</code></td>
+</tr>
+<tr>
+<td>15010</td>
+<td>HTTP</td>
+<td align="left">Pilot</td>
+<td>Pilot service - XDS pilot - 发现</td>
+</tr>
+<tr>
+<td>15011</td>
+<td>TCP</td>
+<td align="left">Pilot</td>
+<td>Pilot service - <code>mTLS</code> - Proxy - 发现</td>
+</tr>
+<tr>
+<td>15014</td>
+<td>HTTP</td>
+<td align="left">Citadel, Citadel agent, Galley, Mixer, Pilot, Sidecar Injector</td>
+<td>控制平面监控</td>
+</tr>
+<tr>
+<td>15020</td>
+<td>HTTP</td>
+<td align="left">Ingress Gateway</td>
+<td>Pilot 健康检查</td>
+</tr>
+<tr>
+<td>15029</td>
+<td>HTTP</td>
+<td align="left">Kiali</td>
+<td>Kiali 用户界面</td>
+</tr>
+<tr>
+<td>15030</td>
+<td>HTTP</td>
+<td align="left">Prometheus</td>
+<td>Prometheus 用户界面</td>
+</tr>
+<tr>
+<td>15031</td>
+<td>HTTP</td>
+<td align="left">Grafana</td>
+<td>Grafana 用户界面</td>
+</tr>
+<tr>
+<td>15032</td>
+<td>HTTP</td>
+<td align="left">Tracing</td>
+<td>Tracing 用户界面</td>
+</tr>
+<tr>
+<td>15443</td>
+<td>TLS</td>
+<td align="left">Ingress and Egress Gateways</td>
+<td>SNI</td>
+</tr>
+<tr>
+<td>15090</td>
+<td>HTTP</td>
+<td align="left">Mixer</td>
+<td>Proxy</td>
+</tr>
+<tr>
+<td>42422</td>
+<td>TCP</td>
+<td align="left">Mixer</td>
+<td>遥测 - Prometheus</td>
+</tr>
+</tbody></table>
+<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p> <a href="https://preliminary.istio.io/docs/ops/deployment/requirements/" target="_blank" rel="noopener">https://preliminary.istio.io/docs/ops/deployment/requirements/</a> </p>
+
     </div>
 
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
+    
+    
+    
+        
 
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-04-21T00:00:00+08:00"
-              content="2020-04-21">
-          04-21
-        </time>
-      </div>
+  <div class="followme">
+    <p>欢迎关注我的其它发布渠道</p>
 
-      <h2 class="post-title">
-          <a class="post-title-link" href="/2020/docker/docker-install/" itemprop="url">
-            <span itemprop="name">centos7 install docker</span>
-          </a>
-      </h2>
+    <div class="social-list">
 
-    </header>
-  </article>
+            <div class="social-item">
+              <a target="_blank" class="social-link" href="/atom.xml">
+                <span class="icon">
+                  <i class="fa fa-rss"></i>
+                </span>
 
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-03-06T00:00:00+08:00"
-              content="2020-03-06">
-          03-06
-        </time>
-      </div>
-
-      <h2 class="post-title">
-          <a class="post-title-link" href="/2020/docker/docker-install-shadowsocks-libev/" itemprop="url">
-            <span itemprop="name">快速部署 Shadowsocks Docker版</span>
-          </a>
-      </h2>
-
-    </header>
-  </article>
-
+                <span class="label">RSS</span>
+              </a>
+            </div>
     </div>
   </div>
+
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/istio/" rel="tag"><i class="fa fa-tag"></i> istio</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/istio/istio-architecture-performance/" rel="prev" title="istio 1.6架构及性能">
+      <i class="fa fa-chevron-left"></i> istio 1.6架构及性能
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
   
   
   
 
-  
-
+  </div>
 
 
           </div>
           
+    
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
 
 <script>
   window.addEventListener('tabs:register', () => {
@@ -281,6 +487,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Istio-使用了如下的端口和协议"><span class="nav-number">1.</span> <span class="nav-text">Istio 使用了如下的端口和协议</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考文献"><span class="nav-number">2.</span> <span class="nav-text">参考文献</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -441,6 +648,26 @@
   }
   // defer loading until the whole page loading is completed
   window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "http://haoyunlaile.github.io/2020/istio/istio-port/";
+    this.page.identifier = "2020/istio/istio-port/";
+    this.page.title = "istio使用的端口";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://haoyunlaile.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
 </script>
 
 </body>

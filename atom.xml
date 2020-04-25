@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://haoyunlaile.github.io/"/>
-  <updated>2020-04-22T16:00:00.000Z</updated>
+  <updated>2020-04-24T16:00:00.000Z</updated>
   <id>http://haoyunlaile.github.io/</id>
   
   <author>
@@ -15,6 +15,61 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>istio使用的端口</title>
+    <link href="http://haoyunlaile.github.io/2020/istio/istio-port/"/>
+    <id>http://haoyunlaile.github.io/2020/istio/istio-port/</id>
+    <published>2020-04-24T16:00:00.000Z</published>
+    <updated>2020-04-24T16:00:00.000Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="Istio-使用了如下的端口和协议"><a href="#Istio-使用了如下的端口和协议" class="headerlink" title="Istio 使用了如下的端口和协议"></a>Istio 使用了如下的端口和协议</h2><table><thead><tr><th>端口</th><th>协议</th><th align="left">使用者</th><th>描述</th></tr></thead><tbody><tr><td>8060</td><td>HTTP</td><td align="left">Citadel</td><td>GRPC 服务器</td></tr><tr><td>8080</td><td>HTTP</td><td align="left">Citadel agent</td><td>SDS service 监控</td></tr><tr><td>9090</td><td>HTTP</td><td align="left">Prometheus</td><td>Prometheus</td></tr><tr><td>9091</td><td>HTTP</td><td align="left">Mixer</td><td>策略/遥测</td></tr><tr><td>9876</td><td>HTTP</td><td align="left">Citadel, Citadel agent</td><td>ControlZ 用户界面</td></tr><tr><td>9901</td><td>GRPC</td><td align="left">Galley</td><td>网格配置协议</td></tr><tr><td>15000</td><td>TCP</td><td align="left">Envoy</td><td>Envoy 管理端口 (commands/diagnostics)</td></tr><tr><td>15001</td><td>TCP</td><td align="left">Envoy</td><td>Envoy 传出</td></tr><tr><td>15006</td><td>TCP</td><td align="left">Envoy</td><td>Envoy 传入</td></tr><tr><td>15004</td><td>HTTP</td><td align="left">Mixer, Pilot</td><td>策略/遥测 - <code>mTLS</code></td></tr><tr><td>15010</td><td>HTTP</td><td align="left">Pilot</td><td>Pilot service - XDS pilot - 发现</td></tr><tr><td>15011</td><td>TCP</td><td align="left">Pilot</td><td>Pilot service - <code>mTLS</code> - Proxy - 发现</td></tr><tr><td>15014</td><td>HTTP</td><td align="left">Citadel, Citadel agent, Galley, Mixer, Pilot, Sidecar Injector</td><td>控制平面监控</td></tr><tr><td>15020</td><td>HTTP</td><td align="left">Ingress Gateway</td><td>Pilot 健康检查</td></tr><tr><td>15029</td><td>HTTP</td><td align="left">Kiali</td><td>Kiali 用户界面</td></tr><tr><td>15030</td><td>HTTP</td><td align="left">Prometheus</td><td>Prometheus 用户界面</td></tr><tr><td>15031</td><td>HTTP</td><td align="left">Grafana</td><td>Grafana 用户界面</td></tr><tr><td>15032</td><td>HTTP</td><td align="left">Tracing</td><td>Tracing 用户界面</td></tr><tr><td>15443</td><td>TLS</td><td align="left">Ingress and Egress Gateways</td><td>SNI</td></tr><tr><td>15090</td><td>HTTP</td><td align="left">Mixer</td><td>Proxy</td></tr><tr><td>42422</td><td>TCP</td><td align="left">Mixer</td><td>遥测 - Prometheus</td></tr></tbody></table><h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p> <a href="https://preliminary.istio.io/docs/ops/deployment/requirements/" target="_blank" rel="noopener">https://preliminary.istio.io/docs/ops/deployment/requirements/</a> </p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h2 id=&quot;Istio-使用了如下的端口和协议&quot;&gt;&lt;a href=&quot;#Istio-使用了如下的端口和协议&quot; class=&quot;headerlink&quot; title=&quot;Istio 使用了如下的端口和协议&quot;&gt;&lt;/a&gt;Istio 使用了如下的端口和协议&lt;/h2&gt;&lt;table&gt;
+&lt;thea
+      
+    
+    </summary>
+    
+    
+      <category term="istio" scheme="http://haoyunlaile.github.io/categories/istio/"/>
+    
+    
+      <category term="istio" scheme="http://haoyunlaile.github.io/tags/istio/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>istio 1.6架构及性能</title>
+    <link href="http://haoyunlaile.github.io/2020/istio/istio-architecture-performance/"/>
+    <id>http://haoyunlaile.github.io/2020/istio/istio-architecture-performance/</id>
+    <published>2020-04-24T16:00:00.000Z</published>
+    <updated>2020-04-24T16:00:00.000Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="Istio-架构"><a href="#Istio-架构" class="headerlink" title="Istio 架构"></a>Istio 架构</h2><p> Istio 服务网格从逻辑上分为数据平面和控制平面。</p><ul><li><strong>数据平面</strong> 由一组智能代理（<a href="https://www.envoyproxy.io/" target="_blank" rel="noopener">Envoy</a>）组成，被部署为 sidecar。这些代理负责协调和控制微服务之间的所有网络通信。他们还收集和报告所有网格流量的遥测数据。</li><li><strong>控制平面</strong> 管理并配置代理来进行流量路由。</li></ul><h2 id="Istio-核心组件"><a href="#Istio-核心组件" class="headerlink" title="Istio 核心组件"></a>Istio 核心组件</h2><p>下图展示了组成每个平面的不同组件： </p><p><img data-src="/images/istio-arch.svg" alt="istio-arch"></p><p> Istio 中的流量分为数据平面流量和控制平面流量。</p><ul><li>数据平面流量是指工作负载的业务逻辑发送和接收的消息</li><li>控制平面流量是指在 Istio 组件之间发送的配置和控制消息用来编排网格的行为</li><li>Istio  中的流量管理特指数据平面流量</li></ul><h3 id="Envoy"><a href="#Envoy" class="headerlink" title="Envoy"></a>Envoy</h3><p>Istio 使用 <a href="https://envoyproxy.github.io/envoy/" target="_blank" rel="noopener">Envoy</a> 代理的扩展版本。Envoy 是用 C++ 开发的高性能代理，用于协调服务网格中所有服务的入站和出站流量。Envoy 代理是唯一与数据平面流量交互的 Istio 组件。</p><p>Envoy 代理被部署为服务的 sidecar，在逻辑上为服务增加了 Envoy 的许多内置特性，例如:</p><ul><li><p>动态服务发现</p></li><li><p>负载均衡</p></li><li><p>TLS 终端</p></li><li><p>HTTP/2 与 gRPC 代理</p></li><li><p>熔断器</p></li><li><p>健康检查</p></li><li><p>基于百分比流量分割的分阶段发布</p></li><li><p>故障注入</p></li><li><p>丰富的指标</p><p>这种 sidecar 部署允许 Istio 提取大量关于流量行为的信号作为属性。Istio 可以使用这些属性来实施策略决策，并将其发送到监视系统以提供有关整个网格行为的信息。 </p></li></ul><p>由 Envoy 代理启用的一些 Istio 的功能和任务包括:</p><ul><li>流量控制功能：通过丰富的 HTTP、gRPC、WebSocket 和 TCP 流量路由规则来执行细粒度的流量控制。</li><li>网络弹性特性：重试设置、故障转移、熔断器和故障注入。</li><li>安全性和身份验证特性：执行安全性策略以及通过配置 API 定义的访问控制和速率限制。</li><li>基于 WebAssembly 的可插拔扩展模型，允许通过自定义策略实施和生成网格流量的遥测。</li></ul><h3 id="Pilot"><a href="#Pilot" class="headerlink" title="Pilot"></a>Pilot</h3><p><code>Pilot</code> 为 Envoy sidecar 提供服务发现、用于智能路由的流量管理功能（例如，A/B 测试、金丝雀发布等）以及弹性功能（超时、重试、熔断器等）。</p><p><code>Pilot</code> 将控制流量行为的高级路由规则转换为特定于环境的配置，并在运行时将它们传播到 sidecar。Pilot 将特定于平台的服务发现机制抽象出来，并将它们合成为任何符合 <a href="https://www.envoyproxy.io/docs/envoy/latest/api/api" target="_blank" rel="noopener">Envoy API</a> 的 sidecar 都可以使用的标准格式。</p><p>下图展示了平台适配器和 Envoy 代理如何交互。</p><p><img data-src="/images/pilot-discovery.svg" alt="pilot-discovery"></p><ol><li>平台启动一个服务的新实例，该实例通知其平台适配器。</li><li>平台适配器使用 <code>Pilot</code> 抽象模型注册实例。</li><li><code>Pilot</code> 将流量规则和配置派发给 <code>Envoy</code> 代理，来传达此次更改。</li></ol><h3 id="Citadel"><a href="#Citadel" class="headerlink" title="Citadel"></a>Citadel</h3><p><code>Citadel</code>通过内置的身份和证书管理，可以支持强大的服务到服务以及最终用户的身份验证。您可以使用 Citadel 来升级服务网格中的未加密流量。使用 <code>Citadel</code> operator 可以执行基于服务身份的策略。</p><h3 id="Galley"><a href="#Galley" class="headerlink" title="Galley"></a>Galley</h3><p><code>Galley</code> 是 Istio 的配置验证、提取、处理和分发组件。它负责将其余的 Istio 组件与从底层平台（例如 Kubernetes）获取用户配置的细节隔离开来。</p><h2 id="Istio-部署模型"><a href="#Istio-部署模型" class="headerlink" title="Istio 部署模型"></a>Istio 部署模型</h2><p>您可以将单个网格配置为包括多集群。多集群部署可为您提供更大程度的隔离和可用性，但会增加复杂性。 如果您的系统具有高可用性要求，则可能需要集群跨多个可用区和地域。 对于应用变更或新的版本，您可以在一个集群中配置金丝雀发布，这有助于把对用户的影响降到最低。 此外，如果某个集群有问题，您可以暂时将流量路由到附近的集群，直到解决该问题为止。 </p><p> <img data-src="/images/istio-multi-cluster.svg" alt="istio-multi-cluster"></p><h2 id="Istio-1-6-性能总结"><a href="#Istio-1-6-性能总结" class="headerlink" title="Istio 1.6 性能总结"></a>Istio 1.6 性能总结</h2><p><a href="https://github.com/istio/tools/tree/master/perf/load" target="_blank" rel="noopener">Istio 负载测试</a> 网格包含了 <strong>1000</strong> 个服务和 <strong>2000</strong> 个 sidecar，全网格范围内，QPS 为 70,000。 在使用 Istio 1.6 运行测试后，我们得到了如下结果：</p><ul><li>通过代理的 QPS 有 1000 时，Envoy 使用了 <strong>0.5 vCPU</strong> 和 <strong>50 MB 内存</strong>。</li><li>网格总的 QPS 为 1000 时，<code>istio-telemetry</code> 服务使用了 <strong>0.6 vCPU</strong>。</li><li>Pilot 使用了 <strong>1 vCPU</strong> 和 <strong>1.5 GB</strong> 内存。</li><li><strong>90%</strong> 的情况 Envoy 代理只增加了 <strong>2.8 ms</strong> 的延迟。</li></ul><h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p> <a href="https://preliminary.istio.io/docs/ops/deployment/architecture/" target="_blank" rel="noopener">https://preliminary.istio.io/docs/ops/deployment/architecture/</a> </p><p> <a href="https://preliminary.istio.io/zh/docs/ops/deployment/architecture/" target="_blank" rel="noopener">https://preliminary.istio.io/zh/docs/ops/deployment/architecture/</a> </p><p> <a href="https://preliminary.istio.io/zh/docs/ops/deployment/deployment-models/" target="_blank" rel="noopener">https://preliminary.istio.io/zh/docs/ops/deployment/deployment-models/</a></p><p> <a href="https://preliminary.istio.io/docs/ops/deployment/performance-and-scalability/" target="_blank" rel="noopener">https://preliminary.istio.io/docs/ops/deployment/performance-and-scalability/</a> </p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h2 id=&quot;Istio-架构&quot;&gt;&lt;a href=&quot;#Istio-架构&quot; class=&quot;headerlink&quot; title=&quot;Istio 架构&quot;&gt;&lt;/a&gt;Istio 架构&lt;/h2&gt;&lt;p&gt; Istio 服务网格从逻辑上分为数据平面和控制平面。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;stro
+      
+    
+    </summary>
+    
+    
+      <category term="istio" scheme="http://haoyunlaile.github.io/categories/istio/"/>
+    
+    
+      <category term="istio" scheme="http://haoyunlaile.github.io/tags/istio/"/>
+    
+  </entry>
   
   <entry>
     <title>istio install</title>
