@@ -23,6 +23,8 @@ export PATH=$PWD/bin:$PATH
 
  新建`istio-1.5.1.yaml` 配置文件、按照官方文档操作安装会出现错误，导致不能正常进行sidecar 自动注入
 
+<!--more--> 
+
 ```
 vim istio-1.5.1.yaml
 ```

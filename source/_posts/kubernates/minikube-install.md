@@ -16,7 +16,9 @@ categories:	kubernetes
 
 ## 安装步骤
 
-在安装前需要配置国内的镜像源，这里推荐使用阿里云的
+在安装前需要配置国内的镜像源
+
+<!--more--> 
 
 ```
 cat <<EOF > /etc/yum.repos.d/kubernetes.repo

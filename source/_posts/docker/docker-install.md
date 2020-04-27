@@ -38,6 +38,8 @@ tee /etc/docker/daemon.json <<-'EOF'
 EOF
 ```
 
+<!--more--> 
+
 创建用户并加入docker组
 
 ```

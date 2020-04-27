@@ -31,6 +31,8 @@ categories:	istio
 | 15090 | HTTP | Mixer                                                        | Proxy                                 |
 | 42422 | TCP  | Mixer                                                        | 遥测 - Prometheus                     |
 
+<!--more--> 
+
 ## 参考文献
 
  https://preliminary.istio.io/docs/ops/deployment/requirements/ 

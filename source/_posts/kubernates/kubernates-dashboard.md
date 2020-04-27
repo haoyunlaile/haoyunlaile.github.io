@@ -23,6 +23,8 @@ kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0/a
 
 更改原文件`type: ClusterIP` 为`type: NodePort `后保存
 
+<!--more--> 
+
 ```
 kubectl -n kubernetes-dashboard edit service kubernetes-dashboard
 

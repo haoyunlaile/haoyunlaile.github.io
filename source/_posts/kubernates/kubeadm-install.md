@@ -32,6 +32,8 @@ EOF
 
 ### 安装kubelet、kubeadm、kubectl
 
+<!--more--> 
+
 ```bash
 # 禁用SELinux
 setenforce 0

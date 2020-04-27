@@ -26,6 +26,8 @@ categories:	istio
 - 控制平面流量是指在 Istio 组件之间发送的配置和控制消息用来编排网格的行为
 -  Istio  中的流量管理特指数据平面流量
 
+<!--more--> 
+
 ### Envoy
 
 Istio 使用 [Envoy](https://envoyproxy.github.io/envoy/) 代理的扩展版本。Envoy 是用 C++ 开发的高性能代理，用于协调服务网格中所有服务的入站和出站流量。Envoy 代理是唯一与数据平面流量交互的 Istio 组件。
