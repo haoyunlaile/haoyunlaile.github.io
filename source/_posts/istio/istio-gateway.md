@@ -1,7 +1,7 @@
 ---
-title: istio gateway
+title: Istio Gateway
 date: 2020-04-27
-tags: ["istio","istio gateway"]
+tags: ["istio","istio-gateway"]
 categories:	istio
 ---
 

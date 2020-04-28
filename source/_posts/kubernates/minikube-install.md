@@ -1,6 +1,6 @@
 ---
 title: Minikube install
-date: 2020-04-21
+date: 2020-04-21 13:00
 tags: ["kubernetes","minikube"]
 categories:	kubernetes
 ---

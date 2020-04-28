@@ -1,6 +1,6 @@
 ---
 title: centos7 install docker
-date: 2020-04-21
+date: 2020-04-21 8:00
 tags: docker
 categories:	docker
 ---

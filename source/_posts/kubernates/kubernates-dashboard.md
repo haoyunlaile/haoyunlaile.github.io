@@ -1,6 +1,6 @@
 ---
 title: kubernetes dashboard install
-date: 2020-04-22
+date: 2020-04-22 20:00
 tags: kubernetes-dashboard
 categories:	kubernetes
 ---

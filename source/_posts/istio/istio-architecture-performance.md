@@ -1,5 +1,5 @@
 ---
-title: istio 1.6架构及性能
+title: Istio 1.6架构及性能
 date: 2020-04-25
 tags: istio
 categories:	istio

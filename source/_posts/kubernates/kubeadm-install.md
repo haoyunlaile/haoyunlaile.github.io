@@ -1,6 +1,6 @@
 ---
 title: kubeadm built kubernetes cluster
-date: 2020-04-22
+date: 2020-04-22 19:00
 tags: ["kubernetes","kubeadm"]
 categories:	kubernetes
 ---

@@ -1,5 +1,5 @@
 ---
-title: istio install
+title: Istio install
 date: 2020-04-23
 tags: istio
 categories:	istio
