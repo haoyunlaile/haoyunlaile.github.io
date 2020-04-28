@@ -22,7 +22,7 @@
 
   <meta name="description" content="Istio  Ingress gateway 网关 ​                                                                    Istio 服务网格中的网关  使用网关为网格来管理入站和出站流量，可以让用户指定要进入或离开网格的流量。 网关配置被用于运行在网格内独立 Envoy 代理中，而不是服务工作负载的应用 Sidecar 代理。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="istio gateway">
+<meta property="og:title" content="Istio Gateway">
 <meta property="og:url" content="http://haoyunlaile.github.io/2020/istio/istio-gateway/index.html">
 <meta property="og:site_name" content="好运来了">
 <meta property="og:description" content="Istio  Ingress gateway 网关 ​                                                                    Istio 服务网格中的网关  使用网关为网格来管理入站和出站流量，可以让用户指定要进入或离开网格的流量。 网关配置被用于运行在网格内独立 Envoy 代理中，而不是服务工作负载的应用 Sidecar 代理。">
@@ -31,7 +31,7 @@
 <meta property="article:modified_time" content="2020-04-26T16:00:00.000Z">
 <meta property="article:author" content="好运来了">
 <meta property="article:tag" content="istio">
-<meta property="article:tag" content="istio gateway">
+<meta property="article:tag" content="istio-gateway">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://haoyunlaile.github.io/images/istio-gateways.svg">
 
@@ -47,7 +47,7 @@
   };
 </script>
 
-  <title>istio gateway | 好运来了</title>
+  <title>Istio Gateway | 好运来了</title>
   
 
 
@@ -191,7 +191,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          istio gateway
+          Istio Gateway
         </h1>
 
         <div class="post-meta">
@@ -251,6 +251,8 @@
 <p>网关配置被用于运行在网格内独立 Envoy 代理中，而不是服务工作负载的应用 Sidecar 代理。</p>
 <p> <a href="https://preliminary.istio.io/zh/docs/reference/config/networking/gateway/" target="_blank" rel="noopener"><code>Gateway</code></a> 用于为 HTTP / TCP 流量配置负载均衡器，并不管该负载均衡器将在哪里运行。网格中可以存在任意数量的 <a href="https://preliminary.istio.io/zh/docs/reference/config/networking/gateway/" target="_blank" rel="noopener"><code>Gateway</code></a>，并且多个不同的 <a href="https://preliminary.istio.io/zh/docs/reference/config/networking/gateway/" target="_blank" rel="noopener"><code>Gateway</code></a> 实现可以共存。实际上，通过在配置中指定一组工作负载（Pod）标签，可以将 Gateway 配置绑定到特定的工作负载，从而允许用户通过编写简单的 Gateway Controller 来重用现成的网络设备。</p>
 <p><code>Gateway</code> 只用于配置 L4-L6 功能（例如，对外公开的端口，TLS 配置），所有主流的 L7 代理均以统一的方式实现了这些功能。然后，通过在 <code>Gateway</code> 上绑定 <code>VirtualService</code> 的方式，可以使用标准的 Istio 规则来控制进入 <code>Gateway</code> 的 HTTP 和 TCP 流量。 </p>
+<a id="more"></a> 
+
 <p>例如，下面这个简单的 <code>Gateway</code> 配置了一个 Load Balancer，以允许访问 host <code>bookinfo.com</code> 的 https 外部流量进入网格中： </p>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">networking.istio.io/v1alpha3</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Gateway</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">bookinfo-gateway</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">selector:</span></span><br><span class="line">    <span class="attr">app:</span> <span class="string">my-ingress-gateway</span></span><br><span class="line">  <span class="attr">servers:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">port:</span></span><br><span class="line">      <span class="attr">number:</span> <span class="number">443</span></span><br><span class="line">      <span class="attr">name:</span> <span class="string">https</span></span><br><span class="line">      <span class="attr">protocol:</span> <span class="string">HTTPS</span></span><br><span class="line">    <span class="attr">hosts:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">bookinfo.com</span></span><br><span class="line">    <span class="attr">tls:</span></span><br><span class="line">      <span class="attr">mode:</span> <span class="string">SIMPLE</span></span><br><span class="line">      <span class="attr">serverCertificate:</span> <span class="string">/tmp/tls.crt</span></span><br><span class="line">      <span class="attr">privateKey:</span> <span class="string">/tmp/tls.key</span></span><br></pre></td></tr></table></figure>
 
@@ -258,8 +260,6 @@
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">networking.istio.io/v1alpha3</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">VirtualService</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">bookinfo</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">hosts:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">bookinfo.com</span></span><br><span class="line">  <span class="attr">gateways:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">bookinfo-gateway</span> <span class="comment"># &lt;---- bind to gateway</span></span><br><span class="line">    <span class="attr">http:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">match:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">uri:</span></span><br><span class="line">        <span class="attr">prefix:</span> <span class="string">/reviews</span></span><br><span class="line">    <span class="attr">route:</span></span><br><span class="line">    <span class="string">...</span></span><br></pre></td></tr></table></figure>
 
 <p>然后就可以为出口流量配置带有路由规则的虚拟服务。 </p>
-<a id="more"></a> 
-
 <h3 id="Gateway-配置信息"><a href="#Gateway-配置信息" class="headerlink" title="Gateway 配置信息"></a><code>Gateway</code> 配置信息</h3><table>
 <thead>
 <tr>
@@ -515,7 +515,7 @@
           
           <div class="post-tags">
               <a href="/tags/istio/" rel="tag"><i class="fa fa-tag"></i> istio</a>
-              <a href="/tags/istio-gateway/" rel="tag"><i class="fa fa-tag"></i> istio gateway</a>
+              <a href="/tags/istio-gateway/" rel="tag"><i class="fa fa-tag"></i> istio-gateway</a>
           </div>
 
         
@@ -524,10 +524,13 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2020/istio/istio-port/" rel="prev" title="istio使用的端口">
-      <i class="fa fa-chevron-left"></i> istio使用的端口
+    <a href="/2020/istio/istio-port/" rel="prev" title="Istio 使用的端口">
+      <i class="fa fa-chevron-left"></i> Istio 使用的端口
     </a></div>
-      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/2020/istio/istio-virtualservice/" rel="next" title="Istio VirtualService">
+      Istio VirtualService <i class="fa fa-chevron-right"></i>
+    </a></div>
     </div>
       </footer>
     
@@ -610,7 +613,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives">
         
-          <span class="site-state-item-count">11</span>
+          <span class="site-state-item-count">14</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -623,7 +626,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags">
           
-        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-count">12</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -760,7 +763,7 @@
   var disqus_config = function() {
     this.page.url = "http://haoyunlaile.github.io/2020/istio/istio-gateway/";
     this.page.identifier = "2020/istio/istio-gateway/";
-    this.page.title = "istio gateway";
+    this.page.title = "Istio Gateway";
     };
   NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
     if (window.DISQUS) {
