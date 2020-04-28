@@ -20,23 +20,20 @@
     var CONFIG = {"hostname":"haoyunlaile.github.io","root":"/","scheme":"Pisces","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":"disqus","storage":true,"lazyload":true,"nav":{"disqus":{"text":"Load Comment","order":-1}},"activeClass":"disqus"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="Istio 架构 Istio 服务网格从逻辑上分为数据平面和控制平面。  数据平面 由一组智能代理（Envoy）组成，被部署为 sidecar。这些代理负责协调和控制微服务之间的所有网络通信。他们还收集和报告所有网格流量的遥测数据。 控制平面 管理并配置代理来进行流量路由。  Istio 核心组件下图展示了组成每个平面的不同组件：    Istio 中的流量分为数据平面流量和控制平面流量。  数据">
+  <meta name="description" content="Istio  Sidecar概念及示例 Sidecar描述了sidecar代理的配置。默认情况下，Istio 让每个 Envoy 代理都可以访问来自和它关联的工作负载的所有端口的请求，然后转发到对应的工作负载。您可以使用 sidecar 配置去做下面的事情：  微调 Envoy 代理接受的端口和协议集。 限制 Envoy 代理可以访问的服务集合。  您可能希望在较庞大的应用程序中限制这样的 sid">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Istio 1.6架构及性能">
-<meta property="og:url" content="http://haoyunlaile.github.io/2020/istio/istio-architecture-performance/index.html">
+<meta property="og:title" content="Istio Sidecar">
+<meta property="og:url" content="http://haoyunlaile.github.io/2020/istio/istio-sidecar/index.html">
 <meta property="og:site_name" content="好运来了">
-<meta property="og:description" content="Istio 架构 Istio 服务网格从逻辑上分为数据平面和控制平面。  数据平面 由一组智能代理（Envoy）组成，被部署为 sidecar。这些代理负责协调和控制微服务之间的所有网络通信。他们还收集和报告所有网格流量的遥测数据。 控制平面 管理并配置代理来进行流量路由。  Istio 核心组件下图展示了组成每个平面的不同组件：    Istio 中的流量分为数据平面流量和控制平面流量。  数据">
-<meta property="og:image" content="http://haoyunlaile.github.io/images/istio-arch.svg">
-<meta property="og:image" content="http://haoyunlaile.github.io/images/pilot-discovery.svg">
-<meta property="og:image" content="http://haoyunlaile.github.io/images/istio-multi-cluster.svg">
-<meta property="article:published_time" content="2020-04-24T16:00:00.000Z">
-<meta property="article:modified_time" content="2020-04-24T16:00:00.000Z">
+<meta property="og:description" content="Istio  Sidecar概念及示例 Sidecar描述了sidecar代理的配置。默认情况下，Istio 让每个 Envoy 代理都可以访问来自和它关联的工作负载的所有端口的请求，然后转发到对应的工作负载。您可以使用 sidecar 配置去做下面的事情：  微调 Envoy 代理接受的端口和协议集。 限制 Envoy 代理可以访问的服务集合。  您可能希望在较庞大的应用程序中限制这样的 sid">
+<meta property="article:published_time" content="2020-04-28T13:00:00.000Z">
+<meta property="article:modified_time" content="2020-04-28T13:00:00.000Z">
 <meta property="article:author" content="好运来了">
 <meta property="article:tag" content="istio">
+<meta property="article:tag" content="istio-sidecar">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://haoyunlaile.github.io/images/istio-arch.svg">
 
-<link rel="canonical" href="http://haoyunlaile.github.io/2020/istio/istio-architecture-performance/">
+<link rel="canonical" href="http://haoyunlaile.github.io/2020/istio/istio-sidecar/">
 
 
 <script id="page-configurations">
@@ -48,7 +45,7 @@
   };
 </script>
 
-  <title>Istio 1.6架构及性能 | 好运来了</title>
+  <title>Istio Sidecar | 好运来了</title>
   
 
 
@@ -179,7 +176,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="http://haoyunlaile.github.io/2020/istio/istio-architecture-performance/">
+    <link itemprop="mainEntityOfPage" href="http://haoyunlaile.github.io/2020/istio/istio-sidecar/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/50016783?s=400&u=a5ed1b51def3b9af69486f1f197f4725b370a03c&v=4">
@@ -192,7 +189,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          Istio 1.6架构及性能
+          Istio Sidecar
         </h1>
 
         <div class="post-meta">
@@ -202,7 +199,7 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2020-04-25 00:00:00" itemprop="dateCreated datePublished" datetime="2020-04-25T00:00:00+08:00">2020-04-25</time>
+              <time title="创建时间：2020-04-28 21:00:00" itemprop="dateCreated datePublished" datetime="2020-04-28T21:00:00+08:00">2020-04-28</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -230,8 +227,8 @@
       </span>
       <span class="post-meta-item-text">Disqus：</span>
     
-    <a title="disqus" href="/2020/istio/istio-architecture-performance/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/istio/istio-architecture-performance/" itemprop="commentCount"></span>
+    <a title="disqus" href="/2020/istio/istio-sidecar/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/istio/istio-sidecar/" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -246,75 +243,79 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="Istio-架构"><a href="#Istio-架构" class="headerlink" title="Istio 架构"></a>Istio 架构</h2><p> Istio 服务网格从逻辑上分为数据平面和控制平面。</p>
+        <h2 id="Istio-Sidecar"><a href="#Istio-Sidecar" class="headerlink" title="Istio  Sidecar"></a>Istio  Sidecar</h2><h3 id="概念及示例"><a href="#概念及示例" class="headerlink" title="概念及示例"></a>概念及示例</h3><p> <code>Sidecar</code>描述了sidecar代理的配置。默认情况下，Istio 让每个 Envoy 代理都可以访问来自和它关联的工作负载的所有端口的请求，然后转发到对应的工作负载。您可以使用 <a href="https://preliminary.istio.io/zh/docs/reference/config/networking/sidecar/#Sidecar" target="_blank" rel="noopener">sidecar</a> 配置去做下面的事情：</p>
 <ul>
-<li><strong>数据平面</strong> 由一组智能代理（<a href="https://www.envoyproxy.io/" target="_blank" rel="noopener">Envoy</a>）组成，被部署为 sidecar。这些代理负责协调和控制微服务之间的所有网络通信。他们还收集和报告所有网格流量的遥测数据。</li>
-<li><strong>控制平面</strong> 管理并配置代理来进行流量路由。</li>
+<li>微调 Envoy 代理接受的端口和协议集。</li>
+<li>限制 Envoy 代理可以访问的服务集合。</li>
 </ul>
-<h2 id="Istio-核心组件"><a href="#Istio-核心组件" class="headerlink" title="Istio 核心组件"></a>Istio 核心组件</h2><p>下图展示了组成每个平面的不同组件： </p>
-<p><img data-src="/images/istio-arch.svg" alt="istio-arch"></p>
-<p> Istio 中的流量分为数据平面流量和控制平面流量。</p>
-<ul>
-<li>数据平面流量是指工作负载的业务逻辑发送和接收的消息</li>
-<li>控制平面流量是指在 Istio 组件之间发送的配置和控制消息用来编排网格的行为</li>
-<li>Istio  中的流量管理特指数据平面流量</li>
-</ul>
-<a id="more"></a> 
+<p>您可能希望在较庞大的应用程序中限制这样的 sidecar 可达性，配置每个代理能访问网格中的任意服务可能会因为高内存使用量而影响网格的性能。</p>
+<p>您可以指定将 sidecar 配置应用于特定命名空间中的所有工作负载，或者使用 <code>workloadSelector</code> 选择特定的工作负载。例如，下面的 sidecar 配置将 <code>bookinfo</code> 命名空间中的所有服务配置为仅能访问运行在相同命名空间和 Istio 控制平面中的服务。</p>
+<blockquote>
+<p> 每个名称空间只能有一个没有任何配置 <code>workloadSelector</code>的<code>Sidecar</code>配置 ， 如果<code>Sidecar</code>给定名称空间中存在多个不使用选择器的配置，则系统的行为是不确定的。 </p>
+</blockquote>
+<a id="more"></a>
 
-<h3 id="Envoy"><a href="#Envoy" class="headerlink" title="Envoy"></a>Envoy</h3><p>Istio 使用 <a href="https://envoyproxy.github.io/envoy/" target="_blank" rel="noopener">Envoy</a> 代理的扩展版本。Envoy 是用 C++ 开发的高性能代理，用于协调服务网格中所有服务的入站和出站流量。Envoy 代理是唯一与数据平面流量交互的 Istio 组件。</p>
-<p>Envoy 代理被部署为服务的 sidecar，在逻辑上为服务增加了 Envoy 的许多内置特性，例如:</p>
-<ul>
-<li><p>动态服务发现</p>
-</li>
-<li><p>负载均衡</p>
-</li>
-<li><p>TLS 终端</p>
-</li>
-<li><p>HTTP/2 与 gRPC 代理</p>
-</li>
-<li><p>熔断器</p>
-</li>
-<li><p>健康检查</p>
-</li>
-<li><p>基于百分比流量分割的分阶段发布</p>
-</li>
-<li><p>故障注入</p>
-</li>
-<li><p>丰富的指标</p>
-<p>这种 sidecar 部署允许 Istio 提取大量关于流量行为的信号作为属性。Istio 可以使用这些属性来实施策略决策，并将其发送到监视系统以提供有关整个网格行为的信息。 </p>
-</li>
-</ul>
-<p>由 Envoy 代理启用的一些 Istio 的功能和任务包括:</p>
-<ul>
-<li>流量控制功能：通过丰富的 HTTP、gRPC、WebSocket 和 TCP 流量路由规则来执行细粒度的流量控制。</li>
-<li>网络弹性特性：重试设置、故障转移、熔断器和故障注入。</li>
-<li>安全性和身份验证特性：执行安全性策略以及通过配置 API 定义的访问控制和速率限制。</li>
-<li>基于 WebAssembly 的可插拔扩展模型，允许通过自定义策略实施和生成网格流量的遥测。</li>
-</ul>
-<h3 id="Pilot"><a href="#Pilot" class="headerlink" title="Pilot"></a>Pilot</h3><p><code>Pilot</code> 为 Envoy sidecar 提供服务发现、用于智能路由的流量管理功能（例如，A/B 测试、金丝雀发布等）以及弹性功能（超时、重试、熔断器等）。</p>
-<p><code>Pilot</code> 将控制流量行为的高级路由规则转换为特定于环境的配置，并在运行时将它们传播到 sidecar。Pilot 将特定于平台的服务发现机制抽象出来，并将它们合成为任何符合 <a href="https://www.envoyproxy.io/docs/envoy/latest/api/api" target="_blank" rel="noopener">Envoy API</a> 的 sidecar 都可以使用的标准格式。</p>
-<p>下图展示了平台适配器和 Envoy 代理如何交互。</p>
-<p><img data-src="/images/pilot-discovery.svg" alt="pilot-discovery"></p>
-<ol>
-<li>平台启动一个服务的新实例，该实例通知其平台适配器。</li>
-<li>平台适配器使用 <code>Pilot</code> 抽象模型注册实例。</li>
-<li><code>Pilot</code> 将流量规则和配置派发给 <code>Envoy</code> 代理，来传达此次更改。</li>
-</ol>
-<h3 id="Citadel"><a href="#Citadel" class="headerlink" title="Citadel"></a>Citadel</h3><p><code>Citadel</code>通过内置的身份和证书管理，可以支持强大的服务到服务以及最终用户的身份验证。您可以使用 Citadel 来升级服务网格中的未加密流量。使用 <code>Citadel</code> operator 可以执行基于服务身份的策略。</p>
-<h3 id="Galley"><a href="#Galley" class="headerlink" title="Galley"></a>Galley</h3><p><code>Galley</code> 是 Istio 的配置验证、提取、处理和分发组件。它负责将其余的 Istio 组件与从底层平台（例如 Kubernetes）获取用户配置的细节隔离开来。</p>
-<h2 id="Istio-部署模型"><a href="#Istio-部署模型" class="headerlink" title="Istio 部署模型"></a>Istio 部署模型</h2><p>您可以将单个网格配置为包括多集群。多集群部署可为您提供更大程度的隔离和可用性，但会增加复杂性。 如果您的系统具有高可用性要求，则可能需要集群跨多个可用区和地域。 对于应用变更或新的版本，您可以在一个集群中配置金丝雀发布，这有助于把对用户的影响降到最低。 此外，如果某个集群有问题，您可以暂时将流量路由到附近的集群，直到解决该问题为止。 </p>
-<p> <img data-src="/images/istio-multi-cluster.svg" alt="istio-multi-cluster"></p>
-<h2 id="Istio-1-6-性能总结"><a href="#Istio-1-6-性能总结" class="headerlink" title="Istio 1.6 性能总结"></a>Istio 1.6 性能总结</h2><p><a href="https://github.com/istio/tools/tree/master/perf/load" target="_blank" rel="noopener">Istio 负载测试</a> 网格包含了 <strong>1000</strong> 个服务和 <strong>2000</strong> 个 sidecar，全网格范围内，QPS 为 70,000。 在使用 Istio 1.6 运行测试后，我们得到了如下结果：</p>
-<ul>
-<li>通过代理的 QPS 有 1000 时，Envoy 使用了 <strong>0.5 vCPU</strong> 和 <strong>50 MB 内存</strong>。</li>
-<li>网格总的 QPS 为 1000 时，<code>istio-telemetry</code> 服务使用了 <strong>0.6 vCPU</strong>。</li>
-<li>Pilot 使用了 <strong>1 vCPU</strong> 和 <strong>1.5 GB</strong> 内存。</li>
-<li><strong>90%</strong> 的情况 Envoy 代理只增加了 <strong>2.8 ms</strong> 的延迟。</li>
-</ul>
-<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p> <a href="https://preliminary.istio.io/docs/ops/deployment/architecture/" target="_blank" rel="noopener">https://preliminary.istio.io/docs/ops/deployment/architecture/</a> </p>
-<p> <a href="https://preliminary.istio.io/zh/docs/ops/deployment/architecture/" target="_blank" rel="noopener">https://preliminary.istio.io/zh/docs/ops/deployment/architecture/</a> </p>
-<p> <a href="https://preliminary.istio.io/zh/docs/ops/deployment/deployment-models/" target="_blank" rel="noopener">https://preliminary.istio.io/zh/docs/ops/deployment/deployment-models/</a></p>
-<p> <a href="https://preliminary.istio.io/docs/ops/deployment/performance-and-scalability/" target="_blank" rel="noopener">https://preliminary.istio.io/docs/ops/deployment/performance-and-scalability/</a> </p>
+<p>下面声明的<code>Sidecar</code>在根名称空间中声明了全局默认配置<code>istio-config</code>，该配置在所有名称空间中配置了sidecar，以仅允许将流量发送到同一名称空间中的其他工作负载以及该名称空间中的服务<code>istio-system</code>。 </p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">networking.istio.io/v1alpha3</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Sidecar</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">default</span></span><br><span class="line">  <span class="attr">namespace:</span> <span class="string">`istio-config`</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">egress:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">hosts:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">"./*"</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">"istio-system/*"</span></span><br></pre></td></tr></table></figure>
+
+<p>下面声明的<code>Sidecar</code>在配置<code>prod-us1</code> 命名空间覆盖全局默认以上定义，使出口流量到公共服务中<code>prod-us1</code>，<code>prod-apis</code>和<code>istio-system</code> 命名空间。 </p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">networking.istio.io/v1alpha3</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Sidecar</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">default</span></span><br><span class="line">  <span class="attr">namespace:</span> <span class="string">prod-us1</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">egress:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">hosts:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">"prod-us1/*"</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">"prod-apis/*"</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">"istio-system/*"</span></span><br></pre></td></tr></table></figure>
+
+<p>下面的示例<code>Sidecar</code>在<code>prod-us1</code>名称空间中声明一个配置，该配置接受端口9080上的入站HTTP通信并将其转发到侦听Unix域套接字的附加工作负载实例。在出口方向上，除了<code>istio-system</code>名称空间外，Sidecar仅代理绑定到端口9080的HTTP流量，以用于<code>prod-us1</code>名称空间中的服务 </p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">networking.istio.io/v1alpha3</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Sidecar</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">default</span></span><br><span class="line">  <span class="attr">namespace:</span> <span class="string">prod-us1</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">ingress:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">port:</span></span><br><span class="line">      <span class="attr">number:</span> <span class="number">9080</span></span><br><span class="line">      <span class="attr">protocol:</span> <span class="string">HTTP</span></span><br><span class="line">      <span class="attr">name:</span> <span class="string">somename</span></span><br><span class="line">    <span class="attr">defaultEndpoint:</span> <span class="string">unix:///var/run/someuds.sock</span></span><br><span class="line">  <span class="attr">egress:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">port:</span></span><br><span class="line">      <span class="attr">number:</span> <span class="number">9080</span></span><br><span class="line">      <span class="attr">protocol:</span> <span class="string">HTTP</span></span><br><span class="line">      <span class="attr">name:</span> <span class="string">egresshttp</span></span><br><span class="line">    <span class="attr">hosts:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">"prod-us1/*"</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">hosts:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">"istio-system/*"</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="Sidecar配置"><a href="#Sidecar配置" class="headerlink" title="Sidecar配置"></a>Sidecar配置</h2><table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+<th>Required</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>workloadSelector</code></td>
+<td><code>WorkloadSelector</code></td>
+<td>Criteria used to select the specific set of pods/VMs on which this <code>Sidecar</code> configuration should be applied. If omitted, the <code>Sidecar</code> configuration will be applied to all workload instances in the same namespace.</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>ingress</code></td>
+<td><code>IstioIngressListener[]</code></td>
+<td>Ingress specifies the configuration of the sidecar for processing inbound traffic to the attached workload instance. If omitted, Istio will automatically configure the sidecar based on the information about the workload obtained from the orchestration platform (e.g., exposed ports, services, etc.). If specified, inbound ports are configured if and only if the workload instance is associated with a service.</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>egress</code></td>
+<td><code>IstioEgressListener[]</code></td>
+<td>Egress specifies the configuration of the sidecar for processing outbound traffic from the attached workload instance to other services in the mesh.</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><code>outboundTrafficPolicy</code></td>
+<td><code>OutboundTrafficPolicy</code></td>
+<td>This allows to configure the outbound traffic policy. If your application uses one or more external services that are not known apriori, setting the policy to <code>ALLOW_ANY</code> will cause the sidecars to route any unknown traffic originating from the application to its requested destination.</td>
+<td>No</td>
+</tr>
+</tbody></table>
+<h3 id="WorkloadSelector配置"><a href="#WorkloadSelector配置" class="headerlink" title="WorkloadSelector配置"></a>WorkloadSelector配置</h3><p><code>WorkloadSelector</code>指定的标准来确定是否<code>Gateway</code>， <code>Sidecar</code>或<code>EnvoyFilter</code>配置可被应用到一个代理。匹配条件包括与代理关联的元数据，工作负载实例信息或代理在初始握手期间提供给Istio的任何其他信息。如果指定了多个条件，则必须匹配所有条件才能选择工作负载实例。当前，仅支持基于标签的选择机制。 </p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+<th>Required</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>labels</code></td>
+<td><code>map</code></td>
+<td>一个或多个标签，指示<code>Sidecar</code>应在其上应用此配置的一组特定的Pod / VM 。标签搜索的范围仅限于存在资源的配置名称空间。</td>
+<td>Yes</td>
+</tr>
+</tbody></table>
+<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p><a href="https://preliminary.istio.io/zh/docs/reference/config/networking/sidecar/#Sidecar" target="_blank" rel="noopener">https://preliminary.istio.io/zh/docs/reference/config/networking/sidecar/#Sidecar</a></p>
 
     </div>
 
@@ -345,6 +346,7 @@
           
           <div class="post-tags">
               <a href="/tags/istio/" rel="tag"><i class="fa fa-tag"></i> istio</a>
+              <a href="/tags/istio-sidecar/" rel="tag"><i class="fa fa-tag"></i> istio-sidecar</a>
           </div>
 
         
@@ -353,13 +355,10 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2020/istio/istio-install/" rel="prev" title="Istio install">
-      <i class="fa fa-chevron-left"></i> Istio install
+    <a href="/2020/istio/istio-serviceentry/" rel="prev" title="Istio ServiceEntry">
+      <i class="fa fa-chevron-left"></i> Istio ServiceEntry
     </a></div>
-      <div class="post-nav-item">
-    <a href="/2020/istio/istio-port/" rel="next" title="Istio 使用的端口">
-      Istio 使用的端口 <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -426,7 +425,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Istio-架构"><span class="nav-number">1.</span> <span class="nav-text">Istio 架构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Istio-核心组件"><span class="nav-number">2.</span> <span class="nav-text">Istio 核心组件</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Envoy"><span class="nav-number">2.1.</span> <span class="nav-text">Envoy</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Pilot"><span class="nav-number">2.2.</span> <span class="nav-text">Pilot</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Citadel"><span class="nav-number">2.3.</span> <span class="nav-text">Citadel</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Galley"><span class="nav-number">2.4.</span> <span class="nav-text">Galley</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Istio-部署模型"><span class="nav-number">3.</span> <span class="nav-text">Istio 部署模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Istio-1-6-性能总结"><span class="nav-number">4.</span> <span class="nav-text">Istio 1.6 性能总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考文献"><span class="nav-number">5.</span> <span class="nav-text">参考文献</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Istio-Sidecar"><span class="nav-number">1.</span> <span class="nav-text">Istio  Sidecar</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#概念及示例"><span class="nav-number">1.1.</span> <span class="nav-text">概念及示例</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Sidecar配置"><span class="nav-number">2.</span> <span class="nav-text">Sidecar配置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#WorkloadSelector配置"><span class="nav-number">2.1.</span> <span class="nav-text">WorkloadSelector配置</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考文献"><span class="nav-number">3.</span> <span class="nav-text">参考文献</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -590,9 +589,9 @@
 </script>
 <script>
   var disqus_config = function() {
-    this.page.url = "http://haoyunlaile.github.io/2020/istio/istio-architecture-performance/";
-    this.page.identifier = "2020/istio/istio-architecture-performance/";
-    this.page.title = "Istio 1.6架构及性能";
+    this.page.url = "http://haoyunlaile.github.io/2020/istio/istio-sidecar/";
+    this.page.identifier = "2020/istio/istio-sidecar/";
+    this.page.title = "Istio Sidecar";
     };
   NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
     if (window.DISQUS) {
