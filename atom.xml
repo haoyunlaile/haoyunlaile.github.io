@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://haoyunlaile.github.io/"/>
-  <updated>2020-04-28T13:00:00.000Z</updated>
+  <updated>2020-04-28T16:00:00.000Z</updated>
   <id>http://haoyunlaile.github.io/</id>
   
   <author>
@@ -15,6 +15,38 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Istio Proxy 注入</title>
+    <link href="http://haoyunlaile.github.io/2020/istio/istio-sidecar-injection/"/>
+    <id>http://haoyunlaile.github.io/2020/istio/istio-sidecar-injection/</id>
+    <published>2020-04-28T16:00:00.000Z</published>
+    <updated>2020-04-28T16:00:00.000Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="sidecar注入"><a href="#sidecar注入" class="headerlink" title="sidecar注入"></a>sidecar注入</h2><p>简单来说，Sidecar 注入会将额外容器的配置添加到 Pod 模板中。Istio 服务网格目前所需的容器有：</p><p><code>istio-init</code> <a href="https://kubernetes.io/docs/concepts/workloads/pods/init-containers/" target="_blank" rel="noopener">init 容器</a>用于设置 iptables 规则，以便将入站/出站流量通过 sidecar 代理。初始化容器与应用程序容器在以下方面有所不同：</p><ul><li>它在启动应用容器之前运行，并一直运行直至完成。</li><li>如果有多个初始化容器，则每个容器都应在启动下一个容器之前成功完成。</li></ul><p>因此，您可以看到，对于不需要成为实际应用容器一部分的设置或初始化作业来说，这种容器是多么的完美。在这种情况下，<code>istio-init</code> 就是这样做并设置了 <code>iptables</code> 规则。</p><p><code>istio-proxy</code> 这个容器是真正的 sidecar 代理（基于 Envoy）。</p><a id="more"></a> <p>下面的内容描述了向 pod 中注入 Istio sidecar 的两种方法：使用 <a href="https://preliminary.istio.io/zh/docs/reference/commands/istioctl" target="_blank" rel="noopener"><code>istioctl</code></a> 手动注入或启用 pod 所属命名空间的 Istio sidecar 注入器自动注入。</p><p>手动注入直接修改配置，如 deployment，并将代理配置注入其中。</p><p>当 pod 所属<code>namespace</code>启用自动注入后，自动注入器会使用准入控制器在创建 Pod 时自动注入代理配置。</p><p>通过应用 <code>istio-sidecar-injector</code> ConfigMap 中定义的模版进行注入。</p><h3 id="自动注入-sidecar"><a href="#自动注入-sidecar" class="headerlink" title="自动注入 sidecar"></a>自动注入 sidecar</h3><p>当你在一个<code>namespace</code>中设置了 <code>istio-injection=enabled</code> 标签，且 injection webhook 被启用后，任何新的 pod 都有将在创建时自动添加 sidecar.  请注意，区别于手动注入，自动注入发生在 pod 层面。你将看不到 deployment 本身有任何更改 。</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl label namespace xxx istio-inhection=enabled</span><br></pre></td></tr></table></figure><h3 id="手动注入-sidecar"><a href="#手动注入-sidecar" class="headerlink" title="手动注入 sidecar"></a>手动注入 sidecar</h3><p>手动注入 deployment ，需要使用 使用 <code>istioctl kube-inject</code></p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">istioctl kube-inject -f samples/sleep/sleep.yaml | kubectl apply -f -</span><br></pre></td></tr></table></figure><p> 默认情况下将使用集群内的配置，或者使用该配置的本地副本来完成注入。 </p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">kubectl -n istio-system get configmap istio-sidecar-injector -o=jsonpath='&#123;.data.config&#125;' &gt; inject-config.yaml</span><br><span class="line">kubectl -n istio-system get configmap istio-sidecar-injector -o=jsonpath='&#123;.data.values&#125;' &gt; inject-values.yaml</span><br><span class="line">kubectl -n istio-system get configmap istio -o=jsonpath='&#123;.data.mesh&#125;' &gt; mesh-config.yaml</span><br></pre></td></tr></table></figure><p> 指定输入文件，运行 <code>kube-inject</code> 并部署 </p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">istioctl kube-inject \</span><br><span class="line">    --injectConfigFile inject-config.yaml \</span><br><span class="line">    --meshConfigFile mesh-config.yaml \</span><br><span class="line">    --valuesFile inject-values.yaml \</span><br><span class="line">    --filename samples/sleep/sleep.yaml \</span><br><span class="line">    | kubectl apply -f -</span><br></pre></td></tr></table></figure><p> 验证 sidecar 已经被注入到 READY 列下 <code>2/2</code> 的 sleep pod 中 </p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">kubectl get pod  -l app=sleep</span><br><span class="line">NAME                     READY   STATUS    RESTARTS   AGE</span><br><span class="line">sleep-64c6f57bc8-f5n4x   2/2     Running   0          24s</span><br></pre></td></tr></table></figure><h3 id="卸载-sidecar-自动注入器"><a href="#卸载-sidecar-自动注入器" class="headerlink" title="卸载 sidecar 自动注入器"></a>卸载 sidecar 自动注入器</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">kubectl delete mutatingwebhookconfiguration istio-sidecar-injector</span><br><span class="line">kubectl -n istio-system delete service istio-sidecar-injector</span><br><span class="line">kubectl -n istio-system delete deployment istio-sidecar-injector</span><br><span class="line">kubectl -n istio-system delete serviceaccount istio-sidecar-injector-service-account</span><br><span class="line">kubectl delete clusterrole istio-sidecar-injector-istio-system</span><br><span class="line">kubectl delete clusterrolebinding istio-sidecar-injector-admin-role-binding-istio-system</span><br></pre></td></tr></table></figure><p>上面的命令不会从 pod 中移除注入的 sidecar。需要进行滚动更新或者直接删除对应的pod，并强制 deployment 重新创建新pod。 </p><h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p> <a href="https://preliminary.istio.io/zh/docs/setup/additional-setup/sidecar-injection/#automatic-sidecar-injection" target="_blank" rel="noopener">https://preliminary.istio.io/zh/docs/setup/additional-setup/sidecar-injection/#automatic-sidecar-injection</a> </p><p> <a href="https://preliminary.istio.io/zh/blog/2019/data-plane-setup/" target="_blank" rel="noopener">https://preliminary.istio.io/zh/blog/2019/data-plane-setup/</a> </p>]]></content>
+    
+    <summary type="html">
+    
+      &lt;h2 id=&quot;sidecar注入&quot;&gt;&lt;a href=&quot;#sidecar注入&quot; class=&quot;headerlink&quot; title=&quot;sidecar注入&quot;&gt;&lt;/a&gt;sidecar注入&lt;/h2&gt;&lt;p&gt;简单来说，Sidecar 注入会将额外容器的配置添加到 Pod 模板中。Istio 服务网格目前所需的容器有：&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;istio-init&lt;/code&gt; &lt;a href=&quot;https://kubernetes.io/docs/concepts/workloads/pods/init-containers/&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;init 容器&lt;/a&gt;用于设置 iptables 规则，以便将入站/出站流量通过 sidecar 代理。初始化容器与应用程序容器在以下方面有所不同：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;它在启动应用容器之前运行，并一直运行直至完成。&lt;/li&gt;
+&lt;li&gt;如果有多个初始化容器，则每个容器都应在启动下一个容器之前成功完成。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;因此，您可以看到，对于不需要成为实际应用容器一部分的设置或初始化作业来说，这种容器是多么的完美。在这种情况下，&lt;code&gt;istio-init&lt;/code&gt; 就是这样做并设置了 &lt;code&gt;iptables&lt;/code&gt; 规则。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;istio-proxy&lt;/code&gt; 这个容器是真正的 sidecar 代理（基于 Envoy）。&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="istio" scheme="http://haoyunlaile.github.io/categories/istio/"/>
+    
+    
+      <category term="istio" scheme="http://haoyunlaile.github.io/tags/istio/"/>
+    
+      <category term="istio-proxy" scheme="http://haoyunlaile.github.io/tags/istio-proxy/"/>
+    
+  </entry>
   
   <entry>
     <title>Istio Sidecar</title>
