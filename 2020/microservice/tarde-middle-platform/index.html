@@ -20,19 +20,21 @@
     var CONFIG = {"hostname":"haoyunlaile.github.io","root":"/","scheme":"Pisces","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":"disqus","storage":true,"lazyload":true,"nav":{"disqus":{"text":"Load Comment","order":-1}},"activeClass":"disqus"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="搭建k8s环境所需端口清单控制平面节点端口清单   协议 方向 端口范围 作用 使用者    TCP 入站 6443 Kubernetes API 服务器 所有组件   TCP 入站 2379-2380 etcd server client API kube-apiserver, etcd   TCP 入站 10250 Kubelet API kubelet 自身、控制平面组件   TCP 入站">
+  <meta name="description" content="交易中台技术全景图 上图是个人根据之前的一些工作积累描绘出来的，当然这些只是冰山一角。其中大部分组件都有在公司实际使用过，里面都是开源组件，因为平常工作都是使用Java，所以基本都是从Java里面做的选型。 至于最终技术栈的选择，每个人有不同的认知及经验差异，可能会有其他的一些更好的想法，这个非常好。没有最好的，只有更合适的。可以结合公司的需求，团队的成员熟知度等因素综合考量后，完成这个技术体系的">
 <meta property="og:type" content="article">
-<meta property="og:title" content="kubernetes port list">
-<meta property="og:url" content="http://haoyunlaile.github.io/2020/kubernates/k8s-port/index.html">
+<meta property="og:title" content="交易中台技术栈全景">
+<meta property="og:url" content="http://haoyunlaile.github.io/2020/microservice/tarde-middle-platform/index.html">
 <meta property="og:site_name" content="好运来了">
-<meta property="og:description" content="搭建k8s环境所需端口清单控制平面节点端口清单   协议 方向 端口范围 作用 使用者    TCP 入站 6443 Kubernetes API 服务器 所有组件   TCP 入站 2379-2380 etcd server client API kube-apiserver, etcd   TCP 入站 10250 Kubelet API kubelet 自身、控制平面组件   TCP 入站">
-<meta property="article:published_time" content="2020-04-21T16:00:00.000Z">
-<meta property="article:modified_time" content="2020-04-21T16:00:00.000Z">
+<meta property="og:description" content="交易中台技术全景图 上图是个人根据之前的一些工作积累描绘出来的，当然这些只是冰山一角。其中大部分组件都有在公司实际使用过，里面都是开源组件，因为平常工作都是使用Java，所以基本都是从Java里面做的选型。 至于最终技术栈的选择，每个人有不同的认知及经验差异，可能会有其他的一些更好的想法，这个非常好。没有最好的，只有更合适的。可以结合公司的需求，团队的成员熟知度等因素综合考量后，完成这个技术体系的">
+<meta property="og:image" content="http://haoyunlaile.github.io/images/microservice/%E4%BA%A4%E6%98%93%E4%B8%AD%E5%8F%B0%E6%8A%80%E6%9C%AF%E6%A0%88%E5%85%A8%E6%99%AF.svg">
+<meta property="article:published_time" content="2020-04-30T12:00:00.000Z">
+<meta property="article:modified_time" content="2020-04-30T12:00:00.000Z">
 <meta property="article:author" content="好运来了">
-<meta property="article:tag" content="kubernetes">
+<meta property="article:tag" content="交易中台">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://haoyunlaile.github.io/images/microservice/%E4%BA%A4%E6%98%93%E4%B8%AD%E5%8F%B0%E6%8A%80%E6%9C%AF%E6%A0%88%E5%85%A8%E6%99%AF.svg">
 
-<link rel="canonical" href="http://haoyunlaile.github.io/2020/kubernates/k8s-port/">
+<link rel="canonical" href="http://haoyunlaile.github.io/2020/microservice/tarde-middle-platform/">
 
 
 <script id="page-configurations">
@@ -44,7 +46,7 @@
   };
 </script>
 
-  <title>kubernetes port list | 好运来了</title>
+  <title>交易中台技术栈全景 | 好运来了</title>
   
 
 
@@ -175,7 +177,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="http://haoyunlaile.github.io/2020/kubernates/k8s-port/">
+    <link itemprop="mainEntityOfPage" href="http://haoyunlaile.github.io/2020/microservice/tarde-middle-platform/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/50016783?s=400&u=a5ed1b51def3b9af69486f1f197f4725b370a03c&v=4">
@@ -188,7 +190,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          kubernetes port list
+          交易中台技术栈全景
         </h1>
 
         <div class="post-meta">
@@ -198,7 +200,7 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2020-04-22 00:00:00" itemprop="dateCreated datePublished" datetime="2020-04-22T00:00:00+08:00">2020-04-22</time>
+              <time title="创建时间：2020-04-30 20:00:00" itemprop="dateCreated datePublished" datetime="2020-04-30T20:00:00+08:00">2020-04-30</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -206,7 +208,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/kubernetes/" itemprop="url" rel="index"><span itemprop="name">kubernetes</span></a>
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" itemprop="url" rel="index"><span itemprop="name">微服务</span></a>
                 </span>
             </span>
 
@@ -226,8 +228,8 @@
       </span>
       <span class="post-meta-item-text">Disqus：</span>
     
-    <a title="disqus" href="/2020/kubernates/k8s-port/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/kubernates/k8s-port/" itemprop="commentCount"></span>
+    <a title="disqus" href="/2020/microservice/tarde-middle-platform/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/microservice/tarde-middle-platform/" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -242,78 +244,107 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="搭建k8s环境所需端口清单"><a href="#搭建k8s环境所需端口清单" class="headerlink" title="搭建k8s环境所需端口清单"></a>搭建k8s环境所需端口清单</h2><h3 id="控制平面节点端口清单"><a href="#控制平面节点端口清单" class="headerlink" title="控制平面节点端口清单"></a>控制平面节点端口清单</h3><table>
+        <h2 id="交易中台技术全景图"><a href="#交易中台技术全景图" class="headerlink" title="交易中台技术全景图"></a>交易中台技术全景图</h2><p><img data-src="/images/microservice/%E4%BA%A4%E6%98%93%E4%B8%AD%E5%8F%B0%E6%8A%80%E6%9C%AF%E6%A0%88%E5%85%A8%E6%99%AF.svg" alt="交易中台技术栈全景"></p>
+<p>上图是个人根据之前的一些工作积累描绘出来的，当然这些只是冰山一角。其中大部分组件都有在公司实际使用过，里面都是开源组件，因为平常工作都是使用Java，所以基本都是从Java里面做的选型。</p>
+<p>至于最终技术栈的选择，每个人有不同的认知及经验差异，可能会有其他的一些更好的想法，这个非常好。没有最好的，只有更合适的。可以结合公司的需求，团队的成员熟知度等因素综合考量后，完成这个技术体系的搭建即可。</p>
+<a id="more"></a>
+
+<p>下面的表格为项目对应的github地址，方便查阅</p>
+<table>
 <thead>
 <tr>
-<th align="center">协议</th>
-<th align="center">方向</th>
-<th align="center">端口范围</th>
-<th align="center">作用</th>
-<th align="center">使用者</th>
+<th align="center">序号</th>
+<th>组件名</th>
+<th>github地址</th>
 </tr>
 </thead>
 <tbody><tr>
-<td align="center">TCP</td>
-<td align="center">入站</td>
-<td align="center">6443</td>
-<td align="center">Kubernetes API 服务器</td>
-<td align="center">所有组件</td>
+<td align="center">1</td>
+<td>apollo</td>
+<td><a href="https://github.com/ctripcorp/apollo" target="_blank" rel="noopener">https://github.com/ctripcorp/apollo</a></td>
 </tr>
 <tr>
-<td align="center">TCP</td>
-<td align="center">入站</td>
-<td align="center">2379-2380</td>
-<td align="center">etcd server client API</td>
-<td align="center">kube-apiserver, etcd</td>
+<td align="center">2</td>
+<td>nacos</td>
+<td><a href="https://github.com/alibaba/nacos" target="_blank" rel="noopener">https://github.com/alibaba/nacos</a></td>
 </tr>
 <tr>
-<td align="center">TCP</td>
-<td align="center">入站</td>
-<td align="center">10250</td>
-<td align="center">Kubelet API</td>
-<td align="center">kubelet 自身、控制平面组件</td>
+<td align="center">3</td>
+<td>soul</td>
+<td><a href="https://github.com/Dromara/soul" target="_blank" rel="noopener">https://github.com/Dromara/soul</a></td>
 </tr>
 <tr>
-<td align="center">TCP</td>
-<td align="center">入站</td>
-<td align="center">10251</td>
-<td align="center">kube-scheduler</td>
-<td align="center">kube-scheduler 自身</td>
+<td align="center">4</td>
+<td>redis</td>
+<td><a href="https://github.com/antirez/redis" target="_blank" rel="noopener">https://github.com/antirez/redis</a></td>
 </tr>
 <tr>
-<td align="center">TCP</td>
-<td align="center">入站</td>
-<td align="center">10252</td>
-<td align="center">kube-controller-manager</td>
-<td align="center">kube-controller-manager 自身</td>
+<td align="center">5</td>
+<td>sentinel</td>
+<td><a href="https://github.com/alibaba/Sentinel" target="_blank" rel="noopener">https://github.com/alibaba/Sentinel</a></td>
+</tr>
+<tr>
+<td align="center">6</td>
+<td>rocketmq</td>
+<td><a href="https://github.com/apache/rocketmq" target="_blank" rel="noopener">https://github.com/apache/rocketmq</a></td>
+</tr>
+<tr>
+<td align="center">7</td>
+<td>lmstfy</td>
+<td><a href="https://github.com/bitleak/lmstfy" target="_blank" rel="noopener">https://github.com/bitleak/lmstfy</a></td>
+</tr>
+<tr>
+<td align="center">8</td>
+<td>saturn</td>
+<td><a href="https://github.com/vipshop/Saturn" target="_blank" rel="noopener">https://github.com/vipshop/Saturn</a></td>
+</tr>
+<tr>
+<td align="center">9</td>
+<td>flink</td>
+<td><a href="https://github.com/apache/flink" target="_blank" rel="noopener">https://github.com/apache/flink</a></td>
+</tr>
+<tr>
+<td align="center">10</td>
+<td>shardingsphere</td>
+<td><a href="https://github.com/apache/shardingsphere" target="_blank" rel="noopener">https://github.com/apache/shardingsphere</a></td>
+</tr>
+<tr>
+<td align="center">11</td>
+<td>seata</td>
+<td><a href="https://github.com/seata/seata" target="_blank" rel="noopener">https://github.com/seata/seata</a></td>
+</tr>
+<tr>
+<td align="center">12</td>
+<td>elasticsearch</td>
+<td><a href="https://github.com/elastic/elasticsearch" target="_blank" rel="noopener">https://github.com/elastic/elasticsearch</a></td>
+</tr>
+<tr>
+<td align="center">13</td>
+<td>porter</td>
+<td><a href="https://github.com/sxfad/porter" target="_blank" rel="noopener">https://github.com/sxfad/porter</a></td>
+</tr>
+<tr>
+<td align="center">14</td>
+<td>skywalking</td>
+<td><a href="https://github.com/apache/skywalking" target="_blank" rel="noopener">https://github.com/apache/skywalking</a></td>
+</tr>
+<tr>
+<td align="center">15</td>
+<td>prometheus</td>
+<td><a href="https://github.com/prometheus/prometheus" target="_blank" rel="noopener">https://github.com/prometheus/prometheus</a></td>
+</tr>
+<tr>
+<td align="center">16</td>
+<td>id-generator</td>
+<td><a href="https://github.com/Meituan-Dianping/Leaf" target="_blank" rel="noopener">https://github.com/Meituan-Dianping/Leaf</a></td>
 </tr>
 </tbody></table>
-<h3 id="Node节点端口清单"><a href="#Node节点端口清单" class="headerlink" title="Node节点端口清单"></a>Node节点端口清单</h3><table>
-<thead>
-<tr>
-<th align="center">协议</th>
-<th align="center">方向</th>
-<th align="center">端口范围</th>
-<th align="center">作用</th>
-<th align="center">使用者</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">TCP</td>
-<td align="center">入站</td>
-<td align="center">10250</td>
-<td align="center">Kubelet API</td>
-<td align="center">kubelet 自身、控制平面组件</td>
-</tr>
-<tr>
-<td align="center">TCP</td>
-<td align="center">入站</td>
-<td align="center">30000-32767</td>
-<td align="center">NodePort 服务**</td>
-<td align="center">所有组件</td>
-</tr>
-</tbody></table>
-<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p> <a href="https://kubernetes.io/zh/docs/setup/production-environment/tools/kubeadm/install-kubeadm/" target="_blank" rel="noopener">https://kubernetes.io/zh/docs/setup/production-environment/tools/kubeadm/install-kubeadm/</a> </p>
+<h2 id="中台实践体验"><a href="#中台实践体验" class="headerlink" title="中台实践体验"></a>中台实践体验</h2><ol>
+<li>中台是一把手工程，全员共识是关键</li>
+<li>中台是一次变革，避免急功近利，企业要有中长期投入的准备</li>
+<li>要选择成熟的技术平台，关注稳定性和未来 </li>
+<li>中台本身不能解决所有问题。跟任何的方法论一样，只适用于特定场景、特定问题</li>
+</ol>
 
     </div>
 
@@ -343,7 +374,7 @@
       <footer class="post-footer">
           
           <div class="post-tags">
-              <a href="/tags/kubernetes/" rel="tag"><i class="fa fa-tag"></i> kubernetes</a>
+              <a href="/tags/%E4%BA%A4%E6%98%93%E4%B8%AD%E5%8F%B0/" rel="tag"><i class="fa fa-tag"></i> 交易中台</a>
           </div>
 
         
@@ -352,13 +383,10 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2020/kubernates/minikube-install/" rel="prev" title="Minikube install">
-      <i class="fa fa-chevron-left"></i> Minikube install
+    <a href="/2020/microservice/microservice-architecture/" rel="prev" title="微服务平台架构">
+      <i class="fa fa-chevron-left"></i> 微服务平台架构
     </a></div>
-      <div class="post-nav-item">
-    <a href="/2020/kubernates/kubeadm-install/" rel="next" title="kubeadm built kubernetes cluster">
-      kubeadm built kubernetes cluster <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -425,7 +453,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#搭建k8s环境所需端口清单"><span class="nav-number">1.</span> <span class="nav-text">搭建k8s环境所需端口清单</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#控制平面节点端口清单"><span class="nav-number">1.1.</span> <span class="nav-text">控制平面节点端口清单</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Node节点端口清单"><span class="nav-number">1.2.</span> <span class="nav-text">Node节点端口清单</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-number">2.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#交易中台技术全景图"><span class="nav-number">1.</span> <span class="nav-text">交易中台技术全景图</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#中台实践体验"><span class="nav-number">2.</span> <span class="nav-text">中台实践体验</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -589,9 +617,9 @@
 </script>
 <script>
   var disqus_config = function() {
-    this.page.url = "http://haoyunlaile.github.io/2020/kubernates/k8s-port/";
-    this.page.identifier = "2020/kubernates/k8s-port/";
-    this.page.title = "kubernetes port list";
+    this.page.url = "http://haoyunlaile.github.io/2020/microservice/tarde-middle-platform/";
+    this.page.identifier = "2020/microservice/tarde-middle-platform/";
+    this.page.title = "交易中台技术栈全景";
     };
   NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
     if (window.DISQUS) {

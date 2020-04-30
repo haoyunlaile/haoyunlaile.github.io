@@ -172,6 +172,190 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://haoyunlaile.github.io/2020/istio/istio-install/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/50016783?s=400&u=a5ed1b51def3b9af69486f1f197f4725b370a03c&v=4">
+      <meta itemprop="name" content="好运来了">
+      <meta itemprop="description" content="java,go,istio,mosn,service mesh">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="好运来了">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/istio/istio-install/" class="post-title-link" itemprop="url">Istio install</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-04-23 00:00:00" itemprop="dateCreated datePublished" datetime="2020-04-23T00:00:00+08:00">2020-04-23</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/istio/" itemprop="url" rel="index"><span itemprop="name">istio</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus：</span>
+    
+    <a title="disqus" href="/2020/istio/istio-install/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/istio/istio-install/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h2><p>搭建istio基础环境</p>
+<h2 id="安装步骤"><a href="#安装步骤" class="headerlink" title="安装步骤"></a>安装步骤</h2><p>在安装 Istio 之前，需要一个运行着 Kubernetes 的环境，安装步骤可以参考前面的文章</p>
+<p>下载istio，然后解压，然后将 <code>istioctl</code> 增加到 path 环境变量中 </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">curl -L https://istio.io/downloadIstio | sh -</span><br><span class="line"><span class="built_in">cd</span> istio-1.5.1</span><br><span class="line"><span class="built_in">export</span> PATH=<span class="variable">$PWD</span>/bin:<span class="variable">$PATH</span></span><br></pre></td></tr></table></figure>
+
+<p> 新建<code>istio-1.5.1.yaml</code> 配置文件、按照官方文档操作安装会出现错误，导致不能正常进行sidecar 自动注入</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/istio/istio-install/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://haoyunlaile.github.io/2020/kubernates/kubernates-basics/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/50016783?s=400&u=a5ed1b51def3b9af69486f1f197f4725b370a03c&v=4">
+      <meta itemprop="name" content="好运来了">
+      <meta itemprop="description" content="java,go,istio,mosn,service mesh">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="好运来了">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/kubernates/kubernates-basics/" class="post-title-link" itemprop="url">kubernetes资料</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-04-23 00:00:00" itemprop="dateCreated datePublished" datetime="2020-04-23T00:00:00+08:00">2020-04-23</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/kubernetes/" itemprop="url" rel="index"><span itemprop="name">kubernetes</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus：</span>
+    
+    <a title="disqus" href="/2020/kubernates/kubernates-basics/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/kubernates/kubernates-basics/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>这篇文章用来记录Kubernetes 的基础资料，整体以最新官方文档为准。</p>
+<p>因为k8s整体比较偏运维，作为研发可先大致了解其概念及初级使用方式，后面重点学习点会放在service mesh <code>istio</code> 上。因为<code>istio</code>目前的架构依赖k8s相关组件，后面在学习<code>istio</code> 的过程中使用到k8s具体组件后再回过头来针对性的学习。</p>
+<h3 id="Kubernetes-集群所需的各种组件"><a href="#Kubernetes-集群所需的各种组件" class="headerlink" title="Kubernetes 集群所需的各种组件"></a>Kubernetes 集群所需的各种组件</h3><p><img data-src="/images/components-of-kubernetes.png" alt="components-of-kubernetes.png"></p>
+<p>最好把官方相关文档全部都认认真真看一遍，然后跟着操作一遍会强化理解。因为涉及的体系非常庞大，里面使用到的一个组件可能都需要学习很久，不要着急，慢慢来，有计划一个一个的啃下来。术业有专攻、有目标性的学习与突破。道路且长、共勉</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/kubernates/kubernates-basics/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-Hans">
     <link itemprop="mainEntityOfPage" href="http://haoyunlaile.github.io/2020/kubernates/kubernates-dashboard/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -876,20 +1060,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives">
         
-          <span class="site-state-item-count">16</span>
+          <span class="site-state-item-count">18</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories">
           
-        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-count">4</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags">
           
-        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-count">16</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
