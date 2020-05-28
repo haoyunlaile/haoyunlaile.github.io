@@ -9,7 +9,7 @@ categories:	istio
 
 ###  概念及示例
 
- `Sidecar`描述了sidecar代理的配置。默认情况下，Istio 让每个 Envoy 代理都可以访问来自和它关联的工作负载的所有端口的请求，然后转发到对应的工作负载。您可以使用 [sidecar](https://preliminary.istio.io/zh/docs/reference/config/networking/sidecar/#Sidecar) 配置去做下面的事情：
+ `Sidecar`描述了sidecar代理的配置。默认情况下，Istio 让每个 Envoy 代理都可以访问来自和它关联的工作负载的所有端口的请求，然后转发到对应的工作负载。您可以使用 [Sidecar](https://preliminary.istio.io/zh/docs/reference/config/networking/sidecar/#Sidecar) 配置去做下面的事情：
 
 - 微调 Envoy 代理接受的端口和协议集。
 - 限制 Envoy 代理可以访问的服务集合。
@@ -83,10 +83,10 @@ spec:
 
 | Field                   | Type                     | Description                                                  | Required |
 | ----------------------- | ------------------------ | ------------------------------------------------------------ | -------- |
-| `workloadSelector`      | `WorkloadSelector`       | Criteria used to select the specific set of pods/VMs on which this `Sidecar` configuration should be applied. If omitted, the `Sidecar` configuration will be applied to all workload instances in the same namespace. | No       |
-| `ingress`               | `IstioIngressListener[]` | Ingress specifies the configuration of the sidecar for processing inbound traffic to the attached workload instance. If omitted, Istio will automatically configure the sidecar based on the information about the workload obtained from the orchestration platform (e.g., exposed ports, services, etc.). If specified, inbound ports are configured if and only if the workload instance is associated with a service. | No       |
-| `egress`                | `IstioEgressListener[]`  | Egress specifies the configuration of the sidecar for processing outbound traffic from the attached workload instance to other services in the mesh. | Yes      |
-| `outboundTrafficPolicy` | `OutboundTrafficPolicy`  | This allows to configure the outbound traffic policy. If your application uses one or more external services that are not known apriori, setting the policy to `ALLOW_ANY` will cause the sidecars to route any unknown traffic originating from the application to its requested destination. | No       |
+| `workloadSelector`      | `WorkloadSelector`       | 表示工作负载的选择器，Sidecar 的配置可以使用 workloadSelector 应用到命名空间下的一个或多个负载，如果未配置 workloadSelector，则应用到整个命名空间。每个命名空间都只能定义一个没有 workloadSelector 的 Sidecar，表示对命名空间的全局配置 | No       |
+| `ingress`               | `IstioIngressListener[]` | IstioIngressListener 类型，配置 Sidecar 对于的工作负载的 Inbound 流量。 | No       |
+| `egress`                | `IstioEgressListener[]`  | 是一种 istioEgressListener 类型，可用来配置 Sidecar 对网络内其他服务的访问，如果没有配置，则只要命名空间可见，命名空间里的服务就都可以被访问。 | Yes      |
+| `outboundTrafficPolicy` | `OutboundTrafficPolicy`  | 允许配置出站流量策略                                         | No       |
 
 ### WorkloadSelector配置
 

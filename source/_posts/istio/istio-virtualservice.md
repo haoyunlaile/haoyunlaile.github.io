@@ -148,18 +148,18 @@ destination 片段还指定了 Kubernetes 服务的子集，将符合此规则�
 
 | Field           | Type                     | Description                                                  | Required |
 | --------------- | ------------------------ | ------------------------------------------------------------ | -------- |
-| `name`          | `string`                 | The name assigned to the route for debugging purposes. The route’s name will be concatenated with the match’s name and will be logged in the access logs for requests matching this route/match. | No       |
-| `match`         | `HTTPMatchRequest[]`     | Match conditions to be satisfied for the rule to be activated. All conditions inside a single match block have AND semantics, while the list of match blocks have OR semantics. The rule is matched if any one of the match blocks succeed. | No       |
-| `route`         | `HTTPRouteDestination[]` | A http rule can either redirect or forward (default) traffic. The forwarding target can be one of several versions of a service (see glossary in beginning of document). Weights associated with the service version determine the proportion of traffic it receives. | No       |
-| `redirect`      | `HTTPRedirect`           | A http rule can either redirect or forward (default) traffic. If traffic passthrough option is specified in the rule, route/redirect will be ignored. The redirect primitive can be used to send a HTTP 301 redirect to a different URI or Authority. | No       |
-| `rewrite`       | `HTTPRewrite`            | Rewrite HTTP URIs and Authority headers. Rewrite cannot be used with Redirect primitive. Rewrite will be performed before forwarding. | No       |
+| `name`          | `string`                 | 为route分配给路由的名称                                      | No       |
+| `match`         | `HTTPMatchRequest[]`     | 匹配要激活的规则要满足的条件。单个匹配块内的所有条件都具有AND语义，而匹配块列表具有OR语义。如果任何一个匹配块成功，则匹配该规则。 | No       |
+| `route`         | `HTTPRouteDestination[]` | http规则可以重定向或转发（默认）流量                         | No       |
+| `redirect`      | `HTTPRedirect`           | http规则可以重定向或转发（默认）流量. 如果在规则中指定了流量通过选项，则将忽略路由/重定向。重定向原语可用于将HTTP 301重定向发送到其他URI或Authority。 | No       |
+| `rewrite`       | `HTTPRewrite`            | 重写 HTTP URIs and Authority header. 重写不能与重定向原语一起使用 | No       |
 | `timeout`       | `Duration`               | Timeout for HTTP requests.                                   | No       |
 | `retries`       | `HTTPRetry`              | Retry policy for HTTP requests.                              | No       |
-| `fault`         | `HTTPFaultInjection`     | Fault injection policy to apply on HTTP traffic at the client side. Note that timeouts or retries will not be enabled when faults are enabled on the client side. | No       |
-| `mirror`        | `Destination`            | Mirror HTTP traffic to a another destination in addition to forwarding the requests to the intended destination. Mirrored traffic is on a best effort basis where the sidecar/gateway will not wait for the mirrored cluster to respond before returning the response from the original destination. Statistics will be generated for the mirrored destination. | No       |
-| `mirrorPercent` | `UInt32Value`            | Percentage of the traffic to be mirrored by the `mirror` field. If this field is absent, all the traffic (100%) will be mirrored. Max value is 100. | No       |
-| `corsPolicy`    | `CorsPolicy`             | Cross-Origin Resource Sharing policy (CORS). Refer to [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) for further details about cross origin resource sharing. | No       |
-| `headers`       | `Headers`                | Header manipulation rules                                    | No       |
+| `fault`         | `HTTPFaultInjection`     | 故障注入策略，适用于客户端的HTTP通信。请注意，如果在客户端启用了故障注入策略，则不会启用超时或重试。 | No       |
+| `mirror`        | `Destination`            | 除了将请求转发到预期目标之外，还可以将HTTP流量镜像到另一个目标。 | No       |
+| `mirrorPercent` | `UInt32Value`            | `mirror` 字段是设置流量的百分比。如果不存在该字段，则将镜像所有流量（100％）。最大值为100。 | No       |
+| `corsPolicy`    | `CorsPolicy`             | 有关跨源资源共享的更多详细信息，请参考 [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) | No       |
+| `headers`       | `Headers`                | Header 规则                                                  | No       |
 
 ```yaml
 apiVersion: networking.istio.io/v1alpha3
@@ -187,10 +187,10 @@ spec:
 
 ### TCPRoute配置
 
-| Type    | Description           | Required                                                     |      |
-| ------- | --------------------- | ------------------------------------------------------------ | ---- |
-| `match` | `L4MatchAttributes[]` | Match conditions to be satisfied for the rule to be activated. All conditions inside a single match block have AND semantics, while the list of match blocks have OR semantics. The rule is matched if any one of the match blocks succeed. | No   |
-| `route` | `RouteDestination[]`  | The destination to which the connection should be forwarded to. | No   |
+| Field   | Type                  | Description                                                  | Required |
+| ------- | --------------------- | ------------------------------------------------------------ | -------- |
+| `match` | `L4MatchAttributes[]` | 匹配要激活的规则要满足的条件。单个匹配块内的所有条件都具有AND语义，而匹配块列表具有OR语义。如果任何一个匹配块成功，则匹配该规则。 | No       |
+| `route` | `RouteDestination[]`  | 连接应转发到的目的地                                         | No       |
 
 ```yaml
 apiVersion: networking.istio.io/v1alpha3
@@ -214,10 +214,10 @@ spec:
 
 ### TLSRoute配置
 
-| Type    | Description            | Required                                                     |      |
-| ------- | ---------------------- | ------------------------------------------------------------ | ---- |
-| `match` | `TLSMatchAttributes[]` | Match conditions to be satisfied for the rule to be activated. All conditions inside a single match block have AND semantics, while the list of match blocks have OR semantics. The rule is matched if any one of the match blocks succeed. | Yes  |
-| `route` | `RouteDestination[]`   | The destination to which the connection should be forwarded to. | No   |
+| Type    | Type                   | Description                                                  | Required |
+| ------- | ---------------------- | ------------------------------------------------------------ | -------- |
+| `match` | `TLSMatchAttributes[]` | 匹配要激活的规则要满足的条件。单个匹配块内的所有条件都具有AND语义，而匹配块列表具有OR语义。如果任何一个匹配块成功，则匹配该规则。 | Yes      |
+| `route` | `RouteDestination[]`   | 连接应转发到的目的地                                         | No       |
 
 ```yaml
 apiVersion: networking.istio.io/v1alpha3

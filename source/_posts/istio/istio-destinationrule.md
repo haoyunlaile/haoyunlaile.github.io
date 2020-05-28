@@ -64,9 +64,9 @@ spec:
 
 | Field           | Type            | Description                                                  | Required |
 | --------------- | --------------- | ------------------------------------------------------------ | -------- |
-| `host`          | `string`        | The name of a service from the service registry. Service names are looked up from the platform’s service registry (e.g., Kubernetes services, Consul services, etc.) and from the hosts declared by ServiceEntries. Rules defined for services that do not exist in the service registry will be ignored.*Note for Kubernetes users*: When short names are used (e.g. “reviews” instead of “reviews.default.svc.cluster.local”), Istio will interpret the short name based on the namespace of the rule, not the service. A rule in the “default” namespace containing a host “reviews” will be interpreted as “reviews.default.svc.cluster.local”, irrespective of the actual namespace associated with the reviews service. *To avoid potential misconfigurations, it is recommended to always use fully qualified domain names over short names.*Note that the host field applies to both HTTP and TCP services. | Yes      |
-| `trafficPolicy` | `TrafficPolicy` | 流量策略 (load balancing policy, connection pool sizes, outlier detection). | No       |
-| `subsets`       | `Subset[]`      | One or more named sets that represent individual versions of a service. Traffic policies can be overridden at subset level. | No       |
+| `host`          | `string`        | 表示规则的适用对象，取值是在服务注册中心注册的服务名，可以是网格内的服务，也可以是以 ServiceEnrty 方式注册的网格外的服务。如果这个服务名在服务注册中心不存在，则这个规则无效。host 如果取短域名，则会根据规则所在的命名空间进行解析。 | Yes      |
+| `trafficPolicy` | `TrafficPolicy` | 流量策略，包括负载均衡、连接池策略、异常点检查等             | No       |
+| `subsets`       | `Subset[]`      | 是定义的一个服务的子集，经常用来定义一个服务版本，结合 VirtualService 使用 | No       |
 | `exportTo`      | `string[]`      | 当前destination rule要导出的 namespace 列表。 应用于 service 的 destination rule 的解析发生在 namespace 层次结构的上下文中。 destination rule 的导出允许将其包含在其他 namespace 中的服务的解析层次结构中。 此功能为服务所有者和网格管理员提供了一种机制，用于控制跨 namespace 边界的 destination rule 的可见性<br/>如果未指定任何 namespace，则默认情况下将 destination rule 导出到所有 namespace<br/>值`.` 被保留，用于定义导出到 destination rule 被声明所在的相同 namespace 。类似的值`*`保留，用于定义导出到所有 namespaces<br/>NOTE：在当前版本中，exportTo值被限制为`.`或`*`（即， 当前namespace或所有namespace） | No       |
 
 ### subsets配置

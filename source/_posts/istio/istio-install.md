@@ -216,6 +216,54 @@ prometheus-c89875c74-lvq52              2/2     Running   0          73m
 istioctl manifest generate --set profile=demo | kubectl delete -f -
 ```
 
+## 部署Bookinfo
+
+ Istio 默认自动注入 Sidecar. 请为 `default` 命名空间打上标签 `istio-injection=enabled`： 
+
+```shell
+kubectl label namespace default istio-injection=enabled
+```
+
+ 使用 `kubectl` 部署应用： 
+
+```shell
+kubectl apply -f samples/bookinfo/platform/kube/bookinfo.yaml
+```
+
+>  在实际部署中，微服务版本的启动过程需要持续一段时间，并不是同时完成的。 
+
+确认所有的服务和 Pod 都已经正确的定义和启动： 
+
+```shell
+kubectl get services
+NAME                       CLUSTER-IP   EXTERNAL-IP   PORT(S)              AGE
+details                    10.0.0.31    <none>        9080/TCP             6m
+kubernetes                 10.0.0.1     <none>        443/TCP              7d
+productpage                10.0.0.120   <none>        9080/TCP             6m
+ratings                    10.0.0.15    <none>        9080/TCP             6m
+reviews                    10.0.0.170   <none>        9080/TCP             6m
+```
+
+```shell
+kubectl get pods
+NAME                                        READY     STATUS    RESTARTS   AGE
+details-v1-1520924117-48z17                 2/2       Running   0          6m
+productpage-v1-560495357-jk1lz              2/2       Running   0          6m
+ratings-v1-734492171-rnr5l                  2/2       Running   0          6m
+reviews-v1-874083890-f0qf0                  2/2       Running   0          6m
+reviews-v2-1343845940-b34q5                 2/2       Running   0          6m
+reviews-v3-1813607990-8ch52                 2/2       Running   0          6m
+```
+
+确认 Bookinfo 应用是否正在运行，请在某个 Pod 中用 `curl` 命令对应用发送请求，例如 `ratings`： 
+
+```shell
+kubectl exec -it $(kubectl get pod -l app=ratings -o jsonpath='{.items[0].metadata.name}') -c ratings -- curl productpage:9080/productpage | grep -o "<title>.*</title>"
+<title>Simple Bookstore App</title>
+```
+
+使用浏览器访问Bookinfo放在后面来讲解，因为是使用云环境而非本地，使用gateway/ingress开放外网端口还需要调整一些配置，跟官方文档在本地安装还有些差异。
+
 ## 参考文献
 
  https://preliminary.istio.io/zh/docs/setup/getting-started/ 

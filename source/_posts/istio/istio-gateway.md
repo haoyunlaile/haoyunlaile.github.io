@@ -5,7 +5,7 @@ tags: ["istio","istio-gateway"]
 categories:	istio
 ---
 
-## Istio  Ingress gateway 网关
+## Istio  Ingress Gateway 概述
 
 ![istio-gateways](/images/istio-gateways.svg)
 
@@ -68,64 +68,64 @@ spec:
 
 ###  `Gateway` 配置信息 
 
-| ield     | Type     | Description                                                  | Required |
-| -------- | -------- | ------------------------------------------------------------ | -------- |
-| servers  | Server[] | A list of server specifications.                             | Yes      |
-| selector | map      | One or more labels that indicate a specific set of pods/VMs on which this gateway configuration should be applied. The scope of label search is restricted to the configuration namespace in which the the resource is present. In other words, the Gateway resource must reside in the same namespace as the gateway workload instance. | Yes      |
+| Field    | Type     | Description                                  | Required |
+| -------- | -------- | -------------------------------------------- | -------- |
+| servers  | Server[] | 开放的服务列表                               | 是       |
+| selector | map      | 通过这个Label来找到执行 Gateway 规则的 Envoy | 是       |
 
 ### `Server` 配置信息 
 
 | Field             | Type         | Description                                                  | Required |
 | ----------------- | ------------ | ------------------------------------------------------------ | -------- |
-| `port`            | `Port`       | The Port on which the proxy should listen for incoming connections. | Yes      |
-| `hosts`           | `string[]`   | One or more hosts exposed by this gateway. While typically applicable to HTTP services, it can also be used for TCP services using TLS with SNI. A host is specified as a `dnsName` with an optional `namespace/` prefix. The `dnsName` should be specified using FQDN format, optionally including a wildcard character in the left-most component (e.g., `prod/*.example.com`). Set the `dnsName` to `*` to select all `VirtualService` hosts from the specified namespace (e.g.,`prod/*`).The `namespace` can be set to `*` or `.`, representing any or the current namespace, respectively. For example, `*/foo.example.com` selects the service from any available namespace while `./foo.example.com` only selects the service from the namespace of the sidecar. The default, if no `namespace/` is specified, is `*/`, that is, select services from any namespace. Any associated `DestinationRule` in the selected namespace will also be used.A `VirtualService` must be bound to the gateway and must have one or more hosts that match the hosts specified in a server. The match could be an exact match or a suffix match with the server’s hosts. For example, if the server’s hosts specifies `*.example.com`, a `VirtualService` with hosts `dev.example.com` or `prod.example.com` will match. However, a `VirtualService` with host `example.com` or `newexample.com` will not match.NOTE: Only virtual services exported to the gateway’s namespace (e.g., `exportTo` value of `*`) can be referenced. Private configurations (e.g., `exportTo` set to `.`) will not be available. Refer to the `exportTo` setting in `VirtualService`, `DestinationRule`, and `ServiceEntry` configurations for details. | Yes      |
-| `tls`             | `TLSOptions` | Set of TLS related options that govern the server’s behavior. Use these options to control if all http requests should be redirected to https, and the TLS modes to use. | No       |
-| `defaultEndpoint` | `string`     | The loopback IP endpoint or Unix domain socket to which traffic should be forwarded to by default. Format should be `127.0.0.1:PORT` or `unix:///path/to/socket` or `unix://@foobar` (Linux abstract namespace). | No       |
+| `port`            | `Port`       | 服务对外监听的端口                                           | 是       |
+| `hosts`           | `string[]`   | Gateway 发布的服务地址，是一个 FQDN 域名，可以支持左侧通配符来进行模糊查询 | 是       |
+| `tls`             | `TLSOptions` | TLS安全配置                                                  | 否       |
+| `defaultEndpoint` | `string`     | 默认情况下，应将流量转发到的环回IP端点或Unix域套接字         | 否       |
 
 ### `Port` 配置信息 
 
 | Field      | Type     | Description                                                  | Required |
 | ---------- | -------- | ------------------------------------------------------------ | -------- |
-| `number`   | `uint32` | A valid non-negative integer port number.                    | Yes      |
-| `protocol` | `string` | The protocol exposed on the port. MUST BE one of HTTP\|HTTPS\|GRPC\|HTTP2\|MONGO\|TCP\|TLS. TLS implies the connection will be routed based on the SNI header to the destination without terminating the TLS connection. | Yes      |
-| `name`     | `string` | Label assigned to the port.                                  | No       |
+| `number`   | `uint32` | 一个有效的端口号                                             | 是       |
+| `protocol` | `string` | 所使用的协议，支持HTTP\|HTTPS\|GRPC\|HTTP2\|MONGO\|TCP\|TLS. | 是       |
+| `name`     | `string` | 给端口分配一个名称                                           | 否       |
 
 ### `Server.TLSOptions` 配置信息
 
 | Field                   | Type          | Description                                                  | Required |
 | ----------------------- | ------------- | ------------------------------------------------------------ | -------- |
-| `httpsRedirect`         | `bool`        | If set to true, the load balancer will send a 301 redirect for all http connections, asking the clients to use HTTPS. | No       |
-| `mode`                  | `TLSmode`     | Optional: Indicates whether connections to this port should be secured using TLS. The value of this field determines how TLS is enforced. | No       |
-| `serverCertificate`     | `string`      | REQUIRED if mode is `SIMPLE` or `MUTUAL`. The path to the file holding the server-side TLS certificate to use. | No       |
-| `privateKey`            | `string`      | REQUIRED if mode is `SIMPLE` or `MUTUAL`. The path to the file holding the server’s private key. | No       |
-| `caCertificates`        | `string`      | REQUIRED if mode is `MUTUAL`. The path to a file containing certificate authority certificates to use in verifying a presented client side certificate. | No       |
-| `credentialName`        | `string`      | The credentialName stands for a unique identifier that can be used to identify the serverCertificate and the privateKey. The credentialName appended with suffix “-cacert” is used to identify the CaCertificates associated with this server. Gateway workloads capable of fetching credentials from a remote credential store such as Kubernetes secrets, will be configured to retrieve the serverCertificate and the privateKey using credentialName, instead of using the file system paths specified above. If using mutual TLS, gateway workload instances will retrieve the CaCertificates using credentialName-cacert. The semantics of the name are platform dependent. In Kubernetes, the default Istio supplied credential server expects the credentialName to match the name of the Kubernetes secret that holds the server certificate, the private key, and the CA certificate (if using mutual TLS). Set the `ISTIO_META_USER_SDS` metadata variable in the gateway’s proxy to enable the dynamic credential fetching feature. | No       |
-| `subjectAltNames`       | `string[]`    | A list of alternate names to verify the subject identity in the certificate presented by the client. | No       |
-| `verifyCertificateSpki` | `string[]`    | An optional list of base64-encoded SHA-256 hashes of the SKPIs of authorized client certificates. Note: When both verify*certificate*hash and verify*certificate*spki are specified, a hash matching either value will result in the certificate being accepted. | No       |
-| `verifyCertificateHash` | `string[]`    | An optional list of hex-encoded SHA-256 hashes of the authorized client certificates. Both simple and colon separated formats are acceptable. Note: When both verify*certificate*hash and verify*certificate*spki are specified, a hash matching either value will result in the certificate being accepted. | No       |
-| `minProtocolVersion`    | `TLSProtocol` | Optional: Minimum TLS protocol version.                      | No       |
-| `maxProtocolVersion`    | `TLSProtocol` | Optional: Maximum TLS protocol version.                      | No       |
-| `cipherSuites`          | `string[]`    | Optional: If specified, only support the specified cipher list. Otherwise default to the default cipher list supported by Envoy. | No       |
+| `httpsRedirect`         | `bool`        | 是否要做 HTTP 重定向                                         | 否       |
+| `mode`                  | `TLSmode`     | 在配置的外部端口上使用 TLS 服务时，可以取 PASSTHROUGH、SIMPLE、MUTUAL、AUTO_PASSTHROUGH 这 4 种模式 | 否       |
+| `serverCertificate`     | `string`      | 服务端证书的路径。当模式是 SIMPLE 和 MUTUAL 时必须指定       | 否       |
+| `privateKey`            | `string`      | 服务端密钥的路径。当模式是 SIMPLE 和 MUTUAL 时必须指定       | 否       |
+| `caCertificates`        | `string`      | CA 证书路径。当模式是 MUTUAL 时指定                          | 否       |
+| `credentialName`        | `string`      | 用于唯一标识服务端证书和秘钥。Gateway 使用 credentialName 从远端的凭证存储中获取证书和秘钥，而不是使用 Mount 的文件 | 否       |
+| `subjectAltNames`       | `string[]`    | SAN 列表，SubjectAltName 允许一个证书指定多个域名            | 否       |
+| `verifyCertificateSpki` | `string[]`    | 授权客户端证书的SKPI的base64编码的SHA-256哈希值的可选列表    | 否       |
+| `verifyCertificateHash` | `string[]`    | 授权客户端证书的十六进制编码SHA-256哈希值的可选列表          | 否       |
+| `minProtocolVersion`    | `TLSProtocol` | TLS 协议的最小版本                                           | 否       |
+| `maxProtocolVersion`    | `TLSProtocol` | TLS 协议的最大版本                                           | 否       |
+| `cipherSuites`          | `string[]`    | 指定的加密套件，默认使用 Envoy 支持的加密套件                | 否       |
 
 ### `Server.TLSOptions.TLSmode` 配置信息
 
 | Name               | Description                                                  |
 | ------------------ | ------------------------------------------------------------ |
-| `PASSTHROUGH`      | The SNI string presented by the client will be used as the match criterion in a VirtualService TLS route to determine the destination service from the service registry. |
-| `SIMPLE`           | Secure connections with standard TLS semantics.              |
-| `MUTUAL`           | Secure connections to the downstream using mutual TLS by presenting server certificates for authentication. |
-| `AUTO_PASSTHROUGH` | Similar to the passthrough mode, except servers with this TLS mode do not require an associated VirtualService to map from the SNI value to service in the registry. The destination details such as the service/subset/port are encoded in the SNI value. The proxy will forward to the upstream (Envoy) cluster (a group of endpoints) specified by the SNI value. This server is typically used to provide connectivity between services in disparate L3 networks that otherwise do not have direct connectivity between their respective endpoints. Use of this mode assumes that both the source and the destination are using Istio mTLS to secure traffic. |
-| `ISTIO_MUTUAL`     | Secure connections from the downstream using mutual TLS by presenting server certificates for authentication. Compared to Mutual mode, this mode uses certificates, representing gateway workload identity, generated automatically by Istio for mTLS authentication. When this mode is used, all other fields in `TLSOptions` should be empty. |
+| `PASSTHROUGH`      | 客户端提供的SNI字符串将用作VirtualService TLS路由中的匹配条件，以根据服务注册表确定目标服务 |
+| `SIMPLE`           | 使用标准TLS语义的安全连接                                    |
+| `MUTUAL`           | 通过提供服务器证书进行身份验证，使用双边TLS来保护与下游的连接 |
+| `AUTO_PASSTHROUGH` | 与直通模式相似，不同之处在于具有此TLS模式的服务器不需要关联的VirtualService即可从SNI值映射到注册表中的服务。目标详细信息（例如服务/子集/端口）被编码在SNI值中。代理将转发到SNI值指定的上游（Envoy）群集（一组端点）。 |
+| `ISTIO_MUTUAL`     | 通过提供用于身份验证的服务器证书，使用相互TLS使用来自下游的安全连接 |
 
 ### `Server.TLSOptions.TLSProtocol` 配置信息
 
-| Name       | Description                                   |
-| ---------- | --------------------------------------------- |
-| `TLS_AUTO` | Automatically choose the optimal TLS version. |
-| `TLSV1_0`  | TLS version 1.0                               |
-| `TLSV1_1`  | TLS version 1.1                               |
-| `TLSV1_2`  | TLS version 1.2                               |
-| `TLSV1_3`  | TLS version 1.3                               |
+| Name       | Description     |
+| ---------- | --------------- |
+| `TLS_AUTO` | 自动选择DLS版本 |
+| `TLSV1_0`  | TLS 1.0         |
+| `TLSV1_1`  | TLS 1.1         |
+| `TLSV1_2`  | TLS 1.2         |
+| `TLSV1_3`  | TLS 1.3         |
 
 ## 参考文献
 

@@ -265,6 +265,8 @@ Extract 反序列化Inject的参数值
 
 目前云原生体系在大力推Jaeger (Go语言研发)，如果公司有go体系，也是个不错的选择。
 
+
+
 ## 参考文献
 
  https://opentracing.io/ 
