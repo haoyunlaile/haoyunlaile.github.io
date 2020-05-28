@@ -252,6 +252,24 @@
 <p>卸载istio</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">istioctl manifest generate --<span class="built_in">set</span> profile=demo | kubectl delete -f -</span><br></pre></td></tr></table></figure>
 
+<h2 id="部署Bookinfo"><a href="#部署Bookinfo" class="headerlink" title="部署Bookinfo"></a>部署Bookinfo</h2><p> Istio 默认自动注入 Sidecar. 请为 <code>default</code> 命名空间打上标签 <code>istio-injection=enabled</code>： </p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl label namespace default istio-injection=enabled</span><br></pre></td></tr></table></figure>
+
+<p> 使用 <code>kubectl</code> 部署应用： </p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl apply -f samples/bookinfo/platform/kube/bookinfo.yaml</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p> 在实际部署中，微服务版本的启动过程需要持续一段时间，并不是同时完成的。 </p>
+</blockquote>
+<p>确认所有的服务和 Pod 都已经正确的定义和启动： </p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">kubectl get services</span><br><span class="line">NAME                       CLUSTER-IP   EXTERNAL-IP   PORT(S)              AGE</span><br><span class="line">details                    10.0.0.31    &lt;none&gt;        9080/TCP             6m</span><br><span class="line">kubernetes                 10.0.0.1     &lt;none&gt;        443/TCP              7d</span><br><span class="line">productpage                10.0.0.120   &lt;none&gt;        9080/TCP             6m</span><br><span class="line">ratings                    10.0.0.15    &lt;none&gt;        9080/TCP             6m</span><br><span class="line">reviews                    10.0.0.170   &lt;none&gt;        9080/TCP             6m</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">kubectl get pods</span><br><span class="line">NAME                                        READY     STATUS    RESTARTS   AGE</span><br><span class="line">details-v1-1520924117-48z17                 2/2       Running   0          6m</span><br><span class="line">productpage-v1-560495357-jk1lz              2/2       Running   0          6m</span><br><span class="line">ratings-v1-734492171-rnr5l                  2/2       Running   0          6m</span><br><span class="line">reviews-v1-874083890-f0qf0                  2/2       Running   0          6m</span><br><span class="line">reviews-v2-1343845940-b34q5                 2/2       Running   0          6m</span><br><span class="line">reviews-v3-1813607990-8ch52                 2/2       Running   0          6m</span><br></pre></td></tr></table></figure>
+
+<p>确认 Bookinfo 应用是否正在运行，请在某个 Pod 中用 <code>curl</code> 命令对应用发送请求，例如 <code>ratings</code>： </p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">kubectl exec -it $(kubectl get pod -l app=ratings -o jsonpath='&#123;.items[0].metadata.name&#125;') -c ratings -- curl productpage:9080/productpage | grep -o "&lt;title&gt;.*&lt;/title&gt;"</span><br><span class="line">&lt;title&gt;Simple Bookstore App&lt;/title&gt;</span><br></pre></td></tr></table></figure>
+
+<p>使用浏览器访问Bookinfo放在后面来讲解，因为是使用云环境而非本地，使用gateway/ingress开放外网端口还需要调整一些配置，跟官方文档在本地安装还有些差异。</p>
 <h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p> <a href="https://preliminary.istio.io/zh/docs/setup/getting-started/" target="_blank" rel="noopener">https://preliminary.istio.io/zh/docs/setup/getting-started/</a> </p>
 
     </div>
@@ -358,7 +376,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#需求"><span class="nav-number">1.</span> <span class="nav-text">需求</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装步骤"><span class="nav-number">2.</span> <span class="nav-text">安装步骤</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考文献"><span class="nav-number">3.</span> <span class="nav-text">参考文献</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#需求"><span class="nav-number">1.</span> <span class="nav-text">需求</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装步骤"><span class="nav-number">2.</span> <span class="nav-text">安装步骤</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#部署Bookinfo"><span class="nav-number">3.</span> <span class="nav-text">部署Bookinfo</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考文献"><span class="nav-number">4.</span> <span class="nav-text">参考文献</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -374,7 +392,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives">
         
-          <span class="site-state-item-count">19</span>
+          <span class="site-state-item-count">21</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -387,7 +405,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags">
           
-        <span class="site-state-item-count">18</span>
+        <span class="site-state-item-count">20</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>

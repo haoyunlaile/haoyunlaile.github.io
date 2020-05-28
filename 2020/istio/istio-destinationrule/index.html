@@ -256,19 +256,19 @@
 <tbody><tr>
 <td><code>host</code></td>
 <td><code>string</code></td>
-<td>The name of a service from the service registry. Service names are looked up from the platform’s service registry (e.g., Kubernetes services, Consul services, etc.) and from the hosts declared by ServiceEntries. Rules defined for services that do not exist in the service registry will be ignored.<em>Note for Kubernetes users</em>: When short names are used (e.g. “reviews” instead of “reviews.default.svc.cluster.local”), Istio will interpret the short name based on the namespace of the rule, not the service. A rule in the “default” namespace containing a host “reviews” will be interpreted as “reviews.default.svc.cluster.local”, irrespective of the actual namespace associated with the reviews service. <em>To avoid potential misconfigurations, it is recommended to always use fully qualified domain names over short names.</em>Note that the host field applies to both HTTP and TCP services.</td>
+<td>表示规则的适用对象，取值是在服务注册中心注册的服务名，可以是网格内的服务，也可以是以 ServiceEnrty 方式注册的网格外的服务。如果这个服务名在服务注册中心不存在，则这个规则无效。host 如果取短域名，则会根据规则所在的命名空间进行解析。</td>
 <td>Yes</td>
 </tr>
 <tr>
 <td><code>trafficPolicy</code></td>
 <td><code>TrafficPolicy</code></td>
-<td>流量策略 (load balancing policy, connection pool sizes, outlier detection).</td>
+<td>流量策略，包括负载均衡、连接池策略、异常点检查等</td>
 <td>No</td>
 </tr>
 <tr>
 <td><code>subsets</code></td>
 <td><code>Subset[]</code></td>
-<td>One or more named sets that represent individual versions of a service. Traffic policies can be overridden at subset level.</td>
+<td>是定义的一个服务的子集，经常用来定义一个服务版本，结合 VirtualService 使用</td>
 <td>No</td>
 </tr>
 <tr>
@@ -432,7 +432,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives">
         
-          <span class="site-state-item-count">19</span>
+          <span class="site-state-item-count">21</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -445,7 +445,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags">
           
-        <span class="site-state-item-count">18</span>
+        <span class="site-state-item-count">20</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>

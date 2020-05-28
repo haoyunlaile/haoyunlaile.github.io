@@ -496,7 +496,7 @@
 <p>通过cncf社区链接也可以查询到相关框架</p>
 <p> <a href="https://landscape.cncf.io/category=tracing&amp;format=card-mode&amp;grouping=category" target="_blank" rel="noopener">https://landscape.cncf.io/category=tracing&amp;format=card-mode&amp;grouping=category</a> </p>
 <p><img data-src="/images/microservice/cncf-tracing.png" alt="cncf-tracing"></p>
-<h3 id="框架选型"><a href="#框架选型" class="headerlink" title="框架选型"></a>框架选型</h3><p>如果公司用的Java体系可以选择 Zipkin 或者 SkyWalking 。Zipkin 主要是tracing，而SkyWalking除了tracing，比较偏APM。如果不打算做二次开发建议选SkyWalking，开箱即用（目前存储主要支持ElasticSearch）。</p>
+<h3 id="框架选型"><a href="#框架选型" class="headerlink" title="框架选型"></a>框架选型</h3><p>如果公司用的Java体系可以选择 Zipkin 或者 SkyWalking 。Zipkin 主要是tracing，而SkyWalking整体是APM，包含tracing。如果不打算做二次开发建议选SkyWalking，开箱即用（目前存储主要支持ElasticSearch）。</p>
 <p>目前云原生体系在大力推Jaeger (Go语言研发)，如果公司有go体系，也是个不错的选择。</p>
 <h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p> <a href="https://opentracing.io/" target="_blank" rel="noopener">https://opentracing.io/</a> </p>
 <p> <a href="https://github.com/opentracing/specification" target="_blank" rel="noopener">https://github.com/opentracing/specification</a> </p>
@@ -546,7 +546,10 @@
     <a href="/2020/microservice/tarde-middle-platform/" rel="prev" title="交易中台技术栈全景">
       <i class="fa fa-chevron-left"></i> 交易中台技术栈全景
     </a></div>
-      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/2020/microservice/jaeger-tracing/" rel="next" title="jaeger tracing">
+      jaeger tracing <i class="fa fa-chevron-right"></i>
+    </a></div>
     </div>
       </footer>
     
@@ -623,7 +626,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives">
         
-          <span class="site-state-item-count">19</span>
+          <span class="site-state-item-count">21</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -636,7 +639,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags">
           
-        <span class="site-state-item-count">18</span>
+        <span class="site-state-item-count">20</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>

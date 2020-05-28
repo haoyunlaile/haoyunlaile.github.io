@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"haoyunlaile.github.io","root":"/","scheme":"Pisces","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":true,"nav":{"disqus":{"text":"Load Comment","order":-1}},"activeClass":"gitalk"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="简介 Jaeger是 Uber 推出的一款开源分布式追踪系统（已从CNCF毕业），兼容 OpenTracing API。  它用于监视和诊断基于微服务的分布式系统，功能包括：  分布式上下文传播  分布式链路跟踪  服务依赖分析   示例Trace列表视图 Trace明细视图 技术栈 基于Go实现 数据支持多种类型的后端存储 Cassandra 3.4+ Elasticsearch 5.x, 6.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="jaeger tracing">
+<meta property="og:url" content="http://haoyunlaile.github.io/2020/microservice/jaeger-tracing/index.html">
+<meta property="og:site_name" content="好运来了">
+<meta property="og:description" content="简介 Jaeger是 Uber 推出的一款开源分布式追踪系统（已从CNCF毕业），兼容 OpenTracing API。  它用于监视和诊断基于微服务的分布式系统，功能包括：  分布式上下文传播  分布式链路跟踪  服务依赖分析   示例Trace列表视图 Trace明细视图 技术栈 基于Go实现 数据支持多种类型的后端存储 Cassandra 3.4+ Elasticsearch 5.x, 6.">
+<meta property="og:image" content="http://haoyunlaile.github.io/images/microservice/traces-jaeger-index.png">
+<meta property="og:image" content="http://haoyunlaile.github.io/images/microservice/trace-detail-jaeger.png">
+<meta property="og:image" content="http://haoyunlaile.github.io/images/microservice/architecture-v1.png">
+<meta property="og:image" content="http://haoyunlaile.github.io/images/microservice/architecture-v2.png">
+<meta property="og:image" content="http://haoyunlaile.github.io/images/microservice/jaeger-query-ui.png">
+<meta property="article:published_time" content="2020-05-08T12:00:00.000Z">
+<meta property="article:modified_time" content="2020-05-08T12:00:00.000Z">
+<meta property="article:author" content="好运来了">
+<meta property="article:tag" content="opentracing">
+<meta property="article:tag" content="jaeger">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://haoyunlaile.github.io/images/microservice/traces-jaeger-index.png">
+
+<link rel="canonical" href="http://haoyunlaile.github.io/2020/microservice/jaeger-tracing/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true
+  };
+</script>
+
+  <title>jaeger tracing | 好运来了</title>
+  
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?55ae289b7e76ebbe6ab20e60c74bad9d";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="好运来了" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">好运来了</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">分享知识、记录点滴</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://haoyunlaile.github.io/2020/microservice/jaeger-tracing/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="好运来了">
+      <meta itemprop="description" content="java,go,istio,mosn,service mesh">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="好运来了">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          jaeger tracing
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-05-08 20:00:00" itemprop="dateCreated datePublished" datetime="2020-05-08T20:00:00+08:00">2020-05-08</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" itemprop="url" rel="index"><span itemprop="name">微服务</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p> <a href="https://www.jaegertracing.io/" target="_blank" rel="noopener">Jaeger</a>是 Uber 推出的一款开源分布式追踪系统（已从CNCF毕业），兼容 OpenTracing API。  它用于监视和诊断基于微服务的分布式系统，功能包括：</p>
+<ol>
+<li>分布式上下文传播 </li>
+<li>分布式链路跟踪 </li>
+<li>服务依赖分析 </li>
+</ol>
+<h2 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h2><h3 id="Trace列表视图"><a href="#Trace列表视图" class="headerlink" title="Trace列表视图"></a>Trace列表视图</h3><p><img data-src="/images/microservice/traces-jaeger-index.png" alt="traces-jaeger-index"></p>
+<h3 id="Trace明细视图"><a href="#Trace明细视图" class="headerlink" title="Trace明细视图"></a>Trace明细视图</h3><p><img data-src="/images/microservice/trace-detail-jaeger.png" alt="trace-detail-jaeger"></p>
+<h2 id="技术栈"><a href="#技术栈" class="headerlink" title="技术栈"></a>技术栈</h2><ul>
+<li>基于Go实现</li>
+<li>数据支持多种类型的后端存储<ul>
+<li><a href="https://www.jaegertracing.io/docs/1.17/deployment/#cassandra" target="_blank" rel="noopener">Cassandra 3.4+</a></li>
+<li><a href="https://www.jaegertracing.io/docs/1.17/deployment/#elasticsearch" target="_blank" rel="noopener">Elasticsearch 5.x, 6.x, 7.x</a></li>
+<li><a href="https://www.jaegertracing.io/docs/1.17/deployment/#kafka" target="_blank" rel="noopener">Kafka</a></li>
+<li>memory storage</li>
+</ul>
+</li>
+</ul>
+<h2 id="架构"><a href="#架构" class="headerlink" title="架构"></a>架构</h2><p> Jaeger可以作为单个进程进行部署，也可以作为可扩展的分布式系统进行部署。</p>
+<p> Jaeger 主要由以下几部分组成，架构非常清晰： </p>
+<ul>
+<li>Jaeger Client - 为不同语言实现了符合 OpenTracing 标准的 SDK。应用程序通过 API 写入数据，client library 把 trace 信息按照应用程序指定的采样策略传递给 jaeger-agent.</li>
+<li>Agent - 它是一个监听在 UDP 端口上接收 span 数据的网络守护进程，它会将数据批量发送给 collector。它被设计成一个基础组件，部署到所有的宿主机上。Agent 将 client library 和 collector 解耦，为 client library 屏蔽了路由和发现 collector 的细节.</li>
+<li>Collector - 接收 jaeger-agent 发送来的数据，然后将数据写入后端存储。Collector 被设计成无状态的组件，因此您可以同时运行任意数量的 jaeger-collector。 当前，我们的管道会分析数据并为其建立索引，执行任何转换并最终存储它们。  Jaeger的存储设备是一个可插拔组件，目前支持  Cassandra, Elasticsearch and Kafka 存储.</li>
+<li>Query - 接收查询请求，然后从后端存储系统中检索 trace 并通过 UI 进行展示.</li>
+<li>Ingester - 后端存储被设计成一个可插拔的组件，支持将数据写入 Cassandra, Elasticsearch.</li>
+</ul>
+<p>Jaeger包含两种架构方案：</p>
+<p><strong>一、收集器数据直接写入存储架构（tracing数据直接写入存储)</strong></p>
+<p><img data-src="/images/microservice/architecture-v1.png" alt="architecture-v1"></p>
+<p><strong>二、收集器数据缓冲后异步写入存储架构（tracing数据通过kafka缓冲后再异步消费写入存储)</strong> </p>
+<p><img data-src="/images/microservice/architecture-v2.png" alt="architecture-v2"></p>
+<blockquote>
+<p>个人推荐采用第二种架构方式部署</p>
+</blockquote>
+<h2 id="部署"><a href="#部署" class="headerlink" title="部署"></a>部署</h2><p>为了快速搭建Jaeger环境，这里安装基于Helm部署（需要先搭建 Kubernetes 集群），可以参考前面写的文章来搭建。从  <a href="https://github.com/jaegertracing/helm-charts/tree/master/charts/jaeger" target="_blank" rel="noopener">https://github.com/jaegertracing/helm-charts/tree/master/charts/jaeger</a>  这里可以找到详细的部署流程，可以一步一步跟着执行部署。这里采用 <strong>收集器数据直接写入存储架构</strong> 部署</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">helm install jaeger jaegertracing/jaeger</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>官方推荐使用jaeger-operator来部署，可参考： <a href="https://www.jaegertracing.io/docs/1.17/operator/" target="_blank" rel="noopener">https://www.jaegertracing.io/docs/1.17/operator/</a> </p>
+</blockquote>
+<p>安装完成后查看服务状态</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">kubectl get svc</span><br><span class="line">NAME               TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)                                         AGE</span><br><span class="line">jaeger-agent       ClusterIP   10.97.3.215      &lt;none&gt;        5775/UDP,6831/UDP,6832/UDP,5778/TCP,14271/TCP   7m45s</span><br><span class="line">jaeger-cassandra   ClusterIP   None             &lt;none&gt;        7000/TCP,7001/TCP,7199/TCP,9042/TCP,9160/TCP    7m45s</span><br><span class="line">jaeger-collector   ClusterIP   10.111.141.231   &lt;none&gt;        14250/TCP,14267/TCP,14268/TCP,14269/TCP         7m45s</span><br><span class="line">jaeger-query       ClusterIP   10.97.103.64     &lt;none&gt;        80/TCP,16687/TCP                                7m45s</span><br></pre></td></tr></table></figure>
+
+<p>要访问jaeger ui 需要查看<code>jaeger-query</code>项目对外暴露的端口，我们看到通过helm安装，我们采用的默认配置，这里的网络类型是<code>ClusterIP</code>,如果想外网访问可以先临时改成<code>NodePort</code>的方式，执行如下命令编辑对应配置：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl edit service jaeger-query</span><br></pre></td></tr></table></figure>
+
+<p>找到最下面的<code>ClusterIP</code>改成<code>NodePort</code>保存即可，保存后会自动生效</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">kubectl get svc</span><br><span class="line">NAME               TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)                                         AGE</span><br><span class="line">jaeger-agent       ClusterIP   10.97.3.215      &lt;none&gt;        5775/UDP,6831/UDP,6832/UDP,5778/TCP,14271/TCP   8m38s</span><br><span class="line">jaeger-cassandra   ClusterIP   None             &lt;none&gt;        7000/TCP,7001/TCP,7199/TCP,9042/TCP,9160/TCP    8m38s</span><br><span class="line">jaeger-collector   ClusterIP   10.111.141.231   &lt;none&gt;        14250/TCP,14267/TCP,14268/TCP,14269/TCP         8m38s</span><br><span class="line">jaeger-query       NodePort    10.97.103.64     &lt;none&gt;        80:31067/TCP,16687:31381/TCP                    8m38s</span><br></pre></td></tr></table></figure>
+
+<p>可以发现现在<code>jaeger-query</code>的网络类型已经变成了<code>NodePort</code>，现在可以通过流量访问Jaeger Ui了</p>
+<p>这里的地址是 <a href="http://47.57.100.110:31067/search" target="_blank" rel="noopener">http://47.57.100.110:31067/search</a>  (注意，IP地址及端口根据自己控制台的实际输出填入就行)</p>
+<p>进入页面后可以到刚才部署的UI界面，并查询<code>jaeger-query</code>项目本身的tracing信息。</p>
+<p>我在列表页面找到一个trace_id: <code>73c00aa573bf1ed0</code> 临时保存下它，后面分析会用到，打开后界面如下。</p>
+<p><img data-src="/images/microservice/jaeger-query-ui.png" alt="jaeger-query-ui"></p>
+<h2 id="traces存储结构"><a href="#traces存储结构" class="headerlink" title="traces存储结构"></a>traces存储结构</h2><p>我们可以在jaeger源代码中找到后端cassandra的存储结构，具体信息可以看这里，位置比较隐蔽：</p>
+<p><a href="https://github.com/jaegertracing/jaeger/blob/master/plugin/storage/cassandra/schema/v001.cql.tmpl" target="_blank" rel="noopener">https://github.com/jaegertracing/jaeger/blob/master/plugin/storage/cassandra/schema/v001.cql.tmpl</a> </p>
+<p>不过我们可以登录Pod查看创建后的数据结构信息(cassandra)。让我们一探究竟，首先登入cassandra对应的docker镜像，然后通过cql 连接cassandra集群。</p>
+<blockquote>
+<p>如果对cql不了解的可以查看对应文档： <a href="https://cassandra.apache.org/doc/latest/cql/" target="_blank" rel="noopener">https://cassandra.apache.org/doc/latest/cql/</a> </p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">kubectl exec -it jaeger-cassandra-0 --container jaeger-cassandra -- /bin/bash</span><br><span class="line">cqlsh</span><br><span class="line"></span><br><span class="line">Connected to jaeger at 127.0.0.1:9042.</span><br><span class="line">[cqlsh 5.0.1 | Cassandra 3.11.6 | CQL spec 3.4.4 | Native protocol v4]</span><br><span class="line">Use HELP for help.</span><br></pre></td></tr></table></figure>
+
+<p>进入对应的space，查看里面对应的表信息</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">cqlsh&gt; desc keyspaces;    #查看有哪些keyspaces</span><br><span class="line"></span><br><span class="line">jaeger_v1_test  system_auth  system_distributed</span><br><span class="line">system_schema   system       system_traces     </span><br><span class="line"></span><br><span class="line">cqlsh&gt; use jaeger_v1_test;   #切换到jaeger对应的space</span><br><span class="line">cqlsh:jaeger_v1_test&gt; desc tables;    #查看jaeger space下面的表信息</span><br><span class="line"></span><br><span class="line">service_name_index  service_names  service_operation_index  traces            </span><br><span class="line">dependencies_v2     tag_index      duration_index           operation_names_v2</span><br></pre></td></tr></table></figure>
+
+<p>我们可以一个一个的表信息查看。这里我们主要看下保存我们trace信息的表 <code>service_name_index</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">cqlsh:jaeger_v1_test&gt; desc traces;</span><br><span class="line"></span><br><span class="line">CREATE TABLE jaeger_v1_test.traces (</span><br><span class="line">    trace_id blob,</span><br><span class="line">    span_id bigint,</span><br><span class="line">    span_hash bigint,</span><br><span class="line">    duration bigint,</span><br><span class="line">    flags int,</span><br><span class="line">    logs list&lt;frozen&lt;log&gt;&gt;,</span><br><span class="line">    operation_name text,</span><br><span class="line">    parent_id bigint,</span><br><span class="line">    process frozen&lt;process&gt;,</span><br><span class="line">    refs list&lt;frozen&lt;span_ref&gt;&gt;,</span><br><span class="line">    start_time bigint,</span><br><span class="line">    tags list&lt;frozen&lt;keyvalue&gt;&gt;,</span><br><span class="line">    PRIMARY KEY (trace_id, span_id, span_hash)</span><br><span class="line">) WITH CLUSTERING ORDER BY (span_id ASC, span_hash ASC)</span><br><span class="line">    AND bloom_filter_fp_chance &#x3D; 0.01</span><br><span class="line">    AND caching &#x3D; &#123;&#39;keys&#39;: &#39;ALL&#39;, &#39;rows_per_partition&#39;: &#39;NONE&#39;&#125;</span><br><span class="line">    AND comment &#x3D; &#39;&#39;</span><br><span class="line">    AND compaction &#x3D; &#123;&#39;class&#39;: &#39;org.apache.cassandra.db.compaction.TimeWindowCompactionStrategy&#39;, &#39;compaction_window_size&#39;: &#39;1&#39;, &#39;compaction_window_unit&#39;: &#39;HOURS&#39;, &#39;max_threshold&#39;: &#39;32&#39;, &#39;min_threshold&#39;: &#39;4&#39;&#125;</span><br><span class="line">    AND compression &#x3D; &#123;&#39;chunk_length_in_kb&#39;: &#39;64&#39;, &#39;class&#39;: &#39;org.apache.cassandra.io.compress.LZ4Compressor&#39;&#125;</span><br><span class="line">    AND crc_check_chance &#x3D; 1.0</span><br><span class="line">    AND dclocal_read_repair_chance &#x3D; 0.0</span><br><span class="line">    AND default_time_to_live &#x3D; 172800</span><br><span class="line">    AND gc_grace_seconds &#x3D; 10800</span><br><span class="line">    AND max_index_interval &#x3D; 2048</span><br><span class="line">    AND memtable_flush_period_in_ms &#x3D; 0</span><br><span class="line">    AND min_index_interval &#x3D; 128</span><br><span class="line">    AND read_repair_chance &#x3D; 0.0</span><br><span class="line">    AND speculative_retry &#x3D; &#39;NONE&#39;;</span><br></pre></td></tr></table></figure>
+
+<p>还记得我们开始保存的那个trace_id: <code>73c00aa573bf1ed0</code> 么，现在我们可以在这个表中查看它是如何保存的，我们可以使用下面的cql进行查询，查询前需要对界面上的trace_id进行补位填充<code>0x0000000000000000</code> ，这里一定要注意，最终在cql里面查询的trace_id为：<code>0x000000000000000073c00aa573bf1ed0</code>。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">cqlsh:jaeger_v1_test&gt;</span> <span class="string">expand</span> <span class="string">on;</span></span><br><span class="line"><span class="string">Now</span> <span class="string">Expanded</span> <span class="string">output</span> <span class="string">is</span> <span class="string">enabled</span></span><br><span class="line"><span class="string">cqlsh:jaeger_v1_test&gt;</span> <span class="string">select</span> <span class="string">*</span> <span class="string">from</span> <span class="string">traces</span> <span class="string">where</span> <span class="string">trace_id=0x000000000000000073c00aa573bf1ed0;</span></span><br><span class="line"></span><br><span class="line"><span class="string">@</span> <span class="string">Row</span> <span class="number">1</span></span><br><span class="line"><span class="string">----------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------</span></span><br><span class="line"> <span class="string">trace_id</span>       <span class="string">|</span> <span class="number">0x000000000000000073c00aa573bf1ed0</span></span><br><span class="line"> <span class="string">span_id</span>        <span class="string">|</span> <span class="number">2300299680491247480</span></span><br><span class="line"> <span class="string">span_hash</span>      <span class="string">|</span> <span class="number">1417161953846781420</span></span><br><span class="line"> <span class="string">duration</span>       <span class="string">|</span> <span class="number">204491</span></span><br><span class="line"> <span class="string">flags</span>          <span class="string">|</span> <span class="number">1</span></span><br><span class="line"> <span class="string">logs</span>           <span class="string">|</span> <span class="string">[&#123;ts:</span> <span class="number">1589363774632310</span><span class="string">,</span> <span class="attr">fields:</span> <span class="string">[&#123;key:</span> <span class="string">'event'</span><span class="string">,</span> <span class="attr">value_type:</span> <span class="string">'string'</span><span class="string">,</span> <span class="attr">value_string:</span> <span class="string">'searching'</span><span class="string">,</span> <span class="attr">value_bool:</span> <span class="literal">False</span><span class="string">,</span> <span class="attr">value_long:</span> <span class="number">0</span><span class="string">,</span> <span class="attr">value_double:</span> <span class="number">0</span><span class="string">,</span> <span class="attr">value_binary:</span> <span class="literal">null</span><span class="string">&#125;,</span> <span class="string">&#123;key:</span> <span class="string">'trace_id'</span><span class="string">,</span> <span class="attr">value_type:</span> <span class="string">'string'</span><span class="string">,</span> <span class="attr">value_string:</span> <span class="string">'4c423cfb69721367'</span><span class="string">,</span> <span class="attr">value_bool:</span> <span class="literal">False</span><span class="string">,</span> <span class="attr">value_long:</span> <span class="number">0</span><span class="string">,</span> <span class="attr">value_double:</span> <span class="number">0</span><span class="string">,</span> <span class="attr">value_binary:</span> <span class="literal">null</span><span class="string">&#125;]&#125;]</span></span><br><span class="line"> <span class="string">operation_name</span> <span class="string">|</span> <span class="string">readTrace</span></span><br><span class="line"> <span class="string">parent_id</span>      <span class="string">|</span> <span class="number">0</span></span><br><span class="line"> <span class="string">process</span>        <span class="string">|</span> <span class="string">&#123;service_name:</span> <span class="string">'jaeger-query'</span><span class="string">,</span> <span class="attr">tags:</span> <span class="string">[&#123;key:</span> <span class="string">'jaeger.version'</span><span class="string">,</span> <span class="attr">value_type:</span> <span class="string">'string'</span><span class="string">,</span> <span class="attr">value_string:</span> <span class="string">'Go-2.22.1'</span><span class="string">,</span> <span class="attr">value_bool:</span> <span class="literal">False</span><span class="string">,</span> <span class="attr">value_long:</span> <span class="number">0</span><span class="string">,</span> <span class="attr">value_double:</span> <span class="number">0</span><span class="string">,</span> <span class="attr">value_binary:</span> <span class="literal">null</span><span class="string">&#125;,</span> <span class="string">&#123;key:</span> <span class="string">'hostname'</span><span class="string">,</span> <span class="attr">value_type:</span> <span class="string">'string'</span><span class="string">,</span> <span class="attr">value_string:</span> <span class="string">'jaeger-query-55c77745b5-ff8tt'</span><span class="string">,</span> <span class="attr">value_bool:</span> <span class="literal">False</span><span class="string">,</span> <span class="attr">value_long:</span> <span class="number">0</span><span class="string">,</span> <span class="attr">value_double:</span> <span class="number">0</span><span class="string">,</span> <span class="attr">value_binary:</span> <span class="literal">null</span><span class="string">&#125;,</span> <span class="string">&#123;key:</span> <span class="string">'ip'</span><span class="string">,</span> <span class="attr">value_type:</span> <span class="string">'string'</span><span class="string">,</span> <span class="attr">value_string:</span> <span class="string">'192.168.61.148'</span><span class="string">,</span> <span class="attr">value_bool:</span> <span class="literal">False</span><span class="string">,</span> <span class="attr">value_long:</span> <span class="number">0</span><span class="string">,</span> <span class="attr">value_double:</span> <span class="number">0</span><span class="string">,</span> <span class="attr">value_binary:</span> <span class="literal">null</span><span class="string">&#125;,</span> <span class="string">&#123;key:</span> <span class="string">'client-uuid'</span><span class="string">,</span> <span class="attr">value_type:</span> <span class="string">'string'</span><span class="string">,</span> <span class="attr">value_string:</span> <span class="string">'363a86b295da9842'</span><span class="string">,</span> <span class="attr">value_bool:</span> <span class="literal">False</span><span class="string">,</span> <span class="attr">value_long:</span> <span class="number">0</span><span class="string">,</span> <span class="attr">value_double:</span> <span class="number">0</span><span class="string">,</span> <span class="attr">value_binary:</span> <span class="literal">null</span><span class="string">&#125;]&#125;</span></span><br><span class="line"> <span class="string">refs</span>           <span class="string">|</span> <span class="string">[&#123;ref_type:</span> <span class="string">'child-of'</span><span class="string">,</span> <span class="attr">trace_id:</span> <span class="number">0x000000000000000073c00aa573bf1ed0</span><span class="string">,</span> <span class="attr">span_id:</span> <span class="number">8340678215617945296</span><span class="string">&#125;]</span></span><br><span class="line"> <span class="string">start_time</span>     <span class="string">|</span> <span class="number">1589363774627367</span></span><br><span class="line"> <span class="string">tags</span>           <span class="string">|</span> <span class="string">[&#123;key:</span> <span class="string">'db.statement'</span><span class="string">,</span> <span class="attr">value_type:</span> <span class="string">'string'</span><span class="string">,</span> <span class="attr">value_string:</span> <span class="string">'\n\t\tSELECT trace_id, span_id, parent_id, operation_name, flags, start_time, duration, tags, logs, refs, process\n\t\tFROM traces\n\t\tWHERE trace_id = ?'</span><span class="string">,</span> <span class="attr">value_bool:</span> <span class="literal">False</span><span class="string">,</span> <span class="attr">value_long:</span> <span class="number">0</span><span class="string">,</span> <span class="attr">value_double:</span> <span class="number">0</span><span class="string">,</span> <span class="attr">value_binary:</span> <span class="literal">null</span><span class="string">&#125;,</span> <span class="string">&#123;key:</span> <span class="string">'db.type'</span><span class="string">,</span> <span class="attr">value_type:</span> <span class="string">'string'</span><span class="string">,</span> <span class="attr">value_string:</span> <span class="string">'cassandra'</span><span class="string">,</span> <span class="attr">value_bool:</span> <span class="literal">False</span><span class="string">,</span> <span class="attr">value_long:</span> <span class="number">0</span><span class="string">,</span> <span class="attr">value_double:</span> <span class="number">0</span><span class="string">,</span> <span class="attr">value_binary:</span> <span class="literal">null</span><span class="string">&#125;,</span> <span class="string">&#123;key:</span> <span class="string">'component'</span><span class="string">,</span> <span class="attr">value_type:</span> <span class="string">'string'</span><span class="string">,</span> <span class="attr">value_string:</span> <span class="string">'gocql'</span><span class="string">,</span> <span class="attr">value_bool:</span> <span class="literal">False</span><span class="string">,</span> <span class="attr">value_long:</span> <span class="number">0</span><span class="string">,</span> <span class="attr">value_double:</span> <span class="number">0</span><span class="string">,</span> <span class="attr">value_binary:</span> <span class="literal">null</span><span class="string">&#125;,</span> <span class="string">&#123;key:</span> <span class="string">'internal.span.format'</span><span class="string">,</span> <span class="attr">value_type:</span> <span class="string">'string'</span><span class="string">,</span> <span class="attr">value_string:</span> <span class="string">'proto'</span><span class="string">,</span> <span class="attr">value_bool:</span> <span class="literal">False</span><span class="string">,</span> <span class="attr">value_long:</span> <span class="number">0</span><span class="string">,</span> <span class="attr">value_double:</span> <span class="number">0</span><span class="string">,</span> <span class="attr">value_binary:</span> <span class="literal">null</span><span class="string">&#125;]</span></span><br><span class="line"></span><br><span class="line"><span class="string">此处省略4个Row....</span></span><br><span class="line"><span class="string">(5</span> <span class="string">rows)</span></span><br></pre></td></tr></table></figure>
+
+<p>因为找到这个trace_id包含了5个span，所以这里查询出来了5条记录，可以通过这段文本及上面的图片进行一一观察，可以发现存储结构还是非常清晰的，UI界面需要展示的信息基本都可以很容易从里面取到。</p>
+<p>我们再回过头来看看jaeger client 库thrift的结构（源码见：jaeger.thrift）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"># 标签</span><br><span class="line">struct Tag &#123;</span><br><span class="line">  1: required string  key</span><br><span class="line">  2: required TagType vType</span><br><span class="line">  3: optional string  vStr</span><br><span class="line">  4: optional double  vDouble</span><br><span class="line">  5: optional bool    vBool</span><br><span class="line">  6: optional i64     vLong</span><br><span class="line">  7: optional binary  vBinary</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"># 日志</span><br><span class="line">struct Log &#123;</span><br><span class="line">  1: required i64       timestamp</span><br><span class="line">  2: required list&lt;Tag&gt; fields</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">enum SpanRefType &#123; CHILD_OF, FOLLOWS_FROM &#125;</span><br><span class="line"></span><br><span class="line"># Span 之间的关系</span><br><span class="line">struct SpanRef &#123;</span><br><span class="line">  1: required SpanRefType refType</span><br><span class="line">  2: required i64         traceIdLow</span><br><span class="line">  3: required i64         traceIdHigh</span><br><span class="line">  4: required i64         spanId</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"># Span</span><br><span class="line">struct Span &#123;</span><br><span class="line">  1:  required i64           traceIdLow   # the least significant 64 bits of a traceID</span><br><span class="line">  2:  required i64           traceIdHigh  # the most significant 64 bits of a traceID; 0 when only 64bit IDs are used</span><br><span class="line">  3:  required i64           spanId       # unique span id (only unique within a given trace)</span><br><span class="line">  4:  required i64           parentSpanId # since nearly all spans will have parents spans, CHILD_OF refs do not have to be explicit</span><br><span class="line">  5:  required string        operationName</span><br><span class="line">  6:  optional list&lt;SpanRef&gt; references   # causal references to other spans</span><br><span class="line">  7:  required i32           flags        # a bit field used to propagate sampling decisions. 1 signifies a SAMPLED span, 2 signifies a DEBUG span.</span><br><span class="line">  8:  required i64           startTime</span><br><span class="line">  9:  required i64           duration</span><br><span class="line">  10: optional list&lt;Tag&gt;     tags</span><br><span class="line">  11: optional list&lt;Log&gt;     logs</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>基本上可以跟存储的数据结构一一对应上。</p>
+<h2 id="采样策略"><a href="#采样策略" class="headerlink" title="采样策略"></a>采样策略</h2><p>Jaeger客户端支持4种采样策略，分别是：</p>
+<ol>
+<li><strong>Constant</strong> (<code>sampler.type=const</code>)  采样率的可设置的值为 0 和 1，分别表示关闭采样和全部采样 </li>
+<li><strong>Probabilistic</strong> (<code>sampler.type=probabilistic</code>)   按照概率采样，取值可在 0 至 1 之间，例如设置为 0.5 的话意为只对 50% 的请求采样 </li>
+<li><strong>Rate Limiting</strong> (<code>sampler.type=ratelimiting</code>)  设置每秒的采样次数上限 。 例如，当sampler.param = 2.0时，它将以每秒2条迹线的速率对请求进行采样。 </li>
+<li><strong>Remote</strong> (<code>sampler.type=remote</code>)  此为默认策略。 采样遵循远程设置，取值的含义和 <code>probabilistic</code> 相同，都意为采样的概率，只不过设置为 <code>remote</code> 后，Client 会从 Jaeger Agent 中动态获取采样率设置。 </li>
+</ol>
+<p>为了最大程度地减少开销，Jaeger默认采用 0.1% 的采样策略采集数据 (1000次里面采集1次)。</p>
+<h2 id="客户端"><a href="#客户端" class="headerlink" title="客户端"></a>客户端</h2><p>所有Jaeger客户端库都支持OpenTracing API ，下面这些都是官方支持的客户端库</p>
+<table>
+<thead>
+<tr>
+<th align="left">语言</th>
+<th align="left">GitHub Repo</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">Go</td>
+<td align="left"><a href="https://github.com/jaegertracing/jaeger-client-go" target="_blank" rel="noopener">jaegertracing/jaeger-client-go</a></td>
+</tr>
+<tr>
+<td align="left">Java</td>
+<td align="left"><a href="https://github.com/jaegertracing/jaeger-client-java" target="_blank" rel="noopener">jaegertracing/jaeger-client-java</a></td>
+</tr>
+<tr>
+<td align="left">Node.js</td>
+<td align="left"><a href="https://github.com/jaegertracing/jaeger-client-node" target="_blank" rel="noopener">jaegertracing/jaeger-client-node</a></td>
+</tr>
+<tr>
+<td align="left">Python</td>
+<td align="left"><a href="https://github.com/jaegertracing/jaeger-client-python" target="_blank" rel="noopener">jaegertracing/jaeger-client-python</a></td>
+</tr>
+<tr>
+<td align="left">C++</td>
+<td align="left"><a href="https://github.com/jaegertracing/jaeger-client-cpp" target="_blank" rel="noopener">jaegertracing/jaeger-client-cpp</a></td>
+</tr>
+<tr>
+<td align="left">C#</td>
+<td align="left"><a href="https://github.com/jaegertracing/jaeger-client-csharp" target="_blank" rel="noopener">jaegertracing/jaeger-client-csharp</a></td>
+</tr>
+</tbody></table>
+<p>其他语言的客户端库还在开发中，具体进展可以来这里查看 <a href="https://github.com/jaegertracing/jaeger/issues/366" target="_blank" rel="noopener">issue #366</a> </p>
+<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p><a href="https://www.jaegertracing.io/docs/" target="_blank" rel="noopener">https://www.jaegertracing.io/docs/</a> </p>
+<p><a href="https://github.com/jaegertracing/jaeger" target="_blank" rel="noopener">https://github.com/jaegertracing/jaeger</a> </p>
+
+    </div>
+
+    
+    
+    
+        
+
+  <div class="followme">
+    <p>欢迎关注我的其它发布渠道</p>
+
+    <div class="social-list">
+
+            <div class="social-item">
+              <a target="_blank" class="social-link" href="/atom.xml">
+                <span class="icon">
+                  <i class="fa fa-rss"></i>
+                </span>
+
+                <span class="label">RSS</span>
+              </a>
+            </div>
+    </div>
+  </div>
+
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/opentracing/" rel="tag"><i class="fa fa-tag"></i> opentracing</a>
+              <a href="/tags/jaeger/" rel="tag"><i class="fa fa-tag"></i> jaeger</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/microservice/opentracing/" rel="prev" title="分布式跟踪系统">
+      <i class="fa fa-chevron-left"></i> 分布式跟踪系统
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/istio/istio-sidecar-injector/" rel="next" title="Istio Sidecar注入原理">
+      Istio Sidecar注入原理 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#简介"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#示例"><span class="nav-number">2.</span> <span class="nav-text">示例</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Trace列表视图"><span class="nav-number">2.1.</span> <span class="nav-text">Trace列表视图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Trace明细视图"><span class="nav-number">2.2.</span> <span class="nav-text">Trace明细视图</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#技术栈"><span class="nav-number">3.</span> <span class="nav-text">技术栈</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#架构"><span class="nav-number">4.</span> <span class="nav-text">架构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#部署"><span class="nav-number">5.</span> <span class="nav-text">部署</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#traces存储结构"><span class="nav-number">6.</span> <span class="nav-text">traces存储结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#采样策略"><span class="nav-number">7.</span> <span class="nav-text">采样策略</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#客户端"><span class="nav-number">8.</span> <span class="nav-text">客户端</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考文献"><span class="nav-number">9.</span> <span class="nav-text">参考文献</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="好运来了"
+      src="/images/avatar.gif">
+  <p class="site-author-name" itemprop="name">好运来了</p>
+  <div class="site-description" itemprop="description">java,go,istio,mosn,service mesh</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+        
+          <span class="site-state-item-count">21</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories">
+          
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags">
+          
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/haoyunlaile" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;haoyunlaile" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">好运来了</span>
+</div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script size="300" alpha="0.6" zIndex="-1" src="//cdn.jsdelivr.net/gh/theme-next/theme-next-canvas-ribbon@1/canvas-ribbon.js"></script>
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+  <script defer src="//cdn.jsdelivr.net/gh/theme-next/theme-next-three@1/three.min.js"></script>
+    <script defer src="//cdn.jsdelivr.net/gh/theme-next/theme-next-three@1/three-waves.min.js"></script>
+
+
+  
+  <script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : 'eae8063453ebca094cce',
+      clientSecret: 'b044d5891d0dbc7ae2c891936b31998785caf71a',
+      repo        : 'haoyunlaile.github.io',
+      owner       : 'haoyunlaile',
+      admin       : ['haoyunlaile'],
+      id          : '9746c09b318bdd2ae8437e6672086256',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

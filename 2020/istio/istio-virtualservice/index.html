@@ -346,31 +346,31 @@
 <tbody><tr>
 <td><code>name</code></td>
 <td><code>string</code></td>
-<td>The name assigned to the route for debugging purposes. The route’s name will be concatenated with the match’s name and will be logged in the access logs for requests matching this route/match.</td>
+<td>为route分配给路由的名称</td>
 <td>No</td>
 </tr>
 <tr>
 <td><code>match</code></td>
 <td><code>HTTPMatchRequest[]</code></td>
-<td>Match conditions to be satisfied for the rule to be activated. All conditions inside a single match block have AND semantics, while the list of match blocks have OR semantics. The rule is matched if any one of the match blocks succeed.</td>
+<td>匹配要激活的规则要满足的条件。单个匹配块内的所有条件都具有AND语义，而匹配块列表具有OR语义。如果任何一个匹配块成功，则匹配该规则。</td>
 <td>No</td>
 </tr>
 <tr>
 <td><code>route</code></td>
 <td><code>HTTPRouteDestination[]</code></td>
-<td>A http rule can either redirect or forward (default) traffic. The forwarding target can be one of several versions of a service (see glossary in beginning of document). Weights associated with the service version determine the proportion of traffic it receives.</td>
+<td>http规则可以重定向或转发（默认）流量</td>
 <td>No</td>
 </tr>
 <tr>
 <td><code>redirect</code></td>
 <td><code>HTTPRedirect</code></td>
-<td>A http rule can either redirect or forward (default) traffic. If traffic passthrough option is specified in the rule, route/redirect will be ignored. The redirect primitive can be used to send a HTTP 301 redirect to a different URI or Authority.</td>
+<td>http规则可以重定向或转发（默认）流量. 如果在规则中指定了流量通过选项，则将忽略路由/重定向。重定向原语可用于将HTTP 301重定向发送到其他URI或Authority。</td>
 <td>No</td>
 </tr>
 <tr>
 <td><code>rewrite</code></td>
 <td><code>HTTPRewrite</code></td>
-<td>Rewrite HTTP URIs and Authority headers. Rewrite cannot be used with Redirect primitive. Rewrite will be performed before forwarding.</td>
+<td>重写 HTTP URIs and Authority header. 重写不能与重定向原语一起使用</td>
 <td>No</td>
 </tr>
 <tr>
@@ -388,31 +388,31 @@
 <tr>
 <td><code>fault</code></td>
 <td><code>HTTPFaultInjection</code></td>
-<td>Fault injection policy to apply on HTTP traffic at the client side. Note that timeouts or retries will not be enabled when faults are enabled on the client side.</td>
+<td>故障注入策略，适用于客户端的HTTP通信。请注意，如果在客户端启用了故障注入策略，则不会启用超时或重试。</td>
 <td>No</td>
 </tr>
 <tr>
 <td><code>mirror</code></td>
 <td><code>Destination</code></td>
-<td>Mirror HTTP traffic to a another destination in addition to forwarding the requests to the intended destination. Mirrored traffic is on a best effort basis where the sidecar/gateway will not wait for the mirrored cluster to respond before returning the response from the original destination. Statistics will be generated for the mirrored destination.</td>
+<td>除了将请求转发到预期目标之外，还可以将HTTP流量镜像到另一个目标。</td>
 <td>No</td>
 </tr>
 <tr>
 <td><code>mirrorPercent</code></td>
 <td><code>UInt32Value</code></td>
-<td>Percentage of the traffic to be mirrored by the <code>mirror</code> field. If this field is absent, all the traffic (100%) will be mirrored. Max value is 100.</td>
+<td><code>mirror</code> 字段是设置流量的百分比。如果不存在该字段，则将镜像所有流量（100％）。最大值为100。</td>
 <td>No</td>
 </tr>
 <tr>
 <td><code>corsPolicy</code></td>
 <td><code>CorsPolicy</code></td>
-<td>Cross-Origin Resource Sharing policy (CORS). Refer to <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS" target="_blank" rel="noopener">CORS</a> for further details about cross origin resource sharing.</td>
+<td>有关跨源资源共享的更多详细信息，请参考 <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS" target="_blank" rel="noopener">CORS</a></td>
 <td>No</td>
 </tr>
 <tr>
 <td><code>headers</code></td>
 <td><code>Headers</code></td>
-<td>Header manipulation rules</td>
+<td>Header 规则</td>
 <td>No</td>
 </tr>
 </tbody></table>
@@ -421,22 +421,22 @@
 <h3 id="TCPRoute配置"><a href="#TCPRoute配置" class="headerlink" title="TCPRoute配置"></a>TCPRoute配置</h3><table>
 <thead>
 <tr>
+<th>Field</th>
 <th>Type</th>
 <th>Description</th>
 <th>Required</th>
-<th></th>
 </tr>
 </thead>
 <tbody><tr>
 <td><code>match</code></td>
 <td><code>L4MatchAttributes[]</code></td>
-<td>Match conditions to be satisfied for the rule to be activated. All conditions inside a single match block have AND semantics, while the list of match blocks have OR semantics. The rule is matched if any one of the match blocks succeed.</td>
+<td>匹配要激活的规则要满足的条件。单个匹配块内的所有条件都具有AND语义，而匹配块列表具有OR语义。如果任何一个匹配块成功，则匹配该规则。</td>
 <td>No</td>
 </tr>
 <tr>
 <td><code>route</code></td>
 <td><code>RouteDestination[]</code></td>
-<td>The destination to which the connection should be forwarded to.</td>
+<td>连接应转发到的目的地</td>
 <td>No</td>
 </tr>
 </tbody></table>
@@ -448,21 +448,21 @@
 <thead>
 <tr>
 <th>Type</th>
+<th>Type</th>
 <th>Description</th>
 <th>Required</th>
-<th></th>
 </tr>
 </thead>
 <tbody><tr>
 <td><code>match</code></td>
 <td><code>TLSMatchAttributes[]</code></td>
-<td>Match conditions to be satisfied for the rule to be activated. All conditions inside a single match block have AND semantics, while the list of match blocks have OR semantics. The rule is matched if any one of the match blocks succeed.</td>
+<td>匹配要激活的规则要满足的条件。单个匹配块内的所有条件都具有AND语义，而匹配块列表具有OR语义。如果任何一个匹配块成功，则匹配该规则。</td>
 <td>Yes</td>
 </tr>
 <tr>
 <td><code>route</code></td>
 <td><code>RouteDestination[]</code></td>
-<td>The destination to which the connection should be forwarded to.</td>
+<td>连接应转发到的目的地</td>
 <td>No</td>
 </tr>
 </tbody></table>
@@ -595,7 +595,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives">
         
-          <span class="site-state-item-count">19</span>
+          <span class="site-state-item-count">21</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -608,7 +608,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags">
           
-        <span class="site-state-item-count">18</span>
+        <span class="site-state-item-count">20</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>

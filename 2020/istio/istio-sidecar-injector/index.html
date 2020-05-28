@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"haoyunlaile.github.io","root":"/","scheme":"Pisces","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":true,"nav":{"disqus":{"text":"Load Comment","order":-1}},"activeClass":"gitalk"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="概念简单来说，Sidecar 注入会将额外容器的配置添加到 Pod 模板中。这里特指将Envoy容器注应用所在Pod中。 Istio 服务网格目前所需的容器有： istio-init 用于设置 iptables 规则，以便将入站&#x2F;出站流量通过 Sidecar 代理。 初始化容器与应用程序容器在以下方面有所不同：  它在启动应用容器之前运行，并一直运行直至完成。 如果有多个初始化容器，则每个容器都应">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Istio Sidecar注入原理">
+<meta property="og:url" content="http://haoyunlaile.github.io/2020/istio/istio-sidecar-injector/index.html">
+<meta property="og:site_name" content="好运来了">
+<meta property="og:description" content="概念简单来说，Sidecar 注入会将额外容器的配置添加到 Pod 模板中。这里特指将Envoy容器注应用所在Pod中。 Istio 服务网格目前所需的容器有： istio-init 用于设置 iptables 规则，以便将入站&#x2F;出站流量通过 Sidecar 代理。 初始化容器与应用程序容器在以下方面有所不同：  它在启动应用容器之前运行，并一直运行直至完成。 如果有多个初始化容器，则每个容器都应">
+<meta property="article:published_time" content="2020-05-24T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-05-24T16:00:00.000Z">
+<meta property="article:author" content="好运来了">
+<meta property="article:tag" content="istio">
+<meta property="article:tag" content="sidecar">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://haoyunlaile.github.io/2020/istio/istio-sidecar-injector/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true
+  };
+</script>
+
+  <title>Istio Sidecar注入原理 | 好运来了</title>
+  
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?55ae289b7e76ebbe6ab20e60c74bad9d";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="好运来了" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">好运来了</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">分享知识、记录点滴</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://haoyunlaile.github.io/2020/istio/istio-sidecar-injector/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="好运来了">
+      <meta itemprop="description" content="java,go,istio,mosn,service mesh">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="好运来了">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Istio Sidecar注入原理
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-05-25 00:00:00" itemprop="dateCreated datePublished" datetime="2020-05-25T00:00:00+08:00">2020-05-25</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/istio/" itemprop="url" rel="index"><span itemprop="name">istio</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h2><p>简单来说，Sidecar 注入会<strong>将额外容器</strong>的配置<strong>添加到 Pod 模板中</strong>。这里特指将Envoy容器注应用所在Pod中。</p>
+<p>Istio 服务网格目前所需的容器有：</p>
+<p><code>istio-init</code> 用于设置 iptables 规则，以便将入站/出站流量通过 Sidecar 代理。</p>
+<p>初始化容器与应用程序容器在以下方面有所不同：</p>
+<ul>
+<li>它在启动应用容器之前运行，并一直运行直至完成。</li>
+<li>如果有多个初始化容器，则每个容器都应在启动下一个容器之前成功完成。</li>
+</ul>
+<p>因此，您可以看到，对于不需要成为实际应用容器一部分的设置或初始化作业来说，这种容器是多么的完美。在这种情况下，<code>istio-init</code> 就是这样做并设置了 <code>iptables</code> 规则。</p>
+<p><code>istio-proxy</code> 这个容器是真正的 Sidecar 代理（基于 Envoy）。</p>
+<p>下面的内容描述了向 pod 中注入 Istio Sidecar 的两种方法：</p>
+<ol>
+<li>使用 <code>istioctl</code>手动注入</li>
+<li>启用 pod 所属命名空间的 Istio Sidecar 注入器自动注入。</li>
+</ol>
+<p>手动注入直接修改配置，如 deployment，并将代理配置注入其中。</p>
+<p>当 pod 所属<code>namespace</code>启用自动注入后，自动注入器会使用准入控制器在创建 Pod 时自动注入代理配置。</p>
+<p>通过应用 <code>istio-sidecar-injector</code> ConfigMap 中定义的模版进行注入。</p>
+<h3 id="自动注入"><a href="#自动注入" class="headerlink" title="自动注入"></a>自动注入</h3><p>当你在一个<code>namespace</code>中设置了 <code>istio-injection=enabled</code> 标签，且 injection webhook 被启用后，任何新的 pod 都有将在创建时自动添加 Sidecar.  请注意，区别于手动注入，自动注入发生在 pod 层面。你将看不到 deployment 本身有任何更改 。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">kubectl label namespace default istio-inhection=enabled</span><br><span class="line">kubectl get namespace -L istio-injection</span><br><span class="line">NAME           STATUS    AGE       ISTIO-INJECTION</span><br><span class="line">default        Active    1h        enabled</span><br><span class="line">istio-system   Active    1h</span><br><span class="line">kube-public    Active    1h</span><br><span class="line">kube-system    Active    1h</span><br></pre></td></tr></table></figure>
+
+<p>注入发生在 pod 创建时。杀死正在运行的 pod 并验证新创建的 pod 是否注入 sidecar。原来的 pod 具有 READY 为 1/1 的容器，注入 sidecar 后的 pod 则具有 READY 为 2/2 的容器 。</p>
+<h4 id="自动注入原理"><a href="#自动注入原理" class="headerlink" title="自动注入原理"></a>自动注入原理</h4><p>自动注入是利用了k8s  Admission webhook 实现的。 Admission webhook 是一种用于接收准入请求并对其进行处理的 HTTP 回调机制， 它可以更改发送到 API 服务器的对象以执行自定义的设置默认值操作。 具体细节可以查阅 <a href="https://kubernetes.io/zh/docs/reference/access-authn-authz/extensible-admission-controllers/" target="_blank" rel="noopener">Admission webhook </a>文档。</p>
+<p>istio 对应的istio-sidecar-injector webhook配置，默认会回调istio-sidecar-injector service的<code>/inject</code>地址。</p>
+<figure class="highlight dts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">apiVersion:</span> admissionregistration.k8s.io/v1beta1</span><br><span class="line"><span class="symbol">kind:</span> MutatingWebhookConfiguration</span><br><span class="line"><span class="symbol">metadata:</span></span><br><span class="line"><span class="symbol">  name:</span> istio-sidecar-injector</span><br><span class="line"><span class="symbol">webhooks:</span></span><br><span class="line">  - name: sidecar-injector.istio.io</span><br><span class="line"><span class="symbol">    clientConfig:</span></span><br><span class="line"><span class="symbol">      service:</span></span><br><span class="line"><span class="symbol">        name:</span> istio-sidecar-injector</span><br><span class="line"><span class="symbol">        namespace:</span> istio-system</span><br><span class="line"><span class="symbol">        path:</span> <span class="string">"/inject"</span></span><br><span class="line"><span class="symbol">      caBundle:</span> $&#123;CA_BUNDLE&#125;</span><br><span class="line"><span class="symbol">    rules:</span></span><br><span class="line">      - operations: [ <span class="string">"CREATE"</span> ]</span><br><span class="line"><span class="symbol">        apiGroups:</span> [<span class="string">""</span>]</span><br><span class="line"><span class="symbol">        apiVersions:</span> [<span class="string">"v1"</span>]</span><br><span class="line"><span class="symbol">        resources:</span> [<span class="string">"pods"</span>]</span><br><span class="line"><span class="symbol">    namespaceSelector:</span></span><br><span class="line"><span class="symbol">      matchLabels:</span></span><br><span class="line">        istio-injection: enabled</span><br></pre></td></tr></table></figure>
+
+<p>回调API入口代码在 <code>pkg/kube/inject/webhook.go</code> 中</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 创建一个用于自动注入sidecar的新实例</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewWebhook</span><span class="params">(p WebhookParameters)</span> <span class="params">(*Webhook, error)</span></span> &#123;</span><br><span class="line">	</span><br><span class="line">    <span class="comment">// ...省略一万字...</span></span><br><span class="line">		</span><br><span class="line">	wh := &amp;Webhook&#123;</span><br><span class="line">		Config:                 sidecarConfig,</span><br><span class="line">		sidecarTemplateVersion: sidecarTemplateVersionHash(sidecarConfig.Template),</span><br><span class="line">		meshConfig:             p.Env.Mesh(),</span><br><span class="line">		configFile:             p.ConfigFile,</span><br><span class="line">		valuesFile:             p.ValuesFile,</span><br><span class="line">		valuesConfig:           valuesConfig,</span><br><span class="line">		watcher:                watcher,</span><br><span class="line">		healthCheckInterval:    p.HealthCheckInterval,</span><br><span class="line">		healthCheckFile:        p.HealthCheckFile,</span><br><span class="line">		env:                    p.Env,</span><br><span class="line">		revision:               p.Revision,</span><br><span class="line">	&#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//api server 回调函数,监听/inject回调</span></span><br><span class="line">	p.Mux.HandleFunc(<span class="string">"/inject"</span>, wh.serveInject)</span><br><span class="line">	p.Mux.HandleFunc(<span class="string">"/inject/"</span>, wh.serveInject)</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// ...省略一万字...</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> wh, <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>serveInject</code>逻辑</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(wh *Webhook)</span> <span class="title">serveInject</span><span class="params">(w http.ResponseWriter, r *http.Request)</span></span> &#123;</span><br><span class="line">	 </span><br><span class="line">	<span class="comment">// ...省略一万字...</span></span><br><span class="line">    </span><br><span class="line">	<span class="keyword">var</span> reviewResponse *v1beta1.AdmissionResponse</span><br><span class="line">	ar := v1beta1.AdmissionReview&#123;&#125;</span><br><span class="line">	<span class="keyword">if</span> _, _, err := deserializer.Decode(body, <span class="literal">nil</span>, &amp;ar); err != <span class="literal">nil</span> &#123;</span><br><span class="line">		handleError(fmt.Sprintf(<span class="string">"Could not decode body: %v"</span>, err))</span><br><span class="line">		reviewResponse = toAdmissionResponse(err)</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">         <span class="comment">//执行具体的inject逻辑</span></span><br><span class="line">		reviewResponse = wh.inject(&amp;ar, path)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 响应inject sidecar后的内容给k8s api server</span></span><br><span class="line">	response := v1beta1.AdmissionReview&#123;&#125;</span><br><span class="line">	<span class="keyword">if</span> reviewResponse != <span class="literal">nil</span> &#123;</span><br><span class="line">		response.Response = reviewResponse</span><br><span class="line">		<span class="keyword">if</span> ar.Request != <span class="literal">nil</span> &#123;</span><br><span class="line">			response.Response.UID = ar.Request.UID</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// ...省略一万字...</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 注入逻辑实现</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(wh *Webhook)</span> <span class="title">inject</span><span class="params">(ar *v1beta1.AdmissionReview, path <span class="keyword">string</span>)</span> *<span class="title">v1beta1</span>.<span class="title">AdmissionResponse</span></span> &#123;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// ...省略一万字...</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">// injectRequired判断是否有设置自动注入</span></span><br><span class="line">	<span class="keyword">if</span> !injectRequired(ignoredNamespaces, wh.Config, &amp;pod.Spec, &amp;pod.ObjectMeta) &#123;</span><br><span class="line">		log.Infof(<span class="string">"Skipping %s/%s due to policy check"</span>, pod.ObjectMeta.Namespace, podName)</span><br><span class="line">		totalSkippedInjections.Increment()</span><br><span class="line">		<span class="keyword">return</span> &amp;v1beta1.AdmissionResponse&#123;</span><br><span class="line">			Allowed: <span class="literal">true</span>,</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// ...省略一万字...</span></span><br><span class="line">    </span><br><span class="line">	<span class="comment">// 返回需要注入Pod的对象</span></span><br><span class="line">	spec, iStatus, err := InjectionData(wh.Config.Template, wh.valuesConfig, wh.sidecarTemplateVersion, typeMetadata, deployMeta, &amp;pod.Spec, &amp;pod.ObjectMeta, wh.meshConfig, path) <span class="comment">// nolint: lll</span></span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		handleError(fmt.Sprintf(<span class="string">"Injection data: err=%v spec=%v\n"</span>, err, iStatus))</span><br><span class="line">		<span class="keyword">return</span> toAdmissionResponse(err)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 执行容器注入逻辑</span></span><br><span class="line">	patchBytes, err := createPatch(&amp;pod, injectionStatus(&amp;pod), wh.revision, annotations, spec, deployMeta.Name, wh.meshConfig)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		handleError(fmt.Sprintf(<span class="string">"AdmissionResponse: err=%v spec=%v\n"</span>, err, spec))</span><br><span class="line">		<span class="keyword">return</span> toAdmissionResponse(err)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	reviewResponse := v1beta1.AdmissionResponse&#123;</span><br><span class="line">		Allowed: <span class="literal">true</span>,</span><br><span class="line">		Patch:   patchBytes,</span><br><span class="line">		PatchType: <span class="function"><span class="keyword">func</span><span class="params">()</span> *<span class="title">v1beta1</span>.<span class="title">PatchType</span></span> &#123;</span><br><span class="line">			pt := v1beta1.PatchTypeJSONPatch</span><br><span class="line">			<span class="keyword">return</span> &amp;pt</span><br><span class="line">		&#125;(),</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> &amp;reviewResponse</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>injectRequired</code>函数</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">injectRequired</span><span class="params">(ignored []<span class="keyword">string</span>, config *Config, podSpec *corev1.PodSpec, metadata *metav1.ObjectMeta)</span> <span class="title">bool</span></span> &#123; </span><br><span class="line">    <span class="comment">// HostNetwork模式直接跳过注入</span></span><br><span class="line">	<span class="keyword">if</span> podSpec.HostNetwork &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// k8s系统命名空间(kube-system/kube-public)跳过注入</span></span><br><span class="line">	<span class="keyword">for</span> _, namespace := <span class="keyword">range</span> ignored &#123;</span><br><span class="line">		<span class="keyword">if</span> metadata.Namespace == namespace &#123;</span><br><span class="line">			<span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	annos := metadata.GetAnnotations()</span><br><span class="line">	<span class="keyword">if</span> annos == <span class="literal">nil</span> &#123;</span><br><span class="line">		annos = <span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">string</span>&#123;&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">    </span><br><span class="line">	<span class="keyword">var</span> useDefault <span class="keyword">bool</span></span><br><span class="line">	<span class="keyword">var</span> inject <span class="keyword">bool</span></span><br><span class="line">    <span class="comment">// 优先判断是否申明了`sidecar.istio.io/inject` 注解，会覆盖命名配置</span></span><br><span class="line">	<span class="keyword">switch</span> strings.ToLower(annos[annotation.SidecarInject.Name]) &#123;</span><br><span class="line">	<span class="keyword">case</span> <span class="string">"y"</span>, <span class="string">"yes"</span>, <span class="string">"true"</span>, <span class="string">"on"</span>:</span><br><span class="line">		inject = <span class="literal">true</span></span><br><span class="line">	<span class="keyword">case</span> <span class="string">""</span>:</span><br><span class="line">        <span class="comment">// 使用命名空间配置</span></span><br><span class="line">		useDefault = <span class="literal">true</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 指定Pod不需要注入Sidecar的标签选择器</span></span><br><span class="line">	<span class="keyword">if</span> useDefault &#123;</span><br><span class="line">		<span class="keyword">for</span> _, neverSelector := <span class="keyword">range</span> config.NeverInjectSelector &#123;</span><br><span class="line">			selector, err := metav1.LabelSelectorAsSelector(&amp;neverSelector)</span><br><span class="line">			<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">			&#125; <span class="keyword">else</span> <span class="keyword">if</span> !selector.Empty() &amp;&amp; selector.Matches(labels.Set(metadata.Labels))</span><br><span class="line">                <span class="comment">// 设置不需要注入</span></span><br><span class="line">				inject = <span class="literal">false</span></span><br><span class="line">				useDefault = <span class="literal">false</span></span><br><span class="line">				<span class="keyword">break</span></span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 总是将 sidecar 注入匹配标签选择器的 pod 中，而忽略全局策略</span></span><br><span class="line">	<span class="keyword">if</span> useDefault &#123;</span><br><span class="line">		<span class="keyword">for</span> _, alwaysSelector := <span class="keyword">range</span> config.AlwaysInjectSelector &#123;</span><br><span class="line">			selector, err := metav1.LabelSelectorAsSelector(&amp;alwaysSelector)</span><br><span class="line">			<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">				log.Warnf(<span class="string">"Invalid selector for AlwaysInjectSelector: %v (%v)"</span>, alwaysSelector, err)</span><br><span class="line">			&#125; <span class="keyword">else</span> <span class="keyword">if</span> !selector.Empty() &amp;&amp; selector.Matches(labels.Set(metadata.Labels))&#123; 				  <span class="comment">// 设置需要注入</span></span><br><span class="line">				inject = <span class="literal">true</span></span><br><span class="line">				useDefault = <span class="literal">false</span></span><br><span class="line">				<span class="keyword">break</span></span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 如果都没有配置则使用默认注入策略</span></span><br><span class="line">	<span class="keyword">var</span> required <span class="keyword">bool</span></span><br><span class="line">	<span class="keyword">switch</span> config.Policy &#123;</span><br><span class="line">	<span class="keyword">default</span>: <span class="comment">// InjectionPolicyOff</span></span><br><span class="line">		log.Errorf(<span class="string">"Illegal value for autoInject:%s, must be one of [%s,%s]. Auto injection disabled!"</span>,</span><br><span class="line">			config.Policy, InjectionPolicyDisabled, InjectionPolicyEnabled)</span><br><span class="line">		required = <span class="literal">false</span></span><br><span class="line">	<span class="keyword">case</span> InjectionPolicyDisabled:</span><br><span class="line">		<span class="keyword">if</span> useDefault &#123;</span><br><span class="line">			required = <span class="literal">false</span></span><br><span class="line">		&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">			required = inject</span><br><span class="line">		&#125;</span><br><span class="line">	<span class="keyword">case</span> InjectionPolicyEnabled:</span><br><span class="line">		<span class="keyword">if</span> useDefault &#123;</span><br><span class="line">			required = <span class="literal">true</span></span><br><span class="line">		&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">			required = inject</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> required</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>从上面我们可以看出，是否注入Sidecar的优先级为</p>
+<blockquote>
+<p> Pod Annotations → NeverInjectSelector → AlwaysInjectSelector → Default Policy </p>
+</blockquote>
+<p><code>createPath</code>函数</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">createPatch</span><span class="params">(pod *corev1.Pod, prevStatus *SidecarInjectionStatus, revision <span class="keyword">string</span>, annotations <span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">string</span>,</span></span></span><br><span class="line"><span class="function"><span class="params">	sic *SidecarInjectionSpec, workloadName <span class="keyword">string</span>, mesh *meshconfig.MeshConfig)</span> <span class="params">([]<span class="keyword">byte</span>, error)</span></span> &#123;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">var</span> patch []rfc6902PatchOperation</span><br><span class="line"></span><br><span class="line">	<span class="comment">// ...省略一万字...</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 注入初始化启动容器</span></span><br><span class="line">	patch = <span class="built_in">append</span>(patch, addContainer(pod.Spec.InitContainers, sic.InitContainers, <span class="string">"/spec/initContainers"</span>)...)</span><br><span class="line">    <span class="comment">// 注入Sidecar容器</span></span><br><span class="line">	patch = <span class="built_in">append</span>(patch, addContainer(pod.Spec.Containers, sic.Containers, <span class="string">"/spec/containers"</span>)...)</span><br><span class="line">    <span class="comment">// 注入挂载卷</span></span><br><span class="line">	patch = <span class="built_in">append</span>(patch, addVolume(pod.Spec.Volumes, sic.Volumes, <span class="string">"/spec/volumes"</span>)...)</span><br><span class="line">	patch = <span class="built_in">append</span>(patch, addImagePullSecrets(pod.Spec.ImagePullSecrets, sic.ImagePullSecrets, <span class="string">"/spec/imagePullSecrets"</span>)...)</span><br><span class="line">    <span class="comment">// 注入新注解</span></span><br><span class="line">	patch = <span class="built_in">append</span>(patch, updateAnnotation(pod.Annotations, annotations)...)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// ...省略一万字...</span></span><br><span class="line">	<span class="keyword">return</span> json.Marshal(patch)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>总结：可以看到，整个注入过程实际就是原本的Pod配置反解析成Pod对象，把需要注入的Yaml内容(如:Sidecar)反序列成对象然后append到对应Pod (如：Container)上，然后再把修改后的Pod重新解析成yaml 内容返回给k8s的api server，然后k8s 拿着修改后内容再将这两个容器调度到同一台机器进行部署，至此就完成了对应Sidecar的注入。</strong></p>
+<h4 id="卸载-sidecar-自动注入器"><a href="#卸载-sidecar-自动注入器" class="headerlink" title="卸载 sidecar 自动注入器"></a>卸载 sidecar 自动注入器</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">kubectl delete mutatingwebhookconfiguration istio-sidecar-injector</span><br><span class="line">kubectl -n istio-system delete service istio-sidecar-injector</span><br><span class="line">kubectl -n istio-system delete deployment istio-sidecar-injector</span><br><span class="line">kubectl -n istio-system delete serviceaccount istio-sidecar-injector-service-account</span><br><span class="line">kubectl delete clusterrole istio-sidecar-injector-istio-system</span><br><span class="line">kubectl delete clusterrolebinding istio-sidecar-injector-admin-role-binding-istio-system</span><br></pre></td></tr></table></figure>
+
+<p>上面的命令不会从 pod 中移除注入的 sidecar。需要进行滚动更新或者直接删除对应的pod，并强制 deployment 重新创建新pod。 </p>
+<h3 id="手动注入-sidecar"><a href="#手动注入-sidecar" class="headerlink" title="手动注入 sidecar"></a>手动注入 sidecar</h3><p>手动注入 deployment ，需要使用 使用 <code>istioctl kube-inject</code></p>
+<p>使用手动注入前先关闭自动注入</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl label namespace default istio-injection=disabled</span><br></pre></td></tr></table></figure>
+
+<p>使用istioctl手动注入</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">istioctl kube-inject -f samples/sleep/sleep.yaml | kubectl apply -f -</span><br></pre></td></tr></table></figure>
+
+<p>我们可以查看对应的<code>deployment</code> 明细</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br></pre></td><td class="code"><pre><span class="line">describe deployment sleep</span><br><span class="line">Name:                   sleep</span><br><span class="line">Namespace:              default</span><br><span class="line">CreationTimestamp:      Wed, 27 May 2020 10:45:23 +0800</span><br><span class="line">Annotations:            deployment.kubernetes.io/revision: 1</span><br><span class="line">Selector:               app=sleep</span><br><span class="line">Pod Template:</span><br><span class="line">  Labels:           app=sleep</span><br><span class="line">                    istio.io/rev=</span><br><span class="line">                    security.istio.io/tlsMode=istio</span><br><span class="line">  Annotations:      sidecar.istio.io/interceptionMode: REDIRECT</span><br><span class="line">                    sidecar.istio.io/status:</span><br><span class="line">                      &#123;"version":"d36ff46d2def0caba37f639f09514b17c4e80078f749a46aae84439790d2b560","initContainers":["istio-init"],"containers":["istio-proxy"]...</span><br><span class="line">                    traffic.sidecar.istio.io/excludeInboundPorts: 15020</span><br><span class="line">                    traffic.sidecar.istio.io/includeOutboundIPRanges: *</span><br><span class="line">  Service Account:  sleep</span><br><span class="line">  Init Containers:</span><br><span class="line">   istio-init:</span><br><span class="line">    Image:      docker.io/istio/proxyv2:1.6.0</span><br><span class="line">    Port:       &lt;none&gt;</span><br><span class="line">    Host Port:  &lt;none&gt;</span><br><span class="line">    Args:</span><br><span class="line">      istio-iptables</span><br><span class="line">      -p</span><br><span class="line">      15001</span><br><span class="line">      -z</span><br><span class="line">      15006</span><br><span class="line">      -u</span><br><span class="line">      1337</span><br><span class="line">      -m</span><br><span class="line">      REDIRECT</span><br><span class="line">      -i</span><br><span class="line">      *</span><br><span class="line">      -x</span><br><span class="line">      </span><br><span class="line">      -b</span><br><span class="line">      *</span><br><span class="line">      -d</span><br><span class="line">      15090,15021,15020</span><br><span class="line">  Containers:</span><br><span class="line">   sleep:</span><br><span class="line">    Image:      governmentpaas/curl-ssl</span><br><span class="line">    Port:       &lt;none&gt;</span><br><span class="line">    Host Port:  &lt;none&gt;</span><br><span class="line">    Command:</span><br><span class="line">      /bin/sleep</span><br><span class="line">      3650d</span><br><span class="line">    Environment:  &lt;none&gt;</span><br><span class="line">    Mounts:</span><br><span class="line">      /etc/sleep/tls from secret-volume (rw)</span><br><span class="line">   istio-proxy:</span><br><span class="line">    Image:      docker.io/istio/proxyv2:1.6.0</span><br><span class="line">    Port:       15090/TCP</span><br><span class="line">    Host Port:  0/TCP</span><br><span class="line">    Args:</span><br><span class="line">      proxy</span><br><span class="line">      sidecar</span><br><span class="line">      --domain</span><br><span class="line">      $(POD_NAMESPACE).svc.cluster.local</span><br><span class="line">      --serviceCluster</span><br><span class="line">      sleep.$(POD_NAMESPACE)</span><br><span class="line">      --proxyLogLevel=warning</span><br><span class="line">      --proxyComponentLogLevel=misc:error</span><br><span class="line">      --trust-domain=cluster.local</span><br><span class="line">      --concurrency</span><br><span class="line">      2</span><br></pre></td></tr></table></figure>
+
+<p>可以看到，相比原始的deployment.yaml文件多出了两个容器，这两个容器的作用后面单独写一篇文章来分析：</p>
+<ol>
+<li><code>Init Containers</code>下的 <code>istio-init</code></li>
+<li><code>Containers</code>下的<code>istio-proxy</code></li>
+</ol>
+<p>上面两个容器的注入，<strong>默认情况下</strong>将使用集群内的配置，或者使用该配置的本地副本来完成注入。 </p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">kubectl -n istio-system get configmap istio-sidecar-injector -o=jsonpath='&#123;.data.config&#125;' &gt; inject-config.yaml</span><br><span class="line">kubectl -n istio-system get configmap istio-sidecar-injector -o=jsonpath='&#123;.data.values&#125;' &gt; inject-values.yaml</span><br><span class="line">kubectl -n istio-system get configmap istio -o=jsonpath='&#123;.data.mesh&#125;' &gt; mesh-config.yaml</span><br></pre></td></tr></table></figure>
+
+<p> 指定输入文件，运行 <code>kube-inject</code> 并部署 </p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">istioctl kube-inject \</span><br><span class="line">    --injectConfigFile inject-config.yaml \</span><br><span class="line">    --meshConfigFile mesh-config.yaml \</span><br><span class="line">    --valuesFile inject-values.yaml \</span><br><span class="line">    --filename samples/sleep/sleep.yaml \</span><br><span class="line">    | kubectl apply -f -</span><br></pre></td></tr></table></figure>
+
+<p> 验证 sidecar 已经被注入到 READY 列下 <code>2/2</code> 的 sleep pod 中 </p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">kubectl get pod  -l app=sleep</span><br><span class="line">NAME                     READY   STATUS    RESTARTS   AGE</span><br><span class="line">sleep-64c6f57bc8-f5n4x   2/2     Running   0          24s</span><br></pre></td></tr></table></figure>
+
+<p>查看对应pod中的容器</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">kubectl <span class="builtin-name">get</span> pods  -o <span class="attribute">jsonpath</span>=<span class="string">"&#123;.items[*].spec.containers[*].image&#125;"</span> | tr -s <span class="string">'[[:space:]]'</span> <span class="string">'\n'</span> | sort</span><br><span class="line">docker.io/istio/proxyv2:1.6.0</span><br><span class="line">governmentpaas/curl-ssl</span><br></pre></td></tr></table></figure>
+
+<p>手动注入的代码入口在 <code>istioctl/cmd/kubeinject.go</code></p>
+<p>手工注入跟自动注入还是有些差异的。手动注入是改变了<code>Deployment</code>。我们可以看下它具体做了哪些动作：</p>
+<p><code>Deployment</code>注入前配置：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">apps/v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Deployment</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">sleep</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">replicas:</span> <span class="number">1</span></span><br><span class="line">  <span class="attr">selector:</span></span><br><span class="line">    <span class="attr">matchLabels:</span></span><br><span class="line">      <span class="attr">app:</span> <span class="string">sleep</span></span><br><span class="line">  <span class="attr">template:</span></span><br><span class="line">    <span class="attr">metadata:</span></span><br><span class="line">      <span class="attr">labels:</span></span><br><span class="line">        <span class="attr">app:</span> <span class="string">sleep</span></span><br><span class="line">    <span class="attr">spec:</span></span><br><span class="line">      <span class="attr">serviceAccountName:</span> <span class="string">sleep</span></span><br><span class="line">      <span class="attr">containers:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">sleep</span></span><br><span class="line">        <span class="attr">image:</span> <span class="string">governmentpaas/curl-ssl</span></span><br><span class="line">        <span class="attr">command:</span> <span class="string">["/bin/sleep",</span> <span class="string">"3650d"</span><span class="string">]</span></span><br><span class="line">        <span class="attr">imagePullPolicy:</span> <span class="string">IfNotPresent</span></span><br><span class="line">        <span class="attr">volumeMounts:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">mountPath:</span> <span class="string">/etc/sleep/tls</span></span><br><span class="line">          <span class="attr">name:</span> <span class="string">secret-volume</span></span><br><span class="line">      <span class="attr">volumes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">secret-volume</span></span><br><span class="line">        <span class="attr">secret:</span></span><br><span class="line">          <span class="attr">secretName:</span> <span class="string">sleep-secret</span></span><br><span class="line">          <span class="attr">optional:</span> <span class="literal">true</span></span><br></pre></td></tr></table></figure>
+
+<p><code>Deployment</code>注入后配置：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">kubectl get deployment sleep -o yaml &gt; sleep.yaml</span><br><span class="line">less sleep.yaml</span><br></pre></td></tr></table></figure>
+
+<p>这里只保留跟注入容器有关的部分内容</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">apps/v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Deployment</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">annotations:</span></span><br><span class="line">    <span class="attr">deployment.kubernetes.io/revision:</span> <span class="string">"1"</span></span><br><span class="line">  <span class="attr">generation:</span> <span class="number">1</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">sleep</span></span><br><span class="line">  <span class="attr">namespace:</span> <span class="string">default</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">replicas:</span> <span class="number">1</span></span><br><span class="line">  <span class="attr">selector:</span></span><br><span class="line">    <span class="attr">matchLabels:</span></span><br><span class="line">      <span class="attr">app:</span> <span class="string">sleep</span></span><br><span class="line">  <span class="attr">template:</span></span><br><span class="line">    <span class="attr">metadata:</span></span><br><span class="line">      <span class="attr">annotations:</span></span><br><span class="line">        <span class="attr">sidecar.istio.io/interceptionMode:</span> <span class="string">REDIRECT</span></span><br><span class="line">      <span class="attr">labels:</span></span><br><span class="line">        <span class="attr">app:</span> <span class="string">sleep</span></span><br><span class="line">        <span class="attr">istio.io/rev:</span> <span class="string">""</span></span><br><span class="line">        <span class="attr">security.istio.io/tlsMode:</span> <span class="string">istio</span></span><br><span class="line">    <span class="attr">spec:</span></span><br><span class="line">      <span class="attr">containers:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">command:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="string">/bin/sleep</span></span><br><span class="line">        <span class="bullet">-</span> <span class="string">3650d</span></span><br><span class="line">        <span class="attr">image:</span> <span class="string">governmentpaas/curl-ssl</span></span><br><span class="line">        <span class="attr">imagePullPolicy:</span> <span class="string">IfNotPresent</span></span><br><span class="line">        <span class="attr">name:</span> <span class="string">sleep</span></span><br><span class="line">        <span class="attr">resources:</span> <span class="string">&#123;&#125;</span></span><br><span class="line">        <span class="attr">terminationMessagePath:</span> <span class="string">/dev/termination-log</span></span><br><span class="line">        <span class="attr">terminationMessagePolicy:</span> <span class="string">File</span></span><br><span class="line">        <span class="attr">volumeMounts:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">mountPath:</span> <span class="string">/etc/sleep/tls</span></span><br><span class="line">          <span class="attr">name:</span> <span class="string">secret-volume</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">args:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="string">proxy</span></span><br><span class="line">        <span class="bullet">-</span> <span class="string">sidecar</span></span><br><span class="line">        <span class="bullet">-</span> <span class="string">--domain</span></span><br><span class="line">        <span class="bullet">-</span> <span class="string">$(POD_NAMESPACE).svc.cluster.local</span></span><br><span class="line">        <span class="bullet">-</span> <span class="string">--serviceCluster</span></span><br><span class="line">        <span class="bullet">-</span> <span class="string">sleep.$(POD_NAMESPACE)</span></span><br><span class="line">        <span class="bullet">-</span> <span class="string">--proxyLogLevel=warning</span></span><br><span class="line">        <span class="bullet">-</span> <span class="string">--proxyComponentLogLevel=misc:error</span></span><br><span class="line">        <span class="bullet">-</span> <span class="string">--trust-domain=cluster.local</span></span><br><span class="line">        <span class="bullet">-</span> <span class="string">--concurrency</span></span><br><span class="line">        <span class="bullet">-</span> <span class="string">"2"</span></span><br><span class="line">        <span class="attr">image:</span> <span class="string">docker.io/istio/proxyv2:1.6.0</span></span><br><span class="line">        <span class="attr">imagePullPolicy:</span> <span class="string">Always</span></span><br><span class="line">        <span class="attr">name:</span> <span class="string">istio-proxy</span></span><br><span class="line">        <span class="attr">ports:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">containerPort:</span> <span class="number">15090</span></span><br><span class="line">          <span class="attr">name:</span> <span class="string">http-envoy-prom</span></span><br><span class="line">          <span class="attr">protocol:</span> <span class="string">TCP</span></span><br><span class="line">      <span class="attr">dnsPolicy:</span> <span class="string">ClusterFirst</span></span><br><span class="line">      <span class="attr">initContainers:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">args:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="string">istio-iptables</span></span><br><span class="line">        <span class="bullet">-</span> <span class="string">-p</span></span><br><span class="line">        <span class="bullet">-</span> <span class="string">"15001"</span></span><br><span class="line">        <span class="bullet">-</span> <span class="string">-z</span></span><br><span class="line">        <span class="bullet">-</span> <span class="string">"15006"</span></span><br><span class="line">        <span class="bullet">-</span> <span class="string">-u</span></span><br><span class="line">        <span class="bullet">-</span> <span class="string">"1337"</span></span><br><span class="line">        <span class="bullet">-</span> <span class="string">-m</span></span><br><span class="line">        <span class="bullet">-</span> <span class="string">REDIRECT</span></span><br><span class="line">        <span class="bullet">-</span> <span class="string">-i</span></span><br><span class="line">        <span class="bullet">-</span> <span class="string">'*'</span></span><br><span class="line">        <span class="bullet">-</span> <span class="string">-x</span></span><br><span class="line">        <span class="bullet">-</span> <span class="string">""</span></span><br><span class="line">        <span class="bullet">-</span> <span class="string">-b</span></span><br><span class="line">        <span class="bullet">-</span> <span class="string">'*'</span></span><br><span class="line">        <span class="bullet">-</span> <span class="string">-d</span></span><br><span class="line">        <span class="bullet">-</span> <span class="number">15090</span><span class="string">,15021,15020</span></span><br><span class="line">        <span class="attr">env:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">DNS_AGENT</span></span><br><span class="line">        <span class="attr">image:</span> <span class="string">docker.io/istio/proxyv2:1.6.0</span></span><br><span class="line">        <span class="attr">imagePullPolicy:</span> <span class="string">Always</span></span><br><span class="line">        <span class="attr">name:</span> <span class="string">istio-init</span></span><br><span class="line">      <span class="attr">restartPolicy:</span> <span class="string">Always</span></span><br></pre></td></tr></table></figure>
+
+<p>可见新增了一个容器镜像</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">image:</span> <span class="string">docker.io/istio/proxyv2:1.6.0</span></span><br></pre></td></tr></table></figure>
+
+<p>那么注入的内容模板从哪里获取，这里有两个选项。</p>
+<ol>
+<li>—injectConfigFile  指定对应的注入文件</li>
+<li>—injectConfigMapName  注入配置的 ConfigMap 名称 </li>
+</ol>
+<p>如果在操作时发现Sidecar没有注入成功可以根据注入的方式查看上面的注入流程来查找问题。</p>
+<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p> <a href="https://preliminary.istio.io/zh/docs/setup/additional-setup/sidecar-injection/#automatic-sidecar-injection" target="_blank" rel="noopener">https://preliminary.istio.io/zh/docs/setup/additional-setup/sidecar-injection/#automatic-sidecar-injection</a></p>
+<p> <a href="https://kubernetes.io/zh/docs/reference/access-authn-authz/admission-controllers/" target="_blank" rel="noopener">https://kubernetes.io/zh/docs/reference/access-authn-authz/admission-controllers/</a> </p>
+<p> <a href="https://istio.io/zh/docs/reference/commands/istioctl/#istioctl-kube-inject" target="_blank" rel="noopener">https://istio.io/zh/docs/reference/commands/istioctl/#istioctl-kube-inject</a> </p>
+
+    </div>
+
+    
+    
+    
+        
+
+  <div class="followme">
+    <p>欢迎关注我的其它发布渠道</p>
+
+    <div class="social-list">
+
+            <div class="social-item">
+              <a target="_blank" class="social-link" href="/atom.xml">
+                <span class="icon">
+                  <i class="fa fa-rss"></i>
+                </span>
+
+                <span class="label">RSS</span>
+              </a>
+            </div>
+    </div>
+  </div>
+
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/istio/" rel="tag"><i class="fa fa-tag"></i> istio</a>
+              <a href="/tags/sidecar/" rel="tag"><i class="fa fa-tag"></i> sidecar</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/microservice/jaeger-tracing/" rel="prev" title="jaeger tracing">
+      <i class="fa fa-chevron-left"></i> jaeger tracing
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/istio/istio-polit-agent-and-envoy-lifecycle/" rel="next" title="Istio polit-agent & envoy启动流程">
+      Istio polit-agent & envoy启动流程 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#概念"><span class="nav-number">1.</span> <span class="nav-text">概念</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#自动注入"><span class="nav-number">1.1.</span> <span class="nav-text">自动注入</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#自动注入原理"><span class="nav-number">1.1.1.</span> <span class="nav-text">自动注入原理</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#卸载-sidecar-自动注入器"><span class="nav-number">1.1.2.</span> <span class="nav-text">卸载 sidecar 自动注入器</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#手动注入-sidecar"><span class="nav-number">1.2.</span> <span class="nav-text">手动注入 sidecar</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考文献"><span class="nav-number">2.</span> <span class="nav-text">参考文献</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="好运来了"
+      src="/images/avatar.gif">
+  <p class="site-author-name" itemprop="name">好运来了</p>
+  <div class="site-description" itemprop="description">java,go,istio,mosn,service mesh</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+        
+          <span class="site-state-item-count">21</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories">
+          
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags">
+          
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/haoyunlaile" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;haoyunlaile" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">好运来了</span>
+</div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script size="300" alpha="0.6" zIndex="-1" src="//cdn.jsdelivr.net/gh/theme-next/theme-next-canvas-ribbon@1/canvas-ribbon.js"></script>
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+  <script defer src="//cdn.jsdelivr.net/gh/theme-next/theme-next-three@1/three.min.js"></script>
+    <script defer src="//cdn.jsdelivr.net/gh/theme-next/theme-next-three@1/three-waves.min.js"></script>
+
+
+  
+  <script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : 'eae8063453ebca094cce',
+      clientSecret: 'b044d5891d0dbc7ae2c891936b31998785caf71a',
+      repo        : 'haoyunlaile.github.io',
+      owner       : 'haoyunlaile',
+      admin       : ['haoyunlaile'],
+      id          : 'ca57d6fe1f8acf825205d005d2e425b0',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>
