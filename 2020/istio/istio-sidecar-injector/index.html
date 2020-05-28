@@ -239,6 +239,8 @@
 </ul>
 <p>因此，您可以看到，对于不需要成为实际应用容器一部分的设置或初始化作业来说，这种容器是多么的完美。在这种情况下，<code>istio-init</code> 就是这样做并设置了 <code>iptables</code> 规则。</p>
 <p><code>istio-proxy</code> 这个容器是真正的 Sidecar 代理（基于 Envoy）。</p>
+<a id="more"></a>
+
 <p>下面的内容描述了向 pod 中注入 Istio Sidecar 的两种方法：</p>
 <ol>
 <li>使用 <code>istioctl</code>手动注入</li>
