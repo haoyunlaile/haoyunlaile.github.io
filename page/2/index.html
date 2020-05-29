@@ -172,6 +172,82 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://haoyunlaile.github.io/2020/istio/istio-virtualservice/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="好运来了">
+      <meta itemprop="description" content="java,go,istio,mosn,service mesh">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="好运来了">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/istio/istio-virtualservice/" class="post-title-link" itemprop="url">Istio VirtualService</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-04-28 13:00:00" itemprop="dateCreated datePublished" datetime="2020-04-28T13:00:00+08:00">2020-04-28</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/istio/" itemprop="url" rel="index"><span itemprop="name">istio</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="Istio-VirtualService-虚拟服务"><a href="#Istio-VirtualService-虚拟服务" class="headerlink" title="Istio  VirtualService 虚拟服务"></a>Istio  VirtualService 虚拟服务</h2><h3 id="概念及示例"><a href="#概念及示例" class="headerlink" title="概念及示例"></a>概念及示例</h3><p><code>VirtualService</code> 描述了一个或多个用户可寻址目标到网格内实际工作负载之间的映射 。 虚拟服务让您配置如何在服务网格内将请求路由到服务，这基于 Istio 和平台提供的基本的连通性和服务发现能力。每个虚拟服务包含一组路由规则，Istio 按顺序评估它们，Istio 将每个给定的请求匹配到虚拟服务指定的实际目标地址。您的网格可以有多个虚拟服务，也可以没有，取决于您的使用场景。 </p>
+<p>虚拟服务在增强 Istio 流量管理的灵活性和有效性方面，发挥着至关重要的作用，通过对客户端请求的目标地址与真实响应请求的目标工作负载进行解耦来实现。虚拟服务同时提供了丰富的方式，为发送至这些工作负载的流量指定不同的路由规则。 </p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">networking.istio.io/v1alpha3</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">VirtualService</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">reviews</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">hosts:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">reviews</span></span><br><span class="line">  <span class="attr">gateways:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">bookinfo-gateway</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">mesh</span></span><br><span class="line">  <span class="attr">http:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">match:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">headers:</span></span><br><span class="line">        <span class="attr">end-user:</span></span><br><span class="line">          <span class="attr">exact:</span> <span class="string">jason</span></span><br><span class="line">    <span class="attr">route:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">destination:</span></span><br><span class="line">        <span class="attr">host:</span> <span class="string">reviews</span></span><br><span class="line">        <span class="attr">subset:</span> <span class="string">v2</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">route:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">destination:</span></span><br><span class="line">        <span class="attr">host:</span> <span class="string">reviews</span></span><br><span class="line">        <span class="attr">subset:</span> <span class="string">v3</span></span><br></pre></td></tr></table></figure>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/istio/istio-virtualservice/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-Hans">
     <link itemprop="mainEntityOfPage" href="http://haoyunlaile.github.io/2020/istio/istio-gateway/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1078,89 +1154,6 @@
   
   
 
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="http://haoyunlaile.github.io/2020/docker/docker-install/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="好运来了">
-      <meta itemprop="description" content="java,go,istio,mosn,service mesh">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="好运来了">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/docker/docker-install/" class="post-title-link" itemprop="url">centos7 install docker</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-04-21 08:00:00" itemprop="dateCreated datePublished" datetime="2020-04-21T08:00:00+08:00">2020-04-21</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/docker/" itemprop="url" rel="index"><span itemprop="name">docker</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h2><p>安装docker运行环境</p>
-<h2 id="准备条件"><a href="#准备条件" class="headerlink" title="准备条件"></a>准备条件</h2><ol>
-<li>一台VPS（本文使用<strong>阿里云香港</strong> - centos7.7）</li>
-<li>一台能SSH连接到VPS的本地电脑 （推荐连接工具xshell）</li>
-</ol>
-<h2 id="安装步骤"><a href="#安装步骤" class="headerlink" title="安装步骤"></a>安装步骤</h2><p>安装docker</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">curl -fsSL https://get.docker.com -o get-docker.sh</span><br><span class="line">sh get-docker.sh --mirror Aliyun</span><br></pre></td></tr></table></figure>
-
-<p>配置docker访问加速</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">tee /etc/docker/daemon.json &lt;&lt;-<span class="string">'EOF'</span></span><br><span class="line">&#123;</span><br><span class="line"> <span class="string">"registry-mirrors"</span>: [</span><br><span class="line"> 	 <span class="string">"https://ze9vyrof.mirror.aliyuncs.com"</span>,</span><br><span class="line">     <span class="string">"https://registry.docker-cn.com"</span>,</span><br><span class="line">     <span class="string">"http://f1361db2.m.daocloud.io"</span>,</span><br><span class="line">     <span class="string">"https://docker.mirrors.ustc.edu.cn"</span></span><br><span class="line"> ]</span><br><span class="line">&#125;</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/docker/docker-install/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
   </div>
 
   
@@ -1233,7 +1226,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives">
         
-          <span class="site-state-item-count">21</span>
+          <span class="site-state-item-count">22</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
